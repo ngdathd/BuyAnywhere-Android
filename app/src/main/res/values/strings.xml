@@ -1,4 +1,7 @@
 <resources>
+    <string name="facebook_app_id">876296992517837</string>
+    <string name="fb_login_protocol_scheme">fb876296992517837</string>
+
     <string name="app_name">BuyAnywhere</string>
     <string name="title_activity_maps">Map</string>
 </resources>
