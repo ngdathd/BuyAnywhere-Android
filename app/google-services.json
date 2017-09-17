@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "328783804062",
+    "project_id": "firebase-buyanywhere"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:328783804062:android:2b067f99b9bf1ec4",
+        "android_client_info": {
+          "package_name": "com.uides.buyanywhere"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "328783804062-l7s70umhcq11d6rd7nkrhi264ps3tprd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.uides.buyanywhere",
+            "certificate_hash": "24c6e6fa3799226ecba0363ff618d3428a785732"
+          }
+        },
+        {
+          "client_id": "328783804062-m45nqe2mh32m4u9tq9jc5vu27nn9vqba.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASVi7CEoPqQxTLd24oi3WyT8PKmHz3zHI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

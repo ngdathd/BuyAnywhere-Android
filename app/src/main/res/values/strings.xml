@@ -1,7 +1,12 @@
 <resources>
     <string name="facebook_app_id">876296992517837</string>
     <string name="fb_login_protocol_scheme">fb876296992517837</string>
-
+    <string name="google_client_id">328783804062-m45nqe2mh32m4u9tq9jc5vu27nn9vqba.apps.googleusercontent.com</string>
     <string name="app_name">BuyAnywhere</string>
     <string name="title_activity_maps">Map</string>
+    <string name="log_out">Log out</string>
+    <string name="sign_out">Sign out</string>
+    <string name="sign_in_failed">Sign in failed</string>
+    <string name="facebook_login_button">Log in with Facebook</string>
+    <string name="google_login_button">Sign in with Google</string>
 </resources>
