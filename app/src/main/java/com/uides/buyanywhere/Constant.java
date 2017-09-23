@@ -5,6 +5,9 @@ package com.uides.buyanywhere;
  */
 
 public class Constant {
+    public static final String BASE_URL = "https://shoppingcoltech.azurewebsites.net/";
     public static final String EMAIL = "email";
     public static final String PUBLIC_PROFILE = "public_profile";
+    public static final String USER_INFO = "user_info";
+    public static final String ACCESS_TOKEN = "access_token";
 }

@@ -15,8 +15,6 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.LoggingBehavior;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
@@ -28,13 +26,21 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
+import com.uides.buyanywhere.main.MainActivity;
+import com.uides.buyanywhere.model.UserInfo;
+import com.uides.buyanywhere.network.SignInService;
+import com.uides.buyanywhere.network.retrofit.Network;
 
-import org.json.JSONObject;
-
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by TranThanhTung on 15/09/2017.
@@ -80,7 +86,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         if (isUserSignedInFacebook()) {
             LoginManager loginManager = LoginManager.getInstance();
             loginManager.registerCallback(callbackManager, facebookCallback);
-            loginManager.logInWithReadPermissions(this, Collections.singletonList(Constant.PUBLIC_PROFILE));
+            List<String> listPermissions = new ArrayList<>();
+            listPermissions.add(Constant.PUBLIC_PROFILE);
+            listPermissions.add(Constant.EMAIL);
+            loginManager.logInWithReadPermissions(this, listPermissions);
         }
     }
 
@@ -105,7 +114,33 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         facebookCallback = new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.i(TAG, "onSuccess: " + loginResult.getAccessToken());
+                final String accessToken = loginResult.getAccessToken().getToken();
+                Log.i(TAG, "onSuccess: " + accessToken);
+                SignInService signInService = Network.getInstance().createService(SignInService.class);
+                Observable<UserInfo> signInServiceObservable = signInService.facebookSignIn(accessToken);
+                signInServiceObservable.subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<UserInfo>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+
+                            }
+
+                            @Override
+                            public void onNext(UserInfo userInfo) {
+                                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putSerializable(Constant.USER_INFO, userInfo);
+                                intent.putExtras(bundle);
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
             }
 
             @Override
@@ -167,7 +202,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private void handleSignInResult(GoogleSignInResult result) {
         if (result.isSuccess()) {
             GoogleSignInAccount userAccount = result.getSignInAccount();
-            Log.i(TAG, "handleSignInResult: "+userAccount.getIdToken());
+            Log.i(TAG, "handleSignInResult: " + userAccount.getIdToken());
         } else {
             Toast.makeText(this, R.string.sign_in_failed, Toast.LENGTH_SHORT).show();
         }
