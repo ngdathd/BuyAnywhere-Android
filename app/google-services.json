@@ -1,7 +1,9 @@
 {
   "project_info": {
     "project_number": "328783804062",
-    "project_id": "firebase-buyanywhere"
+    "firebase_url": "https://fir-buyanywhere.firebaseio.com",
+    "project_id": "firebase-buyanywhere",
+    "storage_bucket": "firebase-buyanywhere.appspot.com"
   },
   "client": [
     {
@@ -12,6 +14,10 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "328783804062-ffeaaor1lvbhjqdk2opj97dn8n66b1us.apps.googleusercontent.com",
+          "client_type": 3
+        },
         {
           "client_id": "328783804062-l7s70umhcq11d6rd7nkrhi264ps3tprd.apps.googleusercontent.com",
           "client_type": 1,
@@ -35,11 +41,16 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "328783804062-ffeaaor1lvbhjqdk2opj97dn8n66b1us.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

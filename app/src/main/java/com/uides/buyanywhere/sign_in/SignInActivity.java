@@ -28,8 +28,9 @@ import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.main.MainActivity;
 import com.uides.buyanywhere.model.UserInfo;
-import com.uides.buyanywhere.network.SignInService;
+import com.uides.buyanywhere.network.service.LogInService;
 import com.uides.buyanywhere.network.retrofit.Network;
+import com.uides.buyanywhere.utils.UserAccessToken;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -115,32 +116,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onSuccess(LoginResult loginResult) {
                 final String accessToken = loginResult.getAccessToken().getToken();
-                Log.i(TAG, "onSuccess: " + accessToken);
-                SignInService signInService = Network.getInstance().createService(SignInService.class);
-                Observable<UserInfo> signInServiceObservable = signInService.facebookSignIn(accessToken);
-                signInServiceObservable.subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<UserInfo>() {
-                            @Override
-                            public void onCompleted() {
-
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-
-                            }
-
-                            @Override
-                            public void onNext(UserInfo userInfo) {
-                                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-                                Bundle bundle = new Bundle();
-                                bundle.putSerializable(Constant.USER_INFO, userInfo);
-                                intent.putExtras(bundle);
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
+                UserAccessToken.saveUserAccessToken(SignInActivity.this, accessToken);
+                signIn(accessToken);
             }
 
             @Override
@@ -203,8 +180,39 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         if (result.isSuccess()) {
             GoogleSignInAccount userAccount = result.getSignInAccount();
             Log.i(TAG, "handleSignInResult: " + userAccount.getIdToken());
+//            signIn(userAccount.getIdToken());
         } else {
             Toast.makeText(this, R.string.sign_in_failed, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void signIn(String token) {
+        LogInService logInService = Network.getInstance().createService(LogInService.class);
+        Observable<UserInfo> signInServiceObservable = logInService.facebookSignIn(token);
+        signInServiceObservable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<UserInfo>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(UserInfo userInfo) {
+                        navigateToMainActivity(userInfo);
+                    }
+                });
+    }
+
+    private void navigateToMainActivity(UserInfo userInfo) {
+        Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+        intent.putExtra(Constant.USER_INFO, userInfo);
+        startActivity(intent);
+        finish();
     }
 }

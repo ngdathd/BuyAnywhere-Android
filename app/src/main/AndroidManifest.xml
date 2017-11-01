@@ -18,6 +18,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <service
+            android:name=".firebase_cloud_message.AppInstanceIdService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".firebase_cloud_message.AppMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
         <meta-data android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id"/>
 
@@ -62,7 +76,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".main.MainActivity"/>
+        <activity android:name=".main.MainActivity">
+
+        </activity>
     </application>
 
 </manifest>
