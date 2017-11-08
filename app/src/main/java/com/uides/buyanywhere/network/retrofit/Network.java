@@ -11,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class Network {
-    public static Network instance = new Network();
+    private static Network instance = new Network();
     private Retrofit retrofit;
     
     public static Network getInstance(){
