@@ -11,9 +11,11 @@ import android.view.ViewGroup;
  */
 
 public abstract class EndlessLoadingRecyclerViewAdapter extends RecyclerViewAdapter {
-    protected boolean isLoading = false;
-    public static final int VIEW_TYPE_LOADING = 2;
+    public static final int VIEW_TYPE_LOADING = 1;
+
     private OnLoadingMoreListener loadingMoreListener;
+    private boolean disableLoadMore = false;
+    protected boolean isLoading = false;
 
     public EndlessLoadingRecyclerViewAdapter(Context context, boolean enableSelectedMode) {
         super(context, enableSelectedMode);
@@ -21,39 +23,51 @@ public abstract class EndlessLoadingRecyclerViewAdapter extends RecyclerViewAdap
 
     public void setLoadingMoreListener(OnLoadingMoreListener loadingMoreListener) {
         this.loadingMoreListener = loadingMoreListener;
+        disableLoadingMore(loadingMoreListener == null);
     }
 
     @Override
-    protected void onScrollStopped(RecyclerView recyclerView) {
-        int scrollOrient = getScrollOrient();
-        if (scrollOrient == SCROLL_DOWN) {
-            if (isLoading) {
-                return;
-            }
-            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-            int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
-            int lastVisibleItemPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
-            if (firstVisibleItemPosition > 0 && lastVisibleItemPosition == getItemCount() - 1) {
-                isLoading = true;
-                if(loadingMoreListener != null) {
-                    loadingMoreListener.onLoadMore();
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        getRecyclerView().addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                switch (newState) {
+                    case RecyclerView.SCROLL_STATE_IDLE: {
+                        if (disableLoadMore || isLoading) {
+                            return;
+                        }
+                        LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                        int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+                        int lastVisibleItemPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+                        if (firstVisibleItemPosition > 0 && lastVisibleItemPosition == getItemCount() - 1) {
+                            isLoading = true;
+                            loadingMoreListener.onLoadMore();
+                        }
+                    }
+                    break;
+
+                    default: {
+                        break;
+                    }
                 }
             }
-        } else if (scrollOrient == SCROLL_UP) {
-            super.onScrollStopped(recyclerView);
-        }
+        });
+    }
+
+    public void disableLoadingMore(boolean disable) {
+        this.disableLoadMore = disable;
     }
 
     public void showLoadingItem(boolean isScroll) {
         addModel(null, VIEW_TYPE_LOADING, isScroll);
     }
-	
-	public void hideLoadingItem(OnItemRemovedCompleteListener onLoadingItemRemoveCompleteListener) {
+
+    public void hideLoadingItem() {
         if (isLoading) {
             removeModel(getItemCount() - 1);
             isLoading = false;
-        }else if(onLoadingItemRemoveCompleteListener != null) {
-            onLoadingItemRemoveCompleteListener.onItemRemovedComplete();
         }
     }
 
@@ -61,11 +75,6 @@ public abstract class EndlessLoadingRecyclerViewAdapter extends RecyclerViewAdap
     protected RecyclerView.ViewHolder solvedOnCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder result;
         switch (viewType) {
-            case VIEW_TYPE_REFRESHING: {
-                result = initRefreshingViewHolder(parent);
-            }
-            break;
-
             case VIEW_TYPE_LOADING: {
                 result = initLoadingViewHolder(parent);
             }
@@ -82,11 +91,6 @@ public abstract class EndlessLoadingRecyclerViewAdapter extends RecyclerViewAdap
     @Override
     protected void solvedOnBindViewHolder(RecyclerView.ViewHolder viewHolder, int viewType, int position) {
         switch (viewType) {
-            case VIEW_TYPE_REFRESHING: {
-                bindRefreshingViewHolder((RefreshingViewHolder) viewHolder, position);
-            }
-            break;
-
             case VIEW_TYPE_LOADING: {
                 bindLoadingViewHolder((LoadingViewHolder) viewHolder, position);
             }
@@ -110,16 +114,6 @@ public abstract class EndlessLoadingRecyclerViewAdapter extends RecyclerViewAdap
     public static class LoadingViewHolder extends RecyclerView.ViewHolder {
         public LoadingViewHolder(View itemView) {
             super(itemView);
-        }
-    }
-	
-	protected class EndlessLoadingRecyclerViewItemAnimatorObservable extends RecyclerViewItemAnimatorObservable{
-        @Override
-        public void onRemoveFinished(RecyclerView.ViewHolder item) {
-            if(itemRemovedCompleteListener != null &&
-                    (item instanceof RefreshingViewHolder || item instanceof LoadingViewHolder)){
-                observeMove = true;
-            }
         }
     }
 }

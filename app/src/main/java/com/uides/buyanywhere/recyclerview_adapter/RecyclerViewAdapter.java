@@ -1,7 +1,6 @@
 package com.uides.buyanywhere.recyclerview_adapter;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -18,10 +17,6 @@ import java.util.List;
 public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static String TAG = "RecyclerViewAdapter";
     public static final int VIEW_TYPE_NORMAL = 0;
-    public static final int VIEW_TYPE_REFRESHING = 1;
-
-    public static final int SCROLL_UP = 0;
-    public static final int SCROLL_DOWN = 1;
 
     private List<ModelWrapper> listWrapperModels;
     private List<ModelWrapper> listBackupWrapperModels;
@@ -30,12 +25,6 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     private OnItemClickListener mOnItemClickListener;
     private boolean selectedMode;
     private RecyclerView mRecyclerView;
-    private boolean isRefreshing;
-    private int previousCompletelyVisibleItem = -1;
-    private int scrollOrient;
-    private float yDown;
-    private boolean enableSwipeRefreshing = false;
-    private OnRefreshingListener refreshingListener;
 
     public RecyclerViewAdapter(Context context, boolean enableSelectedMode) {
         this.mInflater = LayoutInflater.from(context);
@@ -58,47 +47,6 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         this.mRecyclerView = recyclerView;
-        this.mRecyclerView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-
-                    case MotionEvent.ACTION_DOWN: {
-                        yDown = motionEvent.getRawY();
-                    }
-                    break;
-
-                    case MotionEvent.ACTION_UP: {
-                        float deltaY = motionEvent.getRawY() - yDown;
-                        scrollOrient = deltaY > 0 ? SCROLL_UP : SCROLL_DOWN;
-                    }
-                    break;
-                }
-                return false;
-            }
-        });
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                switch (newState) {
-                    case RecyclerView.SCROLL_STATE_DRAGGING: {
-                        previousCompletelyVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager())
-                                .findFirstCompletelyVisibleItemPosition();
-                    }
-                    break;
-					
-					case RecyclerView.SCROLL_STATE_IDLE:{
-                        onScrollStopped(recyclerView);
-                    }
-                    break;
-
-                    default: {
-                        break;
-                    }
-                }
-            }
-        });
     }
 
     @Override
@@ -106,8 +54,8 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         this.mRecyclerView = null;
     }
 
-    public void setOnRefreshingListener(OnRefreshingListener refreshingListener) {
-        this.refreshingListener = refreshingListener;
+    public RecyclerView getRecyclerView() {
+        return mRecyclerView;
     }
 
     public int getPositionOf(Object object) {
@@ -117,30 +65,6 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             }
         }
         return -1;
-    }
-
-    public void enableSwipeRefreshing(boolean enable) {
-        this.enableSwipeRefreshing = enable;
-    }
-
-    public int getScrollOrient() {
-        return scrollOrient;
-    }
-
-    protected void onScrollStopped(RecyclerView recyclerView) {
-        if (!enableSwipeRefreshing || isRefreshing) {
-            return;
-        }
-
-        int firstCompletelyVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager())
-                .findFirstCompletelyVisibleItemPosition();
-        if (firstCompletelyVisibleItem == 0 &&
-                firstCompletelyVisibleItem == previousCompletelyVisibleItem) {
-            isRefreshing = true;
-            if (refreshingListener != null) {
-                refreshingListener.onRefresh();
-            }
-        }
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -234,6 +158,10 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         }
     }
 
+    private RecyclerView.ViewHolder getViewHolder(int position) {
+        return mRecyclerView.findViewHolderForAdapterPosition(position);
+    }
+
     public boolean isItemSelected(int position) {
         if (selectedMode && position >= 0 && position < listSelectedItems.size()) {
             return listSelectedItems.get(position);
@@ -264,7 +192,6 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN: {
                         setClickStateBackground(view, viewType, true);
-                        yDown = motionEvent.getRawY();
                     }
                     break;
 
@@ -292,20 +219,12 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         return viewHolder;
     }
 
-    protected RecyclerView.ViewHolder solvedOnCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerView.ViewHolder result;
-        switch (viewType) {
-            case VIEW_TYPE_REFRESHING: {
-                result = initRefreshingViewHolder(parent);
-            }
-            break;
+    private int getItemPosition(View view) {
+        return mRecyclerView.getChildLayoutPosition(view);
+    }
 
-            default: {
-                result = initNormalViewHolder(parent);
-            }
-            break;
-        }
-        return result;
+    protected RecyclerView.ViewHolder solvedOnCreateViewHolder(ViewGroup parent, int viewType) {
+        return initNormalViewHolder(parent);
     }
 
     @Override
@@ -320,42 +239,12 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     }
 
     protected void solvedOnBindViewHolder(RecyclerView.ViewHolder viewHolder, int viewType, int position) {
-        switch (viewType) {
-            case VIEW_TYPE_REFRESHING: {
-                bindRefreshingViewHolder((RefreshingViewHolder) viewHolder, position);
-            }
-            break;
-
-            default: {
-                bindNormalViewHolder((NormalViewHolder) viewHolder, position);
-            }
-            break;
-        }
+        bindNormalViewHolder((NormalViewHolder) viewHolder, position);
     }
 
     protected abstract RecyclerView.ViewHolder initNormalViewHolder(ViewGroup parent);
 
     protected abstract void bindNormalViewHolder(NormalViewHolder holder, int position);
-
-    protected RecyclerView.ViewHolder initRefreshingViewHolder(ViewGroup parent) {
-        return null;
-    }
-
-    protected void bindRefreshingViewHolder(RefreshingViewHolder holder, int position) {
-
-    }
-
-    public NormalViewHolder getViewHolder(int position) {
-        return (NormalViewHolder) mRecyclerView.findViewHolderForAdapterPosition(position);
-    }
-
-    public int getItemPosition(View view) {
-        return mRecyclerView.getChildLayoutPosition(view);
-    }
-
-    public RecyclerView getRecyclerView() {
-        return mRecyclerView;
-    }
 
     protected void setSelectedItemBackground(View view, int viewType, boolean isSelected) {
 
@@ -374,58 +263,19 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         void onItemClick(RecyclerView.Adapter adapter, View view, int viewType, int position);
     }
 
-    public interface OnRefreshingListener {
-        void onRefresh();
-    }
-
     public static class NormalViewHolder extends RecyclerView.ViewHolder {
         public NormalViewHolder(View itemView) {
             super(itemView);
         }
     }
 
-    public static class RefreshingViewHolder extends NormalViewHolder {
-
-        public RefreshingViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
-
     private static class ModelWrapper {
-        private static final String MODEL_FIELD = "model";
         Object model;
         int viewType;
 
-        public ModelWrapper(Object model, int viewType) {
+        ModelWrapper(Object model, int viewType) {
             this.model = model;
             this.viewType = viewType;
-        }
-    }
-
-    public interface Filter {
-        boolean filter(Object key, Object object);
-    }
-	
-	    public interface OnItemRemovedCompleteListener {
-        void onItemRemovedComplete();
-    }
-
-    protected class RecyclerViewItemAnimatorObservable {
-        protected boolean observeMove = false;
-        protected OnItemRemovedCompleteListener itemRemovedCompleteListener;
-
-        public void onRemoveFinished(RecyclerView.ViewHolder item) {
-           if(itemRemovedCompleteListener != null && item instanceof RefreshingViewHolder){
-               observeMove = true;
-           }
-        }
-
-        public void onMoveFinished(RecyclerView.ViewHolder item) {
-            if(observeMove){
-                itemRemovedCompleteListener.onItemRemovedComplete();
-                itemRemovedCompleteListener = null;
-                observeMove = false;
-            }
         }
     }
 }

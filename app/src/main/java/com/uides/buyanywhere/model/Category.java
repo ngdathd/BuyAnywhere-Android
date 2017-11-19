@@ -7,13 +7,18 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class Category {
-    @SerializedName("Id")
+    public static final String ID = "Id";
+    public static final String NAME = "Name";
+    public static final String DESCRIPTION = "Description";
+    public static final String ICON_URL = "IconUrl";
+
+    @SerializedName(ID)
     private String id;
-    @SerializedName("Name")
+    @SerializedName(NAME)
     private String name;
-    @SerializedName("Description")
+    @SerializedName(DESCRIPTION)
     private String description;
-    @SerializedName("IconUrl")
+    @SerializedName(ICON_URL)
     private String iconUrl;
 
     public String getId() {
@@ -46,15 +51,5 @@ public class Category {
 
     public void setIconUrl(String iconUrl) {
         this.iconUrl = iconUrl;
-    }
-
-    @Override
-    public String toString() {
-        return "Category{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", iconUrl='" + iconUrl + '\'' +
-                '}';
     }
 }

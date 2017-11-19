@@ -4,31 +4,54 @@ package com.uides.buyanywhere.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.sql.Date;
+
 public class Product {
-    @SerializedName("Id")
+    public static final String ID = "Id";
+    public static final String SHOP_NAME = "ShopName";
+    public static final String CATEGORY_NAME = "CategoryName";
+    public static final String NAME = "Name";
+    public static final String QUANTITY = "Quantity";
+    public static final String CURRENT_PRICE = "CurrentPrice";
+    public static final String ORIGIN_PRICE = "OriginPrice";
+    public static final String PREVIEW_URL = "PreviewUrl";
+    public static final String DESCRIPTION = "Description";
+    public static final String CREATED_DATE = "CreatedDate";
+    public static final String RATING = "Rating";
+
+    @SerializedName(ID)
     @Expose
     private String id;
-    @SerializedName("Name")
+    @SerializedName(NAME)
     @Expose
     private String name;
-    @SerializedName("Quantity")
+    @SerializedName(SHOP_NAME)
     @Expose
-    private Integer quantity;
-    @SerializedName("Price")
+    private String shopName;
+    @SerializedName(CURRENT_PRICE)
     @Expose
-    private Integer price;
-    @SerializedName("Description")
+    private long currentPrice;
+    @SerializedName(ORIGIN_PRICE)
+    @Expose
+    private long originPrice;
+    @SerializedName(PREVIEW_URL)
+    @Expose
+    private String previewUrl;
+    @SerializedName(CATEGORY_NAME)
+    @Expose
+    private String categoryName;
+    @SerializedName(QUANTITY)
+    @Expose
+    private int quantity;
+    @SerializedName(RATING)
+    @Expose
+    private float rating;
+    @SerializedName(CREATED_DATE)
+    @Expose
+    private Date createdDate;
+    @SerializedName(DESCRIPTION)
     @Expose
     private String description;
-    @SerializedName("CreatedDate")
-    @Expose
-    private Object createdDate;
-    @SerializedName("ShopId")
-    @Expose
-    private String shopId;
-    @SerializedName("CategoryId")
-    @Expose
-    private String categoryId;
 
     public String getId() {
         return id;
@@ -46,20 +69,68 @@ public class Product {
         this.name = name;
     }
 
-    public Integer getQuantity() {
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
+    }
+
+    public long getCurrentPrice() {
+        return currentPrice;
+    }
+
+    public void setCurrentPrice(long currentPrice) {
+        this.currentPrice = currentPrice;
+    }
+
+    public long getOriginPrice() {
+        return originPrice;
+    }
+
+    public void setOriginPrice(long originPrice) {
+        this.originPrice = originPrice;
+    }
+
+    public String getPreviewUrl() {
+        return previewUrl;
+    }
+
+    public void setPreviewUrl(String previewUrl) {
+        this.previewUrl = previewUrl;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
-    public Integer getPrice() {
-        return price;
+    public float getRating() {
+        return rating;
     }
 
-    public void setPrice(Integer price) {
-        this.price = price;
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 
     public String getDescription() {
@@ -68,29 +139,5 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Object getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Object createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public String getShopId() {
-        return shopId;
-    }
-
-    public void setShopId(String shopId) {
-        this.shopId = shopId;
-    }
-
-    public String getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
     }
 }

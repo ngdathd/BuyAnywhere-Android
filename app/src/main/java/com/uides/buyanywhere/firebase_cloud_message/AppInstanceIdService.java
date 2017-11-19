@@ -4,13 +4,12 @@ import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.uides.buyanywhere.network.service.RegisterGCMTokenService;
-import com.uides.buyanywhere.network.retrofit.Network;
+import com.uides.buyanywhere.service.RegisterGCMTokenService;
+import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.utils.UserAccessToken;
 
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by TranThanhTung on 26/09/2017.
@@ -31,21 +30,14 @@ public class AppInstanceIdService extends FirebaseInstanceIdService {
         registerGCMTokenService.register(UserAccessToken.getAccessToken(this), refreshedToken)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Object>() {
-                    @Override
-                    public void onCompleted() {
-                        Toast.makeText(AppInstanceIdService.this, "Register CloudTokenSuccessful", Toast.LENGTH_SHORT).show();
-                    }
+                .subscribe(this::onRegisterSuccess, this::onRegisterError);
+    }
 
-                    @Override
-                    public void onError(Throwable e) {
+    private void onRegisterError(Throwable e) {
+        Toast.makeText(this, "register gcm failed", Toast.LENGTH_SHORT).show();
+    }
 
-                    }
-
-                    @Override
-                    public void onNext(Object o) {
-
-                    }
-                });
+    private void onRegisterSuccess(Object o) {
+        Toast.makeText(this, "register gcm success", Toast.LENGTH_SHORT).show();
     }
 }

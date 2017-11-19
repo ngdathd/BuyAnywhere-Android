@@ -77,16 +77,14 @@
         <!--</intent-filter>-->
         <!--</activity>-->
 
-        <activity android:name=".demo.ShopRecyclerViewActivity">
+        <activity android:name=".demo.ShopRecyclerViewActivity"/>
+
+        <activity android:name=".ui.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <activity android:name=".main.MainActivity">
-
         </activity>
     </application>
 

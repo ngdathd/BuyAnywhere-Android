@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#01A9F2</color>
+    <color name="colorPrimaryDark">#0187D0</color>
+    <color name="colorAccent">#20B2AA</color>
     <color name="dark_gray">#767676</color>
-    <color name="facebook_button_color">@color/colorPrimary</color>
+    <color name="facebook_button_color">#4267B2</color>
     <color name="google_button_color">@android:color/white</color>
+    <color name="rating_star_active_color">#FEBF00</color>
+    <color name="rating_star_normal_color">#BFBFBD</color>
 </resources>
