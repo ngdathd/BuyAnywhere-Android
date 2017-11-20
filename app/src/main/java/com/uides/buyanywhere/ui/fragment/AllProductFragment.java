@@ -1,7 +1,9 @@
 package com.uides.buyanywhere.ui.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -12,20 +14,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cunoraz.tagview.Tag;
 import com.cunoraz.tagview.TagView;
+import com.hedgehog.ratingbar.RatingBar;
 import com.squareup.picasso.Picasso;
+import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
+import com.uides.buyanywhere.custom_view.LoadingDialog;
+import com.uides.buyanywhere.custom_view.PriceTextView;
+import com.uides.buyanywhere.custom_view.StrikeThroughPriceTextView;
 import com.uides.buyanywhere.model.PageResult;
+import com.uides.buyanywhere.model.Product;
 import com.uides.buyanywhere.model.ProductReview;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.service.GetProductReviewsService;
 import com.uides.buyanywhere.recyclerview_adapter.EndlessLoadingRecyclerViewAdapter;
 import com.uides.buyanywhere.recyclerview_adapter.RecyclerViewAdapter;
+import com.uides.buyanywhere.ui.activity.ProductDetailActivity;
 import com.uides.buyanywhere.utils.DateUtil;
 
 import butterknife.BindView;
@@ -39,7 +47,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by TranThanhTung on 19/11/2017.
  */
 
-public class AllProductFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, EndlessLoadingRecyclerViewAdapter.OnLoadingMoreListener {
+public class AllProductFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, EndlessLoadingRecyclerViewAdapter.OnLoadingMoreListener, RecyclerViewAdapter.OnItemClickListener {
     private static final String TAG = "AllProductFragment";
     public static final int LIMIT_PRODUCT = 5;
 
@@ -90,10 +98,11 @@ public class AllProductFragment extends Fragment implements SwipeRefreshLayout.O
     private void initAdapter(Context context) {
         allProductAdapter = new AllProductAdapter(context);
 
-        int firstColor = getResources().getColor(R.color.colorAccent);
-        int secondColor = getResources().getColor(R.color.colorPrimary);
-        int thirdColor = getResources().getColor(R.color.colorPrimaryDark);
-        swipeRefreshLayout.setColorSchemeColors(firstColor, secondColor, thirdColor);
+        int firstColor = getResources().getColor(R.color.blue);
+        int secondColor = getResources().getColor(R.color.red);
+        int thirdColor = getResources().getColor(R.color.yellow);
+        int fourthColor = getResources().getColor(R.color.green);
+        swipeRefreshLayout.setColorSchemeColors(firstColor, secondColor, thirdColor, fourthColor);
         swipeRefreshLayout.setOnRefreshListener(this);
 
         allProductAdapter.setLoadingMoreListener(this);
@@ -126,6 +135,7 @@ public class AllProductFragment extends Fragment implements SwipeRefreshLayout.O
         if (pageResult.getPageIndex() == pageResult.getTotalPages()) {
             allProductAdapter.disableLoadingMore(true);
         }
+        allProductAdapter.setOnItemClickListener(this);
     }
 
     @Override
@@ -149,6 +159,35 @@ public class AllProductFragment extends Fragment implements SwipeRefreshLayout.O
         if (pageResult.getPageIndex() == pageResult.getTotalPages()) {
             allProductAdapter.disableLoadingMore(true);
         }
+    }
+
+    @Override
+    public void onItemClick(RecyclerView.Adapter adapter, View view, int viewType, int position) {
+        LoadingDialog loadingDialog = new LoadingDialog(getActivity());
+        new Handler().postDelayed(() -> {
+            loadingDialog.dismiss();
+            Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
+            Bundle bundle = new Bundle();
+            ProductReview productReview = allProductAdapter.getItem(position, ProductReview.class);
+            Product product = new Product();
+            product.setName(productReview.getName());
+            product.setShopName(productReview.getShopName());
+            product.setCategoryName(productReview.getCategoryName());
+            product.setCreatedDate(productReview.getCreatedDate());
+            product.setCurrentPrice(productReview.getCurrentPrice());
+            product.setOriginPrice(productReview.getOriginPrice());
+            product.setQuantity(productReview.getQuantity());
+            product.setRating((int) productReview.getRating());
+            //TODO call api to get each field data below
+            product.setRatingCount(10);
+            product.setAddedToCart(false);
+            product.setDescription("");
+
+            bundle.putSerializable(Constant.PRODUCT, product);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }, 2000);
+        loadingDialog.show();
     }
 
     private class AllProductAdapter extends EndlessLoadingRecyclerViewAdapter {
@@ -180,14 +219,14 @@ public class AllProductFragment extends Fragment implements SwipeRefreshLayout.O
             Picasso.with(getActivity()).load(productReview.getPreviewUrl()).into(productViewHolder.imagePreview);
             productViewHolder.textName.setText(productReview.getName());
             productViewHolder.textShop.setText(productReview.getShopName());
-            productViewHolder.textCurrentPrice.setText(productReview.getCurrentPrice() + " VND");
-            productViewHolder.textOriginPrice.setText("" + productReview.getOriginPrice() + " VND");
-            productViewHolder.textQuantity.append("" + productReview.getQuantity());
+            productViewHolder.textCurrentPrice.setPrice("" + productReview.getCurrentPrice(), Constant.PRICE_UNIT);
+            productViewHolder.textOriginPrice.setPrice("" + productReview.getOriginPrice(), Constant.PRICE_UNIT);
+            productViewHolder.textQuantity.setText("" + productReview.getQuantity());
             productViewHolder.tagGroup.removeAll();
             Tag tag = new Tag(productReview.getCategoryName());
             tag.tagTextSize = 11;
             productViewHolder.tagGroup.addTag(tag);
-            productViewHolder.ratingBar.setRating(productReview.getRating());
+            productViewHolder.ratingBar.setStar(productReview.getRating());
             productViewHolder.textTime.setText(DateUtil.getDateDiffNow(productReview.getCreatedDate()));
         }
     }
@@ -197,12 +236,12 @@ public class AllProductFragment extends Fragment implements SwipeRefreshLayout.O
         ImageView imagePreview;
         @BindView(R.id.txt_name)
         TextView textName;
-        @BindView(R.id.txt_shop)
+        @BindView(R.id.txt_shop_name)
         TextView textShop;
         @BindView(R.id.txt_current_price)
-        TextView textCurrentPrice;
+        PriceTextView textCurrentPrice;
         @BindView(R.id.txt_origin_price)
-        TextView textOriginPrice;
+        StrikeThroughPriceTextView textOriginPrice;
         @BindView(R.id.txt_quantity)
         TextView textQuantity;
         @BindView(R.id.tag_group)

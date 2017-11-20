@@ -8,8 +8,15 @@
     <dimen name="primary_text_font">13sp</dimen>
     <dimen name="secondary_text_font">12sp</dimen>
     <dimen name="large_text_font">14sp</dimen>
+    <dimen name="extra_large_text_font">20sp</dimen>
     <dimen name="card_padding_side">16dp</dimen>
     <dimen name="preview_size">96dp</dimen>
     <dimen name="recycler_view_padding">4dp</dimen>
     <dimen name="tag_padding_side">5dp</dimen>
+    <dimen name="app_bar_height_image_view">250dp</dimen>
+    <dimen name="big_activity_fab_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="text_margin_very_small">4dp</dimen>
+    <dimen name="text_margin_start">5dp</dimen>
 </resources>

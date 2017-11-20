@@ -9,18 +9,18 @@ import android.util.AttributeSet;
  * Created by TranThanhTung on 19/11/2017.
  */
 
-public class StrikeThroughTextView extends android.support.v7.widget.AppCompatTextView {
-    public StrikeThroughTextView(Context context) {
+public class StrikeThroughPriceTextView extends PriceTextView {
+    public StrikeThroughPriceTextView(Context context) {
         super(context);
         init();
     }
 
-    public StrikeThroughTextView(Context context, @Nullable AttributeSet attrs) {
+    public StrikeThroughPriceTextView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public StrikeThroughTextView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public StrikeThroughPriceTextView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }

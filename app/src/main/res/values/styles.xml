@@ -16,5 +16,9 @@
         <item name="colorControlActivated">@color/rating_star_active_color</item>
     </style>
 
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
     <dimen name="medium_font_size">15sp</dimen>
 </resources>

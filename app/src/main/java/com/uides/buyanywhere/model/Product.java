@@ -4,9 +4,11 @@ package com.uides.buyanywhere.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.sql.Date;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
-public class Product {
+public class Product implements Serializable{
     public static final String ID = "Id";
     public static final String SHOP_NAME = "ShopName";
     public static final String CATEGORY_NAME = "CategoryName";
@@ -14,10 +16,12 @@ public class Product {
     public static final String QUANTITY = "Quantity";
     public static final String CURRENT_PRICE = "CurrentPrice";
     public static final String ORIGIN_PRICE = "OriginPrice";
-    public static final String PREVIEW_URL = "PreviewUrl";
+    public static final String PREVIEW_URL = "PreviewUrls";
     public static final String DESCRIPTION = "Description";
     public static final String CREATED_DATE = "CreatedDate";
     public static final String RATING = "Rating";
+    private static final String IS_ADDED_TO_CART = "IsAddedToCart";
+    private static final String RATING_COUNT = "RatingCount";
 
     @SerializedName(ID)
     @Expose
@@ -36,7 +40,7 @@ public class Product {
     private long originPrice;
     @SerializedName(PREVIEW_URL)
     @Expose
-    private String previewUrl;
+    private List<String> previewUrls;
     @SerializedName(CATEGORY_NAME)
     @Expose
     private String categoryName;
@@ -45,13 +49,20 @@ public class Product {
     private int quantity;
     @SerializedName(RATING)
     @Expose
-    private float rating;
+    private int rating;//TODO rating float -> int
     @SerializedName(CREATED_DATE)
     @Expose
     private Date createdDate;
     @SerializedName(DESCRIPTION)
     @Expose
     private String description;
+    //TODO fix api
+    @SerializedName(IS_ADDED_TO_CART)
+    @Expose
+    private boolean isAddedToCart;
+    @SerializedName(RATING_COUNT)
+    @Expose
+    private int ratingCount;
 
     public String getId() {
         return id;
@@ -77,28 +88,12 @@ public class Product {
         this.shopName = shopName;
     }
 
-    public long getCurrentPrice() {
-        return currentPrice;
+    public List<String> getPreviewUrls() {
+        return previewUrls;
     }
 
-    public void setCurrentPrice(long currentPrice) {
-        this.currentPrice = currentPrice;
-    }
-
-    public long getOriginPrice() {
-        return originPrice;
-    }
-
-    public void setOriginPrice(long originPrice) {
-        this.originPrice = originPrice;
-    }
-
-    public String getPreviewUrl() {
-        return previewUrl;
-    }
-
-    public void setPreviewUrl(String previewUrl) {
-        this.previewUrl = previewUrl;
+    public void setPreviewUrls(List<String> previewUrls) {
+        this.previewUrls = previewUrls;
     }
 
     public String getCategoryName() {
@@ -117,11 +112,27 @@ public class Product {
         this.quantity = quantity;
     }
 
-    public float getRating() {
+    public long getCurrentPrice() {
+        return currentPrice;
+    }
+
+    public void setCurrentPrice(long currentPrice) {
+        this.currentPrice = currentPrice;
+    }
+
+    public long getOriginPrice() {
+        return originPrice;
+    }
+
+    public void setOriginPrice(long originPrice) {
+        this.originPrice = originPrice;
+    }
+
+    public int getRating() {
         return rating;
     }
 
-    public void setRating(float rating) {
+    public void setRating(int rating) {
         this.rating = rating;
     }
 
@@ -139,5 +150,21 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isAddedToCart() {
+        return isAddedToCart;
+    }
+
+    public void setAddedToCart(boolean addedToCart) {
+        isAddedToCart = addedToCart;
+    }
+
+    public int getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(int ratingCount) {
+        this.ratingCount = ratingCount;
     }
 }

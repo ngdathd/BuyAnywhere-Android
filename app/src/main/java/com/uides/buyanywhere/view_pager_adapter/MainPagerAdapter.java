@@ -65,7 +65,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
             }
 
             default: {
-                return R.id.navigation_shopping;
+                return R.id.navigation_product;
             }
         }
     }

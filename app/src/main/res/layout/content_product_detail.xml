@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".ui.activity.ProductDetailActivity"
+    tools:showIn="@layout/activity_product_detail">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp">
+
+        <RelativeLayout
+            android:id="@+id/rl_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin">
+
+            <TextView
+                android:id="@+id/txt_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="Product ABC"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/extra_large_text_font" />
+
+            <ImageView
+                android:id="@+id/img_shop"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignStart="@id/txt_name"
+                android:layout_below="@id/txt_name"
+                android:src="@drawable/ic_shop" />
+
+            <TextView
+                android:id="@+id/txt_shop_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/img_shop"
+                android:layout_marginStart="@dimen/text_margin_start"
+                android:layout_toEndOf="@id/img_shop"
+                android:text="Shop ABC"
+                android:textSize="@dimen/large_text_font" />
+
+            <ImageView
+                android:id="@+id/img_quantity"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignStart="@id/txt_name"
+                android:layout_below="@id/img_shop"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/ic_product" />
+
+            <TextView
+                android:id="@+id/txt_quantity_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/img_quantity"
+                android:layout_marginStart="@dimen/text_margin_start"
+                android:layout_toEndOf="@id/img_quantity"
+                android:text="@string/quantity"
+                android:textColor="@android:color/holo_blue_light"
+                android:textSize="@dimen/large_text_font" />
+
+            <TextView
+                android:id="@+id/txt_quantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/txt_quantity_label"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@id/txt_quantity_label"
+                android:text="9999"
+                android:textColor="@android:color/holo_blue_light"
+                android:textSize="@dimen/large_text_font" />
+
+            <ImageView
+                android:id="@+id/img_time"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignStart="@id/txt_name"
+                android:layout_below="@id/img_quantity"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/ic_time" />
+
+            <TextView
+                android:id="@+id/txt_created_date_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/img_time"
+                android:layout_marginStart="@dimen/text_margin_start"
+                android:layout_toEndOf="@id/img_time"
+                android:text="@string/created_date"
+                android:textSize="@dimen/large_text_font" />
+
+            <TextView
+                android:id="@+id/txt_created_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/img_time"
+                android:layout_marginStart="@dimen/text_margin_start"
+                android:layout_toEndOf="@id/txt_created_date_label"
+                android:text="01/01/1900"
+                android:textSize="@dimen/large_text_font" />
+
+            <ImageView
+                android:id="@+id/img_price"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignStart="@id/txt_name"
+                android:layout_below="@id/img_time"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/ic_price" />
+
+            <com.uides.buyanywhere.custom_view.PriceTextView
+                android:id="@+id/txt_current_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/img_price"
+                android:layout_marginStart="@dimen/text_margin_start"
+                android:layout_marginTop="20dp"
+                android:layout_toEndOf="@id/img_price"
+                android:text="10.000.000VND"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="@dimen/extra_large_text_font" />
+
+            <com.uides.buyanywhere.custom_view.StrikeThroughPriceTextView
+                android:id="@+id/txt_origin_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/txt_current_price"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@id/txt_current_price"
+                android:text="20.000.000 VND"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="@dimen/large_text_font"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/img_discount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/txt_origin_price"
+                android:layout_marginStart="15dp"
+                android:layout_toEndOf="@id/txt_origin_price"
+                android:src="@drawable/ic_discount" />
+
+            <TextView
+                android:id="@+id/txt_discount_percentage"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_alignBottom="@id/txt_origin_price"
+                android:layout_alignTop="@id/img_discount"
+                android:layout_marginStart="5dp"
+                android:layout_toEndOf="@id/img_discount"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="-99%"
+                android:textColor="@android:color/holo_red_light"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txt_rating_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/txt_shop_name"
+                android:layout_alignParentEnd="true"
+                android:text="5.0"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <com.hedgehog.ratingbar.RatingBar xmlns:hedgehog="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/rating_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/txt_rating_score"
+                android:layout_alignParentTop="@id/txt_rating_score"
+                android:layout_marginEnd="5dp"
+                android:layout_toStartOf="@id/txt_rating_score"
+                android:clickable="false"
+                hedgehog:halfstart="true"
+                hedgehog:starCount="5"
+                hedgehog:starEmpty="@drawable/ic_star_empty_24px"
+                hedgehog:starFill="@drawable/ic_star_fill_24px"
+                hedgehog:starHalf="@drawable/ic_star_half_24px"
+                hedgehog:starImageHeight="22dp"
+                hedgehog:starImagePadding="5dp"
+                hedgehog:starImageWidth="22dp" />
+
+            <TextView
+                android:id="@+id/txt_rating_count_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/txt_quantity_label"
+                android:layout_alignParentEnd="true"
+                android:text="@string/rating_count"
+                android:textColor="@color/colorPrimary" />
+
+            <TextView
+                android:id="@+id/txt_rating_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/txt_rating_count_label"
+                android:layout_marginEnd="5dp"
+                android:layout_toStartOf="@id/txt_rating_count_label"
+                android:text="999"
+                android:textColor="@color/colorPrimary" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/line"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rl_header"
+            android:background="@drawable/line" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/line"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin">
+
+            <TextView
+                android:id="@+id/txt_description_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/product_description"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/extra_large_text_font" />
+
+            <TextView
+                android:id="@+id/txt_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txt_description_label"
+                android:textColor="@android:color/black"
+                android:text="@string/dumb_text"
+                android:textSize="@dimen/primary_text_font" />
+
+            <Button
+                android:id="@+id/btn_rating"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txt_description"
+                android:text="@string/rating"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginTop="20dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_marginBottom="20dp"/>
+
+            <Button
+                android:id="@+id/btn_purchase"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/btn_rating"
+                android:background="@color/colorAccent"
+                android:text="@string/purchase"/>
+        </RelativeLayout>
+    </RelativeLayout>
+</android.support.v4.widget.NestedScrollView>

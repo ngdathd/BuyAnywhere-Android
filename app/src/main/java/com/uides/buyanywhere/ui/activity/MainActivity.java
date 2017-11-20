@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private SearchView searchView;
     private MainPagerAdapter mainPagerAdapter;
-
+    private ActionBar actionBar;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -80,8 +80,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void inti() {
-        initBottomNavigation();
         initToolBar();
+        initBottomNavigation();
 
         mainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mainPagerAdapter);
@@ -91,11 +91,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private void initBottomNavigation() {
         BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        bottomNavigationView.setSelectedItemId(R.id.navigation_product);
     }
 
     private void initToolBar() {
         setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             toolbar.setNavigationIcon(R.drawable.ic_menu);
@@ -116,22 +117,26 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.navigation_shopping: {
+            case R.id.navigation_product: {
+                actionBar.setTitle(R.string.product);
                 viewPager.setCurrentItem(MainPagerAdapter.PRODUCT_FRAGMENT_INDEX);
             }
             return true;
 
             case R.id.navigation_location: {
+                actionBar.setTitle(R.string.location_search);
                 viewPager.setCurrentItem(MainPagerAdapter.FIND_BY_LOCATION_FRAGMENT_INDEX);
             }
             return true;
 
             case R.id.navigation_shopping_cart: {
+                actionBar.setTitle(R.string.shopping_cart);
                 viewPager.setCurrentItem(MainPagerAdapter.SHOPPING_CART_FRAGMENT_INDEX);
             }
             return true;
 
             case R.id.navigation_profile: {
+                actionBar.setTitle(R.string.profile);
                 viewPager.setCurrentItem(MainPagerAdapter.PROFILE_FRAGMENT_INDEX);
             }
             return true;
