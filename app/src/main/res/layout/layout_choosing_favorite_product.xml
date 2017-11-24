@@ -7,7 +7,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="70dp"
         android:textSize="25dp"
         android:textColor="@color/main_color"
         android:text="What are you looking for?"/>
@@ -15,6 +15,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list_item_favor_product"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"/>
 
 </LinearLayout>
