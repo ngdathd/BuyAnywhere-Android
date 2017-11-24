@@ -4,6 +4,10 @@
     <dimen name="sign_in_button_height">60dp</dimen>
     <dimen name="sign_in_button_corner_radius">5dp</dimen>
     <dimen name="_medium_font_size">12sp</dimen>
+    <dimen name="icon">50sp</dimen>
+    <dimen name="ok">20sp</dimen>
+    <dimen name="ava">100sp</dimen>
+    <dimen name="small_icon">20sp</dimen>
     <dimen name="tool_bar_elevation">4dp</dimen>
     <dimen name="primary_text_font">13sp</dimen>
     <dimen name="secondary_text_font">12sp</dimen>
