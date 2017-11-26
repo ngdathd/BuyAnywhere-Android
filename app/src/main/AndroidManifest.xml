@@ -76,6 +76,9 @@
         <!--</intent-filter>-->
         <!--</activity>-->
         <activity android:name=".yen.ChooseFavoriteProductsActivity">
+        </activity>
+
+        <activity android:name=".yen.CommentActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
