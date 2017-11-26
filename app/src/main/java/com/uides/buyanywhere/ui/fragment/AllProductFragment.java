@@ -199,7 +199,7 @@ public class AllProductFragment extends Fragment implements SwipeRefreshLayout.O
         protected RecyclerView.ViewHolder initLoadingViewHolder(ViewGroup parent) {
             View loadingView = getInflater().inflate(R.layout.item_loading, parent, false);
             return new LoadingViewHolder(loadingView);
-        } // lên rồi =))
+        }
 
         @Override
         protected void bindLoadingViewHolder(LoadingViewHolder loadingViewHolder, int position) {

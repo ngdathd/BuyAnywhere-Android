@@ -1,7 +1,9 @@
 package com.uides.buyanywhere.yen;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,15 +18,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
+import com.uides.buyanywhere.custom_view.LoadingDialog;
 import com.uides.buyanywhere.model.Category;
 import com.uides.buyanywhere.model.PageResult;
+import com.uides.buyanywhere.model.Product;
 import com.uides.buyanywhere.model.ProductReview;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.recyclerview_adapter.EndlessLoadingRecyclerViewAdapter;
 import com.uides.buyanywhere.recyclerview_adapter.RecyclerViewAdapter;
 import com.uides.buyanywhere.service.CategoriesService;
 import com.uides.buyanywhere.service.GetProductReviewsService;
+import com.uides.buyanywhere.ui.activity.ProductDetailActivity;
 
 import java.util.List;
 
@@ -40,7 +46,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class ChooseFavoriteProductsActivity extends AppCompatActivity {
-    private static final String TAG = "ChooseFavoriteProducts";//251782064
+    private static final String TAG = "ChooseFavoriteProducts";
     @BindView(R.id.list_item_favor_product)
     RecyclerView favorProduct;
 
@@ -69,7 +75,7 @@ public class ChooseFavoriteProductsActivity extends AppCompatActivity {
 
     private void onSuccess(List<Category> categories) {
         myRecyclerViewAdapter.addModels(categories, false);
-        Log.i(TAG, categories.toString()); // vẫn số
+        Log.i(TAG, categories.toString());
     }
 
     private void onRefreshError(Throwable e) {
@@ -84,8 +90,6 @@ public class ChooseFavoriteProductsActivity extends AppCompatActivity {
         public MyRecyclerViewAdapter(Context context, boolean enableSelectedMode) {
             super(context, enableSelectedMode);
         }
-        //hết lỗi chưa c rồi, nhưng sao hàm đó k dùng ư?
-        //c call service ở đâu? service của cái này à? uk gọi mỗi api thôi uk, thế ở đâu v
 
         @Override
         protected RecyclerView.ViewHolder initNormalViewHolder(ViewGroup parent) {
@@ -113,6 +117,14 @@ public class ChooseFavoriteProductsActivity extends AppCompatActivity {
             product = (ImageView) itemView.findViewById(R.id.product_icon);
             ok = (ImageView) itemView.findViewById(R.id.is_ok);
             name = (TextView) itemView.findViewById(R.id.product_name);
+
+            itemView.setOnClickListener(view -> {
+                if (ok.getVisibility() == View.VISIBLE){
+                    ok.setVisibility(View.INVISIBLE);
+                } else {
+                    ok.setVisibility(View.VISIBLE);
+                }
+            });
 
         }
     }
