@@ -37,7 +37,7 @@
                 android:layout_height="18dp"
                 android:layout_alignStart="@id/txt_name"
                 android:layout_below="@id/txt_name"
-                android:src="@drawable/ic_shop" />
+                android:src="@drawable/ic_shop_24px" />
 
             <TextView
                 android:id="@+id/txt_shop_name"
@@ -184,9 +184,9 @@
                 android:layout_alignParentTop="@id/txt_rating_score"
                 android:layout_marginEnd="5dp"
                 android:layout_toStartOf="@id/txt_rating_score"
-                android:clickable="false"
                 hedgehog:halfstart="true"
                 hedgehog:starCount="5"
+                hedgehog:clickable="false"
                 hedgehog:starEmpty="@drawable/ic_star_empty_24px"
                 hedgehog:starFill="@drawable/ic_star_fill_24px"
                 hedgehog:starHalf="@drawable/ic_star_half_24px"
@@ -244,7 +244,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/txt_description_label"
                 android:textColor="@android:color/black"
-                android:text="@string/dumb_text"
+                android:text="@string/no_description"
                 android:textSize="@dimen/primary_text_font" />
 
             <Button
@@ -263,8 +263,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/btn_rating"
-                android:background="@color/colorAccent"
-                android:text="@string/purchase"/>
+                android:background="@drawable/button"
+                android:text="@string/purchase"
+                android:layout_marginBottom="30dp"/>
         </RelativeLayout>
     </RelativeLayout>
 </android.support.v4.widget.NestedScrollView>

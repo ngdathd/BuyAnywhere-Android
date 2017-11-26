@@ -3,7 +3,10 @@ package com.uides.buyanywhere.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Shop {
+import java.io.Serializable;
+import java.util.Date;
+
+public class Shop implements Serializable {
 
     @SerializedName("Id")
     @Expose
@@ -14,6 +17,9 @@ public class Shop {
     @SerializedName("Name")
     @Expose
     private String name;
+    @SerializedName("Address")
+    @Expose
+    private String address;
     @SerializedName("Phone")
     @Expose
     private String phone;
@@ -23,15 +29,24 @@ public class Shop {
     @SerializedName("Website")
     @Expose
     private String website;
+    @SerializedName("FacebookSite")
+    @Expose
+    private String facebookSite;
     @SerializedName("Description")
     @Expose
     private String description;
     @SerializedName("Rating")
     @Expose
-    private Double rating;
+    private int rating;
     @SerializedName("CreatedDate")
     @Expose
-    private Object createdDate;
+    private Date createdDate;
+    @SerializedName("AvatarUrl")
+    @Expose
+    private String avatarUrl;
+    @SerializedName("CoverUrl")
+    @Expose
+    private String coverUrl;
 
     public String getId() {
         return id;
@@ -89,20 +104,51 @@ public class Shop {
         this.description = description;
     }
 
-    public Double getRating() {
+    public int getRating() {
         return rating;
     }
 
-    public void setRating(Double rating) {
+    public void setRating(int rating) {
         this.rating = rating;
     }
 
-    public Object getCreatedDate() {
+    public Date getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Object createdDate) {
+    public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
 
+    public String getFacebookSite() {
+        return facebookSite;
+    }
+
+    public void setFacebookSite(String facebookSite) {
+        this.facebookSite = facebookSite;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public String getCoverUrl() {
+        return coverUrl;
+    }
+
+    public void setCoverUrl(String coverUrl) {
+        this.coverUrl = coverUrl;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 }

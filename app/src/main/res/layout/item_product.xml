@@ -118,7 +118,7 @@
             android:layout_height="wrap_content"
             android:layout_alignStart="@id/txt_name"
             android:layout_below="@id/tag_group"
-            android:clickable="false"
+            hedgehog:clickable="false"
             hedgehog:halfstart="false"
             hedgehog:starCount="5"
             hedgehog:starEmpty="@drawable/ic_star_empty_24px"

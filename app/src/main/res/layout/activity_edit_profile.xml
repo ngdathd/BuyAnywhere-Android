@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tagview="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:elevation="@dimen/tool_bar_elevation"
+        android:theme="@style/ToolBarTheme"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tool_bar">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/rl_cover"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/img_cover"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/app_bar_height_image_view"
+                    android:scaleType="fitXY" />
+
+                <ProgressBar
+                    android:id="@+id/progress_cover"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:indeterminate="false"
+                    android:layout_centerInParent="true"/>
+
+                <ImageButton
+                    android:id="@+id/btn_reupload_cover"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerInParent="true"
+                    android:visibility="invisible"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_retry"
+                    android:background="?selectableItemBackgroundBorderless"/>
+
+                <ImageButton
+                    android:id="@+id/btn_camera_cover"
+                    android:layout_width="@dimen/medium_icon_size"
+                    android:layout_height="@dimen/medium_icon_size"
+                    android:background="@drawable/camera_button_drawable"
+                    android:src="@drawable/ic_camera"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/relativeLayout"
+                android:layout_alignParentStart="true"
+                android:layout_gravity="bottom"
+                android:background="@color/transparent_gray"
+                android:padding="8dp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/img_avatar"
+                        android:layout_width="@dimen/avatar_size"
+                        android:layout_height="@dimen/avatar_size"
+                        android:padding="1dp"
+                        android:src="@drawable/placeholder" />
+
+                    <ProgressBar
+                        android:id="@+id/progress_avatar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="invisible"
+                        android:indeterminate="false"
+                        android:layout_centerInParent="true"/>
+
+                    <ImageButton
+                        android:id="@+id/btn_reupload_avatar"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_centerInParent="true"
+                        android:scaleType="fitXY"
+                        android:visibility="invisible"
+                        android:src="@drawable/ic_retry"
+                        android:background="?selectableItemBackgroundBorderless"/>
+
+                </RelativeLayout>
+
+                <ImageButton
+                    android:id="@+id/btn_camera_avatar"
+                    android:layout_width="@dimen/medium_icon_size"
+                    android:layout_height="@dimen/medium_icon_size"
+                    android:background="@drawable/camera_button_drawable"
+                    android:src="@drawable/ic_camera"
+                    android:layout_marginTop="45dp"
+                    android:layout_marginStart="50dp"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/rl_cover"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin">
+
+                <ImageView
+                    android:id="@+id/img_shop"
+                    android:layout_width="@dimen/medium_icon_size"
+                    android:layout_height="@dimen/medium_icon_size"
+                    android:layout_marginEnd="@dimen/icon_margin_end"
+                    android:src="@drawable/ic_name" />
+
+                <com.uides.buyanywhere.custom_view.ClearableEditText
+                    android:id="@+id/txt_input_name"
+                    app:clearDrawable="@drawable/button_delete_drawable"
+                    app:isRequired="true"
+                    android:textSize="@dimen/extra_large_text_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/img_shop"
+                    android:layout_toEndOf="@id/img_shop"
+                    android:hint="@string/name"
+                    android:textColor="@android:color/black" />
+
+                <ImageView
+                    android:id="@+id/img_address"
+                    android:layout_width="@dimen/medium_icon_size"
+                    android:layout_height="@dimen/medium_icon_size"
+                    android:layout_below="@id/img_shop"
+                    android:layout_marginEnd="@dimen/icon_margin_end"
+                    android:layout_marginTop="@dimen/icon_margin_top"
+                    android:src="@drawable/ic_home" />
+
+                <com.uides.buyanywhere.custom_view.ClearableEditText
+                    android:id="@+id/txt_input_address"
+                    app:clearDrawable="@drawable/button_delete_drawable"
+                    android:textSize="@dimen/extra_large_text_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/img_address"
+                    android:layout_toEndOf="@id/img_address"
+                    android:hint="@string/address"
+                    android:textColor="@android:color/black" />
+
+                <ImageView
+                    android:id="@+id/img_phone"
+                    android:layout_width="@dimen/medium_icon_size"
+                    android:layout_height="@dimen/medium_icon_size"
+                    android:layout_below="@id/img_address"
+                    android:layout_marginEnd="@dimen/icon_margin_end"
+                    android:layout_marginTop="@dimen/icon_margin_top"
+                    android:src="@drawable/ic_phone" />
+
+                <com.uides.buyanywhere.custom_view.ClearableEditText
+                    android:id="@+id/txt_input_phone"
+                    app:clearDrawable="@drawable/button_delete_drawable"
+                    android:textSize="@dimen/extra_large_text_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/img_phone"
+                    android:layout_toEndOf="@id/img_phone"
+                    android:hint="@string/phone"
+                    android:textColor="@android:color/black" />
+
+                <ImageView
+                    android:id="@+id/img_email"
+                    android:layout_width="@dimen/medium_icon_size"
+                    android:layout_height="@dimen/medium_icon_size"
+                    android:layout_below="@id/img_phone"
+                    android:layout_marginEnd="@dimen/icon_margin_end"
+                    android:layout_marginTop="@dimen/icon_margin_top"
+                    android:src="@drawable/ic_gender" />
+
+                <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/group_gender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/img_email"
+                    android:layout_toEndOf="@id/img_email"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radio_male"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="25dp"
+                        android:text="@string/male" />
+
+                    <RadioButton
+                        android:id="@+id/radio_female"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="25dp"
+                        android:text="@string/female" />
+
+                    <RadioButton
+                        android:id="@+id/radio_none"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/none" />
+                </RadioGroup>
+
+                <ImageView
+                    android:id="@+id/img_website"
+                    android:layout_width="@dimen/medium_icon_size"
+                    android:layout_height="@dimen/medium_icon_size"
+                    android:layout_below="@id/img_email"
+                    android:layout_marginEnd="@dimen/icon_margin_end"
+                    android:layout_marginTop="@dimen/icon_margin_top"
+                    android:src="@drawable/ic_favorite" />
+
+                <com.cunoraz.tagview.TagView
+                    android:id="@+id/tag_group_favorite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/img_website"
+                    android:layout_toEndOf="@id/img_website"
+                    tagview:textPaddingBottom="3dp"
+                    tagview:textPaddingLeft="5dp"
+                    tagview:textPaddingRight="5dp"
+                    tagview:textPaddingTop="3dp"
+                    android:layout_toStartOf="@id/btn_add"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/large_text_font"
+                    android:layout_below="@id/tag_group_favorite"
+                    android:layout_alignStart="@id/tag_group_favorite"
+                    android:text="@string/favorite"/>
+
+                <ImageButton
+                    android:id="@+id/btn_add"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/ic_plus"
+                    android:layout_alignTop="@id/tag_group_favorite"
+                    android:background="?selectableItemBackgroundBorderless"/>
+
+                <ProgressBar
+                    android:id="@+id/progress_add"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:visibility="invisible"
+                    android:layout_alignTop="@id/tag_group_favorite"/>
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

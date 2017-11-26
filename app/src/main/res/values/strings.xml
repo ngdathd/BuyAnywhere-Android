@@ -2,14 +2,14 @@
     <string name="facebook_app_id">876296992517837</string>
     <string name="fb_login_protocol_scheme">fb876296992517837</string>
     <string name="google_client_id">328783804062-m45nqe2mh32m4u9tq9jc5vu27nn9vqba.apps.googleusercontent.com</string>
-    <string name="app_name">BuyAnywhere</string>
+    <string name="app_name">Buy Anywhere</string>
     <string name="title_activity_maps">Map</string>
     <string name="log_out">Log out</string>
     <string name="sign_out">Sign out</string>
-    <string name="sign_in_failed">Sign in failed</string>
+    <string name="sign_in_failed">Đăng nhập thất bại</string>
     <string name="facebook_login_button">Log in with Facebook</string>
     <string name="google_login_button">Sign in with Google</string>
-    <string name="upload_failed">Upload failed</string>
+    <string name="upload_failed">Upload thất bại</string>
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
     <string name="profile">Tài Khoản</string>
@@ -17,28 +17,7 @@
     <string name="location_search">Vị Trí</string>
     <string name="shopping_cart">Giỏ Hàng</string>
     <string name="quantity">Số lượng:</string>
-    <string name="unexpected_error_message">Có lỗi xảy ra</string>
-    <string name="dumb_text">
-        "Material is the metaphor."
-        "\n\nA material metaphor is the unifying theory of a rationalized space and a system of motion."
-        "The material is grounded in tactile reality, inspired by the study of paper and ink, yet "
-        "technologically advanced and open to imagination and magic."
-        "\nSurfaces and edges of the material provide visual cues that are grounded in reality. The "
-        "use of familiar tactile attributes helps users quickly understand affordances. Yet the "
-        "flexibility of the material creates new affordances that supercede those in the physical "
-        "world, without breaking the rules of physics."
-        "\nThe fundamentals of light, surface, and movement are key to conveying how objects move, "
-        "interact, and exist in space and in relation to each other. Realistic lighting shows "
-        "seams, divides space, and indicates moving parts."
-        "\n\nBold, graphic, intentional."
-        "\n\nThe foundational elements of print based design typography, grids, space, scale, color, "
-        "and use of imagery guide visual treatments. These elements do far more than please the "
-        "eye. They create hierarchy, meaning, and focus. Deliberate color choices, edge to edge "
-        "imagery, large scale typography, and intentional white space create a bold and graphic "
-        "interface that immerse the user in the experience."
-        "\nAn emphasis on user actions makes core functionality immediately apparent and provides "
-        "waypoints for the user."
-    </string>
+    <string name="unexpected_error_message">Có lỗi xảy ra, vui lòng thử lại</string>
     <string name="rating_count">lượt đánh giá</string>
     <string name="product_description">Mô tả sản phẩm</string>
     <string name="add_to_cart">Thêm vào giỏ hàng</string>
@@ -58,4 +37,64 @@
     <string name="very_unpleased">Rất không hài lòng</string>
     <string name="feedback_sent">Đã gửi nhận xét</string>
     <string name="rating_required">Đánh giá số sao</string>
+    <string name="shop">Cửa Hàng</string>
+
+    <string name="account">Email</string>
+    <string name="password">Mật khẩu</string>
+    <string name="confirm_password">Xác nhận mật khẩu</string>
+    <string name="sign_in">Đăng nhập</string>
+    <string name="register_account">Đăng ký tài khoản</string>
+    <string name="error_account">Nhập email</string>
+    <string name="account_not_exist">Tài khoản không hợp lệ</string>
+    <string name="error_password">Nhập mật khẩu</string>
+    <string name="full_name">Họ và Tên</string>
+    <string name="empty_name">Nhập họ và tên</string>
+    <string name="password_not_match">Mật khẩu xác nhận không đúng</string>
+    <string name="not_have_account">Chưa có tài khoản? Đăng ký ngay</string>
+    <string name="check_box_remember_content">Ghi nhớ</string>
+    <string name="check_box_auto_sign_in_content">Tự động đăng nhập</string>
+    <string name="edit">Chỉnh sửa</string>
+    <string name="phone">Di động</string>
+    <string name="email">Email</string>
+    <string name="favorite">Yêu thích</string>
+    <string name="address">Địa chỉ</string>
+    <string name="retry">Thử lại</string>
+    <string name="an_error_occured">Có lỗi xảy ra</string>
+    <string name="register_shop">Đăng ký shop</string>
+    <string name="name">Họ và tên</string>
+    <string name="submit">Ghi nhận</string>
+    <string name="edit_profile">Chỉnh sửa hồ sơ</string>
+    <string name="field_required">Thông tin bắt buộc</string>
+    <string name="gender">Giới tính</string>
+    <string name="or">hoặc</string>
+    <string name="male">Nam</string>
+    <string name="female">Nữ</string>
+    <string name="none">Không</string>
+    <string name="product_categories">Danh mục sản phẩm</string>
+    <string name="confirm">Xác nhận</string>
+    <string name="upload_success">Upload thành công</string>
+    <string name="select_an_image">Chọn một ảnh</string>
+    <string name="shop_name">Tên shop</string>
+    <string name="shop_address">Địa chỉ</string>
+    <string name="contact">Điện thoại liên lạc</string>
+    <string name="shop_register">Đăng ký shop</string>
+    <string name="shop_unregistered">Shop chưa được đăng ký</string>
+    <string name="register_now">Đăng ký ngay</string>
+    <string name="shop_description">Thông tin shop</string>
+    <string name="facebook">Facebook</string>
+    <string name="edit_shop">Chỉnh sửa thông tin shop</string>
+    <string name="product_name">Tên sản phẩm</string>
+    <string name="product_origin_price">Giá gốc</string>
+    <string name="off_price">Giảm giá</string>
+    <string name="percent">Phần trăm</string>
+    <string name="select_category">Chọn danh mục</string>
+    <string name="post_product">Đăng sản phẩm</string>
+    <string name="register_failed">Đăng ký thất bại, vui long thử lại</string>
+    <string name="website">Website</string>
+    <string name="no_description">Không có mô tả</string>
+    <string name="upload_task_not_done">Tác vụ upload chưa hoàn thành</string>
+    <string name="delete_failed">Xóa thất bại</string>
+    <string name="item_deleting">Sản phẩm đang được xóa</string>
+    <item name="visible" type="id"/>
+    <item name="masked" type="id"/>
 </resources>

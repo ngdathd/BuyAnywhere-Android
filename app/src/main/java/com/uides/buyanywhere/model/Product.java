@@ -16,11 +16,11 @@ public class Product implements Serializable{
     public static final String QUANTITY = "Quantity";
     public static final String CURRENT_PRICE = "CurrentPrice";
     public static final String ORIGIN_PRICE = "OriginPrice";
-    public static final String PREVIEW_URL = "PreviewUrls";
+    public static final String PREVIEW_URL = "PreviewUrl";
+    public static final String DESCRIPTIVE_IMAGE_URL = "DescriptiveImageUrl";
     public static final String DESCRIPTION = "Description";
     public static final String CREATED_DATE = "CreatedDate";
     public static final String RATING = "Rating";
-    private static final String IS_ADDED_TO_CART = "IsAddedToCart";
     private static final String RATING_COUNT = "RatingCount";
 
     @SerializedName(ID)
@@ -40,7 +40,10 @@ public class Product implements Serializable{
     private long originPrice;
     @SerializedName(PREVIEW_URL)
     @Expose
-    private List<String> previewUrls;
+    private String previewUrl;
+    @SerializedName(DESCRIPTIVE_IMAGE_URL)
+    @Expose
+    private List<String> descriptiveImageUrl;
     @SerializedName(CATEGORY_NAME)
     @Expose
     private String categoryName;
@@ -49,20 +52,18 @@ public class Product implements Serializable{
     private int quantity;
     @SerializedName(RATING)
     @Expose
-    private int rating;//TODO rating float -> int
+    private int rating;
     @SerializedName(CREATED_DATE)
     @Expose
     private Date createdDate;
     @SerializedName(DESCRIPTION)
     @Expose
     private String description;
-    //TODO fix api
-    @SerializedName(IS_ADDED_TO_CART)
-    @Expose
-    private boolean isAddedToCart;
     @SerializedName(RATING_COUNT)
     @Expose
     private int ratingCount;
+
+    private boolean isAddedToCart;
 
     public String getId() {
         return id;
@@ -88,12 +89,20 @@ public class Product implements Serializable{
         this.shopName = shopName;
     }
 
-    public List<String> getPreviewUrls() {
-        return previewUrls;
+    public String getPreviewUrl() {
+        return previewUrl;
     }
 
-    public void setPreviewUrls(List<String> previewUrls) {
-        this.previewUrls = previewUrls;
+    public void setPreviewUrl(String previewUrl) {
+        this.previewUrl = previewUrl;
+    }
+
+    public List<String> getDescriptiveImageUrl() {
+        return descriptiveImageUrl;
+    }
+
+    public void setDescriptiveImageUrl(List<String> descriptiveImageUrl) {
+        this.descriptiveImageUrl = descriptiveImageUrl;
     }
 
     public String getCategoryName() {

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ClearableEditText">
+        <attr name="android:text"/>
+        <attr name="android:textColor"/>
+        <attr name="android:textSize"/>
+        <attr name="android:hint"/>
+        <attr name="android:lines"/>
+        <attr name="android:inputType"/>
+        <attr name="clearDrawable" format="integer"/>
+        <attr name="isRequired" format="boolean"/>
+    </declare-styleable>
+</resources>

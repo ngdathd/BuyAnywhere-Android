@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:elevation="@dimen/tool_bar_elevation"
+        android:theme="@style/ToolBarTheme"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tool_bar">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+
+
+            <ImageView
+                android:id="@+id/image_shop"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/shop"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="30dp"/>
+
+
+            <ImageView
+                android:id="@+id/img_shop"
+                android:layout_width="@dimen/medium_icon_size"
+                android:layout_height="@dimen/medium_icon_size"
+                android:layout_marginEnd="@dimen/icon_margin_end"
+                android:src="@drawable/ic_shop_green"
+                android:layout_below="@id/image_shop"/>
+
+            <com.uides.buyanywhere.custom_view.ClearableEditText
+                android:id="@+id/txt_input_shop_name"
+                app:clearDrawable="@drawable/button_delete_drawable"
+                app:isRequired="true"
+                android:textSize="@dimen/extra_large_text_font"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/img_shop"
+                android:layout_toEndOf="@id/img_shop"
+                android:hint="@string/shop_name"
+                android:textColor="@android:color/black" />
+
+            <ImageView
+                android:id="@+id/img_address"
+                android:layout_width="@dimen/medium_icon_size"
+                android:layout_height="@dimen/medium_icon_size"
+                android:layout_below="@id/img_shop"
+                android:layout_marginEnd="@dimen/icon_margin_end"
+                android:layout_marginTop="@dimen/icon_margin_top"
+                android:src="@drawable/ic_address" />
+
+            <com.uides.buyanywhere.custom_view.ClearableEditText
+                android:id="@+id/txt_input_address"
+                app:clearDrawable="@drawable/button_delete_drawable"
+                app:isRequired="true"
+                android:textSize="@dimen/extra_large_text_font"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/img_address"
+                android:layout_toEndOf="@id/img_address"
+                android:hint="@string/shop_address"
+                android:textColor="@android:color/black" />
+
+            <ImageView
+                android:id="@+id/img_phone"
+                android:layout_width="@dimen/medium_icon_size"
+                android:layout_height="@dimen/medium_icon_size"
+                android:layout_below="@id/img_address"
+                android:layout_marginEnd="@dimen/icon_margin_end"
+                android:layout_marginTop="@dimen/icon_margin_top"
+                android:src="@drawable/ic_phone" />
+
+            <com.uides.buyanywhere.custom_view.ClearableEditText
+                android:id="@+id/txt_input_phone"
+                app:clearDrawable="@drawable/button_delete_drawable"
+                app:isRequired="true"
+                android:textSize="@dimen/extra_large_text_font"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/img_phone"
+                android:layout_toEndOf="@id/img_phone"
+                android:hint="@string/contact"
+                android:textColor="@android:color/black" />
+
+
+            <Button
+                android:id="@+id/btn_register_shop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/img_phone"
+                android:layout_marginTop="52dp"
+                android:background="@drawable/button"
+                android:padding="10dp"
+                android:text="@string/register_shop"
+                android:textColor="@android:color/white" />
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

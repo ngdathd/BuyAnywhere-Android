@@ -17,6 +17,11 @@
         android:title="@string/shopping_cart" />
 
     <item
+        android:id="@+id/navigation_shop"
+        android:icon="@drawable/ic_shop_large"
+        android:title="@string/shop" />
+
+    <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_user"
         android:title="@string/profile" />

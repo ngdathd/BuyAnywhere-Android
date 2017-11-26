@@ -11,6 +11,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.uides.buyanywhere.R;
@@ -54,12 +55,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             }
             break;
 
-            case R.id.action_search:{
+            case R.id.action_search: {
 
             }
             break;
 
-            case R.id.action_settings:{
+            case R.id.action_settings: {
 
             }
             break;
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private void initToolBar() {
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
-        if(actionBar != null) {
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             toolbar.setNavigationIcon(R.drawable.ic_menu);
         }
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        Toast.makeText(this, query,Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
         return false;
     }
 
@@ -119,32 +120,52 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         switch (item.getItemId()) {
             case R.id.navigation_product: {
                 actionBar.setTitle(R.string.product);
+                if(searchView != null) {
+                    searchView.setVisibility(View.VISIBLE);
+                }
                 viewPager.setCurrentItem(MainPagerAdapter.PRODUCT_FRAGMENT_INDEX);
             }
             return true;
 
             case R.id.navigation_location: {
                 actionBar.setTitle(R.string.location_search);
+                if(searchView != null) {
+                    searchView.setVisibility(View.VISIBLE);
+                }
                 viewPager.setCurrentItem(MainPagerAdapter.FIND_BY_LOCATION_FRAGMENT_INDEX);
             }
             return true;
 
             case R.id.navigation_shopping_cart: {
                 actionBar.setTitle(R.string.shopping_cart);
+                if(searchView != null) {
+                    searchView.setVisibility(View.INVISIBLE);
+                }
                 viewPager.setCurrentItem(MainPagerAdapter.SHOPPING_CART_FRAGMENT_INDEX);
+            }
+            return true;
+
+            case R.id.navigation_shop: {
+                actionBar.setTitle(R.string.shop);
+                if(searchView != null) {
+                    searchView.setVisibility(View.INVISIBLE);
+                }
+                viewPager.setCurrentItem(MainPagerAdapter.SHOP_FRAGMENT_INDEX);
             }
             return true;
 
             case R.id.navigation_profile: {
                 actionBar.setTitle(R.string.profile);
+                if(searchView != null) {
+                    searchView.setVisibility(View.INVISIBLE);
+                }
                 viewPager.setCurrentItem(MainPagerAdapter.PROFILE_FRAGMENT_INDEX);
             }
             return true;
 
-            default:{
+            default: {
                 return false;
             }
-
         }
     }
 

@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rl_root"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    tools:context=".ui.activity.MainActivity">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp">
+
+                <RelativeLayout
+                    android:id="@+id/rl_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    android:layout_marginTop="@dimen/activity_vertical_margin">
+
+                    <TextView
+                        android:id="@+id/txt_shop_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="Shop ABC"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/extra_large_text_font" />
+
+                    <ImageView
+                        android:id="@+id/img_address"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_alignStart="@id/txt_shop_name"
+                        android:layout_below="@id/txt_shop_name"
+                        android:src="@drawable/ic_address_gray" />
+
+                    <TextView
+                        android:id="@+id/txt_shop_address"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/img_address"
+                        android:layout_marginStart="@dimen/text_margin_start"
+                        android:layout_toEndOf="@id/img_address"
+                        android:text="Hoài Đức, Hà Nội"
+                        android:textSize="@dimen/large_text_font" />
+
+                    <ImageView
+                        android:id="@+id/img_phone"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_alignStart="@id/txt_shop_name"
+                        android:layout_below="@id/img_address"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/ic_phone_gray" />
+
+                    <TextView
+                        android:id="@+id/txt_phone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/img_phone"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_toEndOf="@id/img_phone"
+                        android:text="0961569816"
+                        android:textSize="@dimen/large_text_font" />
+
+
+                    <RelativeLayout
+                        android:id="@+id/rl_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@id/txt_shop_name"
+                        android:layout_below="@id/img_phone"
+                        android:layout_marginTop="10dp">
+
+                        <ImageView
+                            android:id="@+id/img_email"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_mail_gray" />
+
+                        <TextView
+                            android:id="@+id/txt_email"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@id/img_email"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_toEndOf="@id/img_email"
+                            android:text="thanhtung100397@gmail.com"
+                            android:textSize="@dimen/large_text_font" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/rl_website"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@id/txt_shop_name"
+                        android:layout_below="@id/rl_email"
+                        android:layout_marginTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="10dp">
+
+                        <ImageView
+                            android:id="@+id/img_website"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_website" />
+
+                        <TextView
+                            android:id="@+id/txt_website"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@id/img_website"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_toEndOf="@id/img_website"
+                            android:text="abc.com.vn"
+                            android:maxWidth="260dp"
+                            android:textSize="@dimen/large_text_font" />
+
+                        <ImageButton
+                            android:id="@+id/btn_website"
+                            android:layout_width="@dimen/tiny_icon_size"
+                            android:layout_height="@dimen/tiny_icon_size"
+                            android:layout_marginStart="20dp"
+                            android:layout_toEndOf="@id/txt_website"
+                            android:background="?selectableItemBackgroundBorderless"
+                            android:src="@drawable/ic_redirect" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/rl_facebook"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@id/txt_shop_name"
+                        android:layout_below="@id/rl_website"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="10dp">
+
+                        <ImageView
+                            android:id="@+id/img_facebook"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_facebook_gray" />
+
+                        <TextView
+                            android:id="@+id/txt_facebook"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@id/img_facebook"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_toEndOf="@id/img_facebook"
+                            android:text="facebook_page.com.vn"
+                            android:maxWidth="260dp"
+                            android:textSize="@dimen/large_text_font" />
+
+                        <ImageButton
+                            android:id="@+id/btn_facebook"
+                            android:layout_width="@dimen/tiny_icon_size"
+                            android:layout_height="@dimen/tiny_icon_size"
+                            android:layout_marginStart="20dp"
+                            android:layout_toEndOf="@id/txt_facebook"
+                            android:background="?selectableItemBackgroundBorderless"
+                            android:src="@drawable/ic_redirect" />
+
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/txt_rating_score"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/txt_shop_address"
+                        android:layout_alignParentEnd="true"
+                        android:text="5.0"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp" />
+
+                    <com.hedgehog.ratingbar.RatingBar xmlns:hedgehog="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/rating_bar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/txt_rating_score"
+                        android:layout_alignParentTop="@id/txt_rating_score"
+                        android:layout_marginEnd="5dp"
+                        android:layout_toStartOf="@id/txt_rating_score"
+                        hedgehog:clickable="false"
+                        hedgehog:halfstart="true"
+                        hedgehog:starCount="5"
+                        hedgehog:starEmpty="@drawable/ic_star_empty_24px"
+                        hedgehog:starFill="@drawable/ic_star_fill_24px"
+                        hedgehog:starHalf="@drawable/ic_star_half_24px"
+                        hedgehog:starImageHeight="22dp"
+                        hedgehog:starImagePadding="5dp"
+                        hedgehog:starImageWidth="22dp" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/rl_header"
+                    android:background="@drawable/line" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/line"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    android:layout_marginTop="@dimen/activity_vertical_margin">
+
+                    <TextView
+                        android:id="@+id/txt_description_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/shop_description"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/extra_large_text_font" />
+
+                    <TextView
+                        android:id="@+id/txt_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/txt_description_label"
+                        android:layout_centerVertical="true"
+                        android:text="@string/no_description"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/primary_text_font"
+                        android:layout_marginBottom="15dp"/>
+                </RelativeLayout>
+            </RelativeLayout>
+        </android.support.v4.widget.NestedScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/big_activity_fab_margin"
+        android:src="@drawable/ic_edit"
+        app:fabSize="normal"
+        app:rippleColor="@color/light_gray"
+        android:focusable="true"
+        android:clickable="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>

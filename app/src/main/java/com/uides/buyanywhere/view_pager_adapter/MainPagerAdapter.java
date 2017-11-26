@@ -5,10 +5,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.uides.buyanywhere.R;
-import com.uides.buyanywhere.ui.fragment.AllProductFragment;
-import com.uides.buyanywhere.ui.fragment.FindByLocationFragment;
-import com.uides.buyanywhere.ui.fragment.ProfileFragment;
-import com.uides.buyanywhere.ui.fragment.ShoppingCartFragment;
+import com.uides.buyanywhere.ui.fragment.product.ProductFragment;
+import com.uides.buyanywhere.ui.fragment.location.FindByLocationFragment;
+import com.uides.buyanywhere.ui.fragment.profile.ProfileFragment;
+import com.uides.buyanywhere.ui.fragment.shop.ShopFragment;
+import com.uides.buyanywhere.ui.fragment.cart.ShoppingCartFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,8 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
     public static final int PRODUCT_FRAGMENT_INDEX = 0;
     public static final int FIND_BY_LOCATION_FRAGMENT_INDEX = 1;
     public static final int SHOPPING_CART_FRAGMENT_INDEX = 2;
-    public static final int PROFILE_FRAGMENT_INDEX = 3;
+    public static final int SHOP_FRAGMENT_INDEX = 3;
+    public static final int PROFILE_FRAGMENT_INDEX = 4;
     private List<Fragment> fragments;
 
     public MainPagerAdapter(FragmentManager fm) {
@@ -31,9 +33,10 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
 
     private void initFragments() {
         fragments = new ArrayList<>(4);
-        fragments.add(new AllProductFragment());
+        fragments.add(new ProductFragment());
         fragments.add(new FindByLocationFragment());
         fragments.add(new ShoppingCartFragment());
+        fragments.add(new ShopFragment());
         fragments.add(new ProfileFragment());
     }
 
@@ -51,12 +54,14 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
         switch (position) {
             case FIND_BY_LOCATION_FRAGMENT_INDEX: {
                 return R.id.navigation_location;
-
             }
 
             case SHOPPING_CART_FRAGMENT_INDEX: {
                 return R.id.navigation_shopping_cart;
+            }
 
+            case SHOP_FRAGMENT_INDEX: {
+                return R.id.navigation_shop;
             }
 
             case PROFILE_FRAGMENT_INDEX: {

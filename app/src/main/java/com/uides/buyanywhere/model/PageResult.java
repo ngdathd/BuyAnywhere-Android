@@ -13,10 +13,10 @@ public class PageResult<T> {
     @SerializedName("results")
     @Expose
     private List<T> results;
-    @SerializedName("pageIndex")
+    @SerializedName("PageIndex")
     @Expose
     private int pageIndex;
-    @SerializedName("pageSize")
+    @SerializedName("PageSize")
     @Expose
     private int pageSize;
     @SerializedName("totalPages")

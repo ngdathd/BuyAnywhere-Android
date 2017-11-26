@@ -16,9 +16,9 @@
         android:clickable="false"
         hedgehog:halfstart="false"
         hedgehog:starCount="5"
-        hedgehog:starEmpty="@drawable/ic_star_empty_48px"
-        hedgehog:starFill="@drawable/ic_star_fill_48px"
-        hedgehog:starHalf="@drawable/ic_star_half_48px"
+        hedgehog:starEmpty="@drawable/ic_star_empty_large"
+        hedgehog:starFill="@drawable/ic_star_fill_large"
+        hedgehog:starHalf="@drawable/ic_star_half_large"
         hedgehog:starImageHeight="48dp"
         hedgehog:starImageWidth="48dp" />
 

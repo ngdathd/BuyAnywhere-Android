@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".ui.activity.MainActivity"
+    tools:showIn="@layout/fragment_profile">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin">
+
+            <ImageView
+                android:id="@+id/img_address"
+                android:layout_width="@dimen/small_icon_size"
+                android:layout_height="@dimen/small_icon_size"
+                android:src="@drawable/ic_home"
+                android:layout_marginEnd="@dimen/icon_margin_end"/>
+
+            <TextView
+                android:id="@+id/txt_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/large_text_font"
+                android:text="Hoài Đức, Hà Nội"
+                android:layout_toEndOf="@id/img_address"
+                android:layout_alignBottom="@id/img_address"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/primary_text_font"
+                android:layout_below="@id/txt_address"
+                android:layout_alignStart="@id/txt_address"
+                android:text="@string/address"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin">
+
+            <ImageView
+                android:id="@+id/img_email"
+                android:layout_width="@dimen/small_icon_size"
+                android:layout_height="@dimen/small_icon_size"
+                android:src="@drawable/ic_mail"
+                android:layout_marginEnd="@dimen/icon_margin_end"/>
+
+            <TextView
+                android:id="@+id/txt_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/large_text_font"
+                android:text="thanhtung100397@gmail.com"
+                android:layout_toEndOf="@id/img_email"
+                android:layout_alignBottom="@id/img_email"
+                android:textColor="@android:color/black"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/primary_text_font"
+                android:layout_below="@id/txt_email"
+                android:layout_alignStart="@id/txt_email"
+                android:text="@string/email"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin">
+
+            <ImageView
+                android:id="@+id/img_phone"
+                android:layout_width="@dimen/small_icon_size"
+                android:layout_height="@dimen/small_icon_size"
+                android:src="@drawable/ic_phone"
+                android:layout_marginEnd="@dimen/icon_margin_end"/>
+
+            <TextView
+                android:id="@+id/txt_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/large_text_font"
+                android:text="0961569816"
+                android:layout_toEndOf="@id/img_phone"
+                android:layout_alignBottom="@id/img_phone"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/primary_text_font"
+                android:layout_below="@id/txt_phone"
+                android:layout_alignStart="@id/txt_phone"
+                android:text="@string/phone"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin">
+
+            <ImageView
+                android:id="@+id/img_email"
+                android:layout_width="@dimen/small_icon_size"
+                android:layout_height="@dimen/small_icon_size"
+                android:src="@drawable/ic_gender"
+                android:layout_marginEnd="@dimen/icon_margin_end"/>
+
+            <TextView
+                android:id="@+id/txt_gender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/large_text_font"
+                android:text="male"
+                android:layout_toEndOf="@id/img_email"
+                android:layout_alignBottom="@id/img_email"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/primary_text_font"
+                android:layout_below="@id/txt_gender"
+                android:layout_alignStart="@id/txt_gender"
+                android:text="@string/gender"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin">
+
+            <ImageView
+                android:id="@+id/img_website"
+                android:layout_width="@dimen/small_icon_size"
+                android:layout_height="@dimen/small_icon_size"
+                android:src="@drawable/ic_favorite"
+                android:layout_marginEnd="@dimen/icon_margin_end"/>
+
+            <com.cunoraz.tagview.TagView xmlns:tagview="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/tag_group_favorite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/img_website"
+                android:layout_alignTop="@id/img_website"
+                tagview:textPaddingBottom="3dp"
+                tagview:textPaddingLeft="5dp"
+                tagview:textPaddingRight="5dp"
+                tagview:textPaddingTop="3dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/primary_text_font"
+                android:layout_below="@id/tag_group_favorite"
+                android:layout_alignStart="@id/tag_group_favorite"
+                android:text="@string/favorite"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

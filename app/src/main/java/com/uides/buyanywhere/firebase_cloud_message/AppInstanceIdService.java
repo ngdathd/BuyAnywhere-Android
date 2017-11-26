@@ -4,7 +4,7 @@ import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.uides.buyanywhere.service.RegisterGCMTokenService;
+import com.uides.buyanywhere.service.auth.RegisterGCMTokenService;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.utils.UserAccessToken;
 

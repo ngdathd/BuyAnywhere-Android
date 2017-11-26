@@ -1,6 +1,7 @@
 package com.uides.buyanywhere.recyclerview_adapter;
 
 import android.content.Context;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -17,6 +18,9 @@ import java.util.List;
 public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static String TAG = "RecyclerViewAdapter";
     public static final int VIEW_TYPE_NORMAL = 0;
+
+    private static long availableID = 0;
+    private DiffUtilCallBack diffUtilCallBack;
 
     private List<ModelWrapper> listWrapperModels;
     private List<ModelWrapper> listBackupWrapperModels;
@@ -37,6 +41,8 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         } else {
             this.listSelectedItems = new ArrayList<>(0);
         }
+
+        this.diffUtilCallBack = new DiffUtilCallBack();
     }
 
     public void retrieveList(){
@@ -144,6 +150,7 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     }
 
     public void removeModel(int index) {
+//        notifyItemRangeChanged(index, listWrapperModels.size());
         this.listWrapperModels.remove(index);
         this.listBackupWrapperModels.remove(index);
         notifyItemRemoved(index);
@@ -269,11 +276,14 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         }
     }
 
-    private static class ModelWrapper {
+    public static class ModelWrapper {
         Object model;
         int viewType;
+        long id;
 
         ModelWrapper(Object model, int viewType) {
+            this.id = availableID;
+            availableID++;
             this.model = model;
             this.viewType = viewType;
         }

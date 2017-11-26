@@ -35,8 +35,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                android:clickable="true"
                 android:focusable="true"
+                android:theme="@style/ToolBarTheme"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -48,6 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/big_activity_fab_margin"
         android:src="@drawable/ic_add_to_cart"
+        app:fabSize="normal"
         app:layout_anchor="@id/app_bar_scrolling"
         app:layout_anchorGravity="bottom|end" />
 
