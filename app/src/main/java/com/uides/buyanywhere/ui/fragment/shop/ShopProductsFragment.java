@@ -21,22 +21,25 @@ import com.hedgehog.ratingbar.RatingBar;
 import com.squareup.picasso.Picasso;
 import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
+import com.uides.buyanywhere.auth.UserAuth;
 import com.uides.buyanywhere.custom_view.PriceTextView;
 import com.uides.buyanywhere.custom_view.StrikeThroughPriceTextView;
 import com.uides.buyanywhere.custom_view.dialog.LoadingDialog;
 import com.uides.buyanywhere.model.PageResult;
 import com.uides.buyanywhere.model.Product;
 import com.uides.buyanywhere.model.ProductReview;
+import com.uides.buyanywhere.model.User;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.recyclerview_adapter.EndlessLoadingRecyclerViewAdapter;
 import com.uides.buyanywhere.recyclerview_adapter.RecyclerViewAdapter;
 import com.uides.buyanywhere.service.product.GetProductService;
-import com.uides.buyanywhere.service.product.GetProductsService;
+import com.uides.buyanywhere.service.shop.GetShopProductsService;
 import com.uides.buyanywhere.ui.activity.PostProductActivity;
 import com.uides.buyanywhere.ui.activity.ProductDetailActivity;
 import com.uides.buyanywhere.ui.fragment.RecyclerViewFragment;
-import com.uides.buyanywhere.ui.fragment.product.ProductFragment;
 import com.uides.buyanywhere.utils.DateUtil;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,10 +51,10 @@ import io.reactivex.schedulers.Schedulers;
  * Created by TranThanhTung on 25/11/2017.
  */
 
-public class FragmentShopProducts extends RecyclerViewFragment implements EndlessLoadingRecyclerViewAdapter.OnLoadingMoreListener,
+public class ShopProductsFragment extends RecyclerViewFragment implements EndlessLoadingRecyclerViewAdapter.OnLoadingMoreListener,
         RecyclerViewAdapter.OnItemClickListener, View.OnClickListener {
     private static final int POST_PRODUCT_REQUEST_CODE = 0;
-    private static final String TAG = "FragmentShopProducts";
+    private static final String TAG = "ShopProductsFragment";
     public static final int LIMIT_PRODUCT = 10;
 
     @BindView(R.id.fab_add)
@@ -59,6 +62,9 @@ public class FragmentShopProducts extends RecyclerViewFragment implements Endles
 
     private LoadingDialog loadingDialog;
     private GetProductService getProductService;
+    private GetShopProductsService getShopProductsService;
+    private String shopID;
+    private boolean isGuest;
 
     @Override
     protected int getLayout() {
@@ -68,6 +74,9 @@ public class FragmentShopProducts extends RecyclerViewFragment implements Endles
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle bundle = getArguments();
+        shopID = bundle.getString(Constant.SHOP_ID);
+        isGuest = bundle.getBoolean(Constant.IS_GUEST, false);
         initServices();
         this.loadingDialog = new LoadingDialog(getActivity());
     }
@@ -76,14 +85,18 @@ public class FragmentShopProducts extends RecyclerViewFragment implements Endles
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
-        fabAdd.setOnClickListener(this);
+        if(isGuest) {
+            fabAdd.setVisibility(View.INVISIBLE);
+        } else {
+            fabAdd.setOnClickListener(this);
+        }
         return rootView;
     }
 
     private void initServices() {
-        //TODO init service
         Network network = Network.getInstance();
         getProductService = network.createService(GetProductService.class);
+        getShopProductsService = network.createService(GetShopProductsService.class);
     }
 
     @Override
@@ -96,15 +109,23 @@ public class FragmentShopProducts extends RecyclerViewFragment implements Endles
 
     @Override
     public void onRefresh() {
-//        Disposable disposable = getProductReviewsService
-//                .getProducts(1, LIMIT_PRODUCT, ProductReview.CREATED_DATE, 1)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribeOn(Schedulers.newThread())
-//                .subscribe(this::onRefreshSuccess, this::onRefreshError);
-//        addDisposable(disposable);
+        User user = UserAuth.getAuthUser();
+        Disposable disposable = getShopProductsService
+                .getShopProducts(user.getAccessToken(),
+                        shopID,
+                        1,
+                        LIMIT_PRODUCT,
+                        ProductReview.CREATED_DATE,
+                        1)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(this::onRefreshSuccess, this::onRefreshError);
+        addDisposable(disposable);
+        ((EndlessLoadingRecyclerViewAdapter) getAdapter()).disableLoadingMore(true);
     }
 
     private void onRefreshError(Throwable e) {
+        ((EndlessLoadingRecyclerViewAdapter) getAdapter()).disableLoadingMore(false);
         Log.i(TAG, "onRefreshError: " + e);
         Toast.makeText(getActivity(),
                 R.string.unexpected_error_message,
@@ -114,6 +135,7 @@ public class FragmentShopProducts extends RecyclerViewFragment implements Endles
     }
 
     private void onRefreshSuccess(PageResult<ProductReview> pageResult) {
+        ((EndlessLoadingRecyclerViewAdapter) getAdapter()).disableLoadingMore(false);
         ProductAdapter productAdapter = (ProductAdapter) getAdapter();
         productAdapter.clear();
         productAdapter.disableLoadingMore(false);
@@ -122,34 +144,35 @@ public class FragmentShopProducts extends RecyclerViewFragment implements Endles
         if (pageResult.getPageIndex() == pageResult.getTotalPages()) {
             productAdapter.disableLoadingMore(true);
         }
-        if (productAdapter.getItemCount() == 0) {
-            showEmptyImage(true);
-        } else {
-            showEmptyImage(false);
-        }
     }
 
     @Override
     public void onLoadMore() {
-//        ProductAdapter productAdapter = (ProductAdapter) getAdapter();
-//        productAdapter.showLoadingItem(true);
-//        Disposable disposable = getProductReviewsService
-//                .getProducts(productAdapter.getItemCount() / LIMIT_PRODUCT + 1,
-//                        LIMIT_PRODUCT, ProductReview.CREATED_DATE,
-//                        1)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribeOn(Schedulers.newThread())
-//                .subscribe(this::onLoadMoreSuccess, this::onLoadMoreError);
-//        addDisposable(disposable);
+        ProductAdapter productAdapter = (ProductAdapter) getAdapter();
+        productAdapter.showLoadingItem(true);
+        User user = UserAuth.getAuthUser();
+        Disposable disposable = getShopProductsService
+                .getShopProducts(user.getAccessToken(),
+                        user.getShopID(),
+                        productAdapter.getItemCount() / LIMIT_PRODUCT + 1,
+                        LIMIT_PRODUCT, ProductReview.CREATED_DATE,
+                        1)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(this::onLoadMoreSuccess, this::onLoadMoreError);
+        addDisposable(disposable);
+        getSwipeRefreshLayout().setEnabled(false);
     }
 
     private void onLoadMoreError(Throwable e) {
+        getSwipeRefreshLayout().setEnabled(true);
         Log.i(TAG, "onLoadMoreError: " + e);
         ProductAdapter productAdapter = (ProductAdapter) getAdapter();
         productAdapter.hideLoadingItem();
     }
 
     private void onLoadMoreSuccess(PageResult<ProductReview> pageResult) {
+        getSwipeRefreshLayout().setEnabled(true);
         ProductAdapter productAdapter = (ProductAdapter) getAdapter();
         productAdapter.hideLoadingItem();
         productAdapter.addModels(pageResult.getResults(), false);
@@ -174,6 +197,7 @@ public class FragmentShopProducts extends RecyclerViewFragment implements Endles
         Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable(Constant.PRODUCT, product);
+        bundle.putBoolean(Constant.IS_FROM_SHOP, true);
         intent.putExtras(bundle);
         startActivity(intent);
     }
@@ -204,14 +228,14 @@ public class FragmentShopProducts extends RecyclerViewFragment implements Endles
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case POST_PRODUCT_REQUEST_CODE: {
-                if(resultCode == Activity.RESULT_OK) {
+                if (resultCode == Activity.RESULT_OK) {
                     ProductReview productReview = (ProductReview) data.getSerializableExtra(Constant.PRODUCT_REVIEW);
-                    getAdapter().addModel(productReview, false);
+                    getAdapter().addModel(0, productReview, false);
                 }
             }
             break;
 
-            default:{
+            default: {
                 break;
             }
         }
@@ -267,6 +291,26 @@ public class FragmentShopProducts extends RecyclerViewFragment implements Endles
             productViewHolder.tagGroup.addTag(tag);
             productViewHolder.ratingBar.setStar(productReview.getRating());
             productViewHolder.textTime.setText(DateUtil.getDateDiffNow(productReview.getCreatedDate()));
+        }
+
+        @Override
+        public <T> void addModels(List<T> listModels, boolean isScroll) {
+            super.addModels(listModels, isScroll);
+            if (getItemCount() == 0) {
+                showEmptyImage(true);
+            } else {
+                showEmptyImage(false);
+            }
+        }
+
+        @Override
+        public void addModel(Object model, boolean isScroll) {
+            super.addModel(model, isScroll);
+            if (getItemCount() == 0) {
+                showEmptyImage(true);
+            } else {
+                showEmptyImage(false);
+            }
         }
     }
 

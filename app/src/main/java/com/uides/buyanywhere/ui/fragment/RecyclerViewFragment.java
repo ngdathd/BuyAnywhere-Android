@@ -72,10 +72,6 @@ public abstract class RecyclerViewFragment extends Fragment implements SwipeRefr
         return swipeRefreshLayout;
     }
 
-    public void setSwipeRefreshLayout(SwipeRefreshLayout swipeRefreshLayout) {
-        this.swipeRefreshLayout = swipeRefreshLayout;
-    }
-
     @Override
     public void onStop() {
         super.onStop();

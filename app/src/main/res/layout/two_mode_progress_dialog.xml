@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="350dp"
+    android:layout_height="80dp"
+    android:elevation="2dp"
+    android:translationZ="2dp"
+    app:cardUseCompatPadding="true"
+    app:contentPadding="10dp"
+    app:cardCornerRadius="5dp">
+
+    <RelativeLayout
+        android:id="@+id/fl_indeterminate"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="72dp"
+            android:textSize="@dimen/extra_large_text_font"
+            android:layout_centerVertical="true"
+            android:text="@string/processing"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/fl_determinate"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/txt_current"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/large_text_font"
+            android:layout_marginBottom="5dp"/>
+
+        <TextView
+            android:id="@+id/txt_source"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/large_text_font"
+            android:layout_toEndOf="@id/txt_current"
+            android:text="/"
+            android:layout_marginEnd="@dimen/text_space"
+            android:layout_marginStart="@dimen/text_space"/>
+
+        <TextView
+            android:id="@+id/txt_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/large_text_font"
+            android:layout_toEndOf="@id/txt_source" />
+
+        <TextView
+            android:id="@+id/txt_percent_symbol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/large_text_font"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="@dimen/text_space"
+            android:text="%"/>
+
+        <TextView
+            android:id="@+id/txt_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/large_text_font"
+            android:layout_toStartOf="@id/txt_percent_symbol" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:indeterminate="false"
+            android:max="100"
+            android:layout_below="@id/txt_current"/>
+    </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>

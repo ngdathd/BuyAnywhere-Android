@@ -70,7 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/img_quantity"
             android:layout_toEndOf="@id/img_quantity"
-            android:hint="@string/quantity"
+            android:hint="@string/quantity_required"
             android:inputType="number"
             android:textColor="@android:color/black"
             android:textSize="@dimen/extra_large_text_font"
@@ -92,12 +92,25 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/img_origin_price"
             android:layout_toEndOf="@id/img_origin_price"
+            android:layout_toStartOf="@id/txt_origin_vnd"
             android:hint="@string/product_origin_price"
             android:inputType="number"
             android:textColor="@android:color/black"
             android:textSize="@dimen/extra_large_text_font"
             app:clearDrawable="@drawable/button_delete_drawable"
             app:isRequired="true" />
+
+        <TextView
+            android:id="@+id/txt_origin_vnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/txt_input_origin_price"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@id/txt_input_origin_price"
+            android:layout_marginStart="6dp"
+            android:gravity="center_vertical"
+            android:text="@string/vnd"
+            android:textSize="@dimen/ultra_large_text_font" />
 
         <ImageView
             android:id="@+id/img_off_price"
@@ -114,11 +127,24 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/img_off_price"
             android:layout_toEndOf="@id/img_off_price"
+            android:layout_toStartOf="@id/txt_off_vnd"
             android:hint="@string/off_price"
             android:inputType="number"
             android:textColor="@android:color/black"
             android:textSize="@dimen/extra_large_text_font"
             app:clearDrawable="@drawable/button_delete_drawable" />
+
+        <TextView
+            android:id="@+id/txt_off_vnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/txt_input_off_price"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@id/txt_input_off_price"
+            android:layout_marginStart="6dp"
+            android:gravity="center_vertical"
+            android:text="@string/vnd"
+            android:textSize="@dimen/ultra_large_text_font" />
 
         <ImageView
             android:id="@+id/img_camera"
@@ -139,7 +165,7 @@
 
         <com.uides.buyanywhere.custom_view.ClearableEditText
             android:id="@+id/txt_input_description"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignStart="@id/img_facebook"
             android:layout_below="@id/recycler_view_thumbnail_image"

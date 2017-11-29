@@ -1,5 +1,6 @@
 package com.uides.buyanywhere.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.utils.BottomNavigationViewHelper;
 import com.uides.buyanywhere.view_pager_adapter.MainPagerAdapter;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         MenuItem searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(this);
+        searchView.setQueryHint(getString(R.string.input_key));
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -51,11 +54,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-
-            }
-            break;
-
-            case R.id.action_search: {
 
             }
             break;
@@ -106,8 +104,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
-        return false;
+        Intent intent = new Intent(this, SearchResultActivity.class);
+        intent.putExtra(Constant.PRODUCT_NAME, query);
+        startActivity(intent);
+        return true;
     }
 
     @Override
@@ -127,14 +127,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             }
             return true;
 
-            case R.id.navigation_location: {
-                actionBar.setTitle(R.string.location_search);
-                if(searchView != null) {
-                    searchView.setVisibility(View.VISIBLE);
-                }
-                viewPager.setCurrentItem(MainPagerAdapter.FIND_BY_LOCATION_FRAGMENT_INDEX);
-            }
-            return true;
+//            case R.id.navigation_location: {
+//                actionBar.setTitle(R.string.location_search);
+//                if(searchView != null) {
+//                    searchView.setVisibility(View.VISIBLE);
+//                }
+//                viewPager.setCurrentItem(MainPagerAdapter.FIND_BY_LOCATION_FRAGMENT_INDEX);
+//            }
+//            return true;
 
             case R.id.navigation_shopping_cart: {
                 actionBar.setTitle(R.string.shopping_cart);

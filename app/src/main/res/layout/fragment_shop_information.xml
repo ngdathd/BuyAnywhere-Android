@@ -41,30 +41,11 @@
                         android:textSize="@dimen/extra_large_text_font" />
 
                     <ImageView
-                        android:id="@+id/img_address"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:layout_alignStart="@id/txt_shop_name"
-                        android:layout_below="@id/txt_shop_name"
-                        android:src="@drawable/ic_address_gray" />
-
-                    <TextView
-                        android:id="@+id/txt_shop_address"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignBottom="@id/img_address"
-                        android:layout_marginStart="@dimen/text_margin_start"
-                        android:layout_toEndOf="@id/img_address"
-                        android:text="Hoài Đức, Hà Nội"
-                        android:textSize="@dimen/large_text_font" />
-
-                    <ImageView
                         android:id="@+id/img_phone"
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:layout_alignStart="@id/txt_shop_name"
-                        android:layout_below="@id/img_address"
-                        android:layout_marginTop="10dp"
+                        android:layout_below="@id/txt_shop_name"
                         android:src="@drawable/ic_phone_gray" />
 
                     <TextView
@@ -78,13 +59,31 @@
                         android:text="0961569816"
                         android:textSize="@dimen/large_text_font" />
 
+                    <ImageView
+                        android:id="@+id/img_address"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_alignStart="@id/txt_shop_name"
+                        android:layout_below="@id/img_phone"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/ic_address_gray" />
+
+                    <TextView
+                        android:id="@+id/txt_shop_address"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/img_address"
+                        android:layout_marginStart="@dimen/text_margin_start"
+                        android:layout_toEndOf="@id/img_address"
+                        android:text="Hoài Đức, Hà Nội"
+                        android:textSize="@dimen/large_text_font" />
 
                     <RelativeLayout
                         android:id="@+id/rl_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignStart="@id/txt_shop_name"
-                        android:layout_below="@id/img_phone"
+                        android:layout_below="@id/img_address"
                         android:layout_marginTop="10dp">
 
                         <ImageView
@@ -129,8 +128,8 @@
                             android:layout_marginStart="5dp"
                             android:layout_marginTop="10dp"
                             android:layout_toEndOf="@id/img_website"
-                            android:text="abc.com.vn"
                             android:maxWidth="260dp"
+                            android:text="abc.com.vn"
                             android:textSize="@dimen/large_text_font" />
 
                         <ImageButton
@@ -167,8 +166,8 @@
                             android:layout_marginStart="5dp"
                             android:layout_marginTop="10dp"
                             android:layout_toEndOf="@id/img_facebook"
-                            android:text="facebook_page.com.vn"
                             android:maxWidth="260dp"
+                            android:text="facebook_page.com.vn"
                             android:textSize="@dimen/large_text_font" />
 
                         <ImageButton
@@ -186,9 +185,9 @@
                         android:id="@+id/txt_rating_score"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignBottom="@id/txt_shop_address"
+                        android:layout_alignBottom="@id/txt_phone"
                         android:layout_alignParentEnd="true"
-                        android:text="5.0"
+                        android:text="0"
                         android:textColor="@android:color/black"
                         android:textSize="16sp" />
 
@@ -243,10 +242,10 @@
                         android:layout_alignParentStart="true"
                         android:layout_below="@id/txt_description_label"
                         android:layout_centerVertical="true"
+                        android:layout_marginBottom="15dp"
                         android:text="@string/no_description"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/primary_text_font"
-                        android:layout_marginBottom="15dp"/>
+                        android:textSize="@dimen/primary_text_font" />
                 </RelativeLayout>
             </RelativeLayout>
         </android.support.v4.widget.NestedScrollView>
@@ -256,13 +255,13 @@
         android:id="@+id/fab_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/big_activity_fab_margin"
+        android:clickable="true"
+        android:focusable="true"
         android:src="@drawable/ic_edit"
         app:fabSize="normal"
-        app:rippleColor="@color/light_gray"
-        android:focusable="true"
-        android:clickable="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"/>
+        app:rippleColor="@color/light_gray" />
 </RelativeLayout>

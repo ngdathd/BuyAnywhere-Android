@@ -81,15 +81,30 @@
 
         <activity android:name=".ui.activity.ProductDetailActivity"
             android:screenOrientation="portrait"/>
+
         <activity android:name=".ui.activity.ProfileEditActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"/>
+
         <activity android:name=".ui.activity.MainActivity"
             android:screenOrientation="portrait"/>
+
         <activity android:name=".ui.activity.ShopRegisterActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"/>
+
         <activity android:name=".ui.activity.ShopEditActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"/>
+
         <activity android:name=".ui.activity.PostProductActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"/>
+
+        <activity android:name=".ui.activity.ShopActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".ui.activity.SearchResultActivity"
             android:screenOrientation="portrait"/>
     </application>
 

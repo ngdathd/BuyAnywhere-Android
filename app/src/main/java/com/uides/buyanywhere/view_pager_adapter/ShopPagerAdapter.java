@@ -5,9 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.uides.buyanywhere.model.Shop;
-import com.uides.buyanywhere.ui.fragment.shop.FragmentShopInformation;
-import com.uides.buyanywhere.ui.fragment.shop.FragmentShopProducts;
+import com.uides.buyanywhere.ui.fragment.shop.ShopInformationFragment;
+import com.uides.buyanywhere.ui.fragment.shop.ShopProductsFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +24,12 @@ public class ShopPagerAdapter extends FragmentPagerAdapter {
     public ShopPagerAdapter(FragmentManager fm, Bundle shopBundle) {
         super(fm);
         fragments = new ArrayList<>(2);
-        FragmentShopInformation shopInformation = new FragmentShopInformation();
+        ShopInformationFragment shopInformation = new ShopInformationFragment();
         shopInformation.setArguments(shopBundle);
         fragments.add(shopInformation);
-        fragments.add(new FragmentShopProducts());
+        ShopProductsFragment shopProductsFragment = new ShopProductsFragment();
+        shopProductsFragment.setArguments(shopBundle);
+        fragments.add(shopProductsFragment);
     }
 
     @Override

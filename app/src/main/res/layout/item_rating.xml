@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_avatar"
+        android:layout_width="@dimen/ava_comment"
+        android:layout_height="@dimen/ava_comment"
+        android:src="@drawable/avatar_placeholder"
+        android:layout_marginEnd="16dp"/>
+
+    <TextView
+        android:id="@+id/txt_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_toEndOf="@id/img_avatar"
+        android:text="User name"
+        android:textStyle="bold" />
+
+    <com.hedgehog.ratingbar.RatingBar xmlns:hedgehog="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/rating_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/txt_rating_score"
+        android:layout_alignParentTop="@id/txt_rating_score"
+        android:layout_marginEnd="5dp"
+        android:layout_toStartOf="@id/txt_rating_score"
+        hedgehog:halfstart="true"
+        hedgehog:starCount="5"
+        hedgehog:clickable="false"
+        hedgehog:starEmpty="@drawable/ic_star_empty_24px"
+        hedgehog:starFill="@drawable/ic_star_fill_24px"
+        hedgehog:starHalf="@drawable/ic_star_half_24px"
+        hedgehog:starImageHeight="22dp"
+        hedgehog:starImagePadding="5dp"
+        hedgehog:starImageWidth="22dp"
+        android:layout_alignParentEnd="true"/>
+
+
+    <TextView
+        android:id="@+id/txt_feedback"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@id/txt_name"
+        android:layout_below="@id/txt_name"
+        android:text="ABCfkeokfoekfeofkef"/>
+</RelativeLayout>

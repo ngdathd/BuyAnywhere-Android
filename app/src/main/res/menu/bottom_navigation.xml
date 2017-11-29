@@ -6,10 +6,10 @@
         android:icon="@drawable/ic_shopping"
         android:title="@string/product" />
 
-    <item
-        android:id="@+id/navigation_location"
-        android:icon="@drawable/ic_location"
-        android:title="@string/location_search" />
+    <!--<item-->
+        <!--android:id="@+id/navigation_location"-->
+        <!--android:icon="@drawable/ic_location"-->
+        <!--android:title="@string/location_search" />-->
 
     <item
         android:id="@+id/navigation_shopping_cart"

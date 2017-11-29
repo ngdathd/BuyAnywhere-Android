@@ -75,6 +75,10 @@ public class RatingDialog implements RatingBar.OnRatingChangeListener, DialogInt
         alertDialog.show();
     }
 
+    public void dismiss() {
+        alertDialog.dismiss();
+    }
+
     @Override
     public void onRatingChange(float RatingCount) {
         rating = (int) RatingCount;
@@ -117,6 +121,6 @@ public class RatingDialog implements RatingBar.OnRatingChangeListener, DialogInt
     }
 
     public interface OnPositiveButtonClickListener {
-        boolean onPositiveButtonClick(float rating, String textFeedback);
+        boolean onPositiveButtonClick(int rating, String textFeedback);
     }
 }

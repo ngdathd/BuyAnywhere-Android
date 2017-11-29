@@ -104,8 +104,8 @@ public class ProfileEditActivity extends AppCompatActivity implements View.OnCli
 
     private UserProfile userProfile;
 
-    private StorageTask<UploadTask.TaskSnapshot> avatarUploadTask;
-    private StorageTask<UploadTask.TaskSnapshot> coverUploadTask;
+    private FirebaseUploadImageHelper avatarUploadHelper;
+    private FirebaseUploadImageHelper coverUploadHelper;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -114,10 +114,34 @@ public class ProfileEditActivity extends AppCompatActivity implements View.OnCli
         ButterKnife.bind(this);
         Intent intent = getIntent();
         userProfile = (UserProfile) intent.getSerializableExtra(Constant.USER_PROFILE);
-        compositeDisposable = new CompositeDisposable();
+        initServices();
         initViews();
         initToolBar();
         showViews(userProfile);
+    }
+
+    private void initServices() {
+        compositeDisposable = new CompositeDisposable();
+
+        avatarUploadHelper = new FirebaseUploadImageHelper();
+        avatarUploadHelper.setOnSuccessListener((index, total, taskSnapshot) -> {
+            userProfile.setAvatarUrl(taskSnapshot.getDownloadUrl().toString());
+            Toast.makeText(ProfileEditActivity.this, R.string.upload_success, Toast.LENGTH_SHORT).show();
+
+            buttonReUploadAvatar.setTag(null);
+            showProgress(progressAvatar, false);
+            buttonCameraAvatar.setVisibility(View.VISIBLE);
+        });
+
+        coverUploadHelper = new FirebaseUploadImageHelper();
+        coverUploadHelper.setOnSuccessListener((index, total, taskSnapshot) -> {
+            userProfile.setCoverUrl(taskSnapshot.getDownloadUrl().toString());
+            Toast.makeText(ProfileEditActivity.this, R.string.upload_success, Toast.LENGTH_SHORT).show();
+
+            buttonReUploadCover.setTag(null);
+            showProgress(progressCover, false);
+            buttonCameraCover.setVisibility(View.VISIBLE);
+        });
     }
 
     private void initViews() {
@@ -140,12 +164,8 @@ public class ProfileEditActivity extends AppCompatActivity implements View.OnCli
         if (compositeDisposable != null) {
             compositeDisposable.clear();
         }
-        if (avatarUploadTask != null) {
-            avatarUploadTask.cancel();
-        }
-        if (coverUploadTask != null) {
-            coverUploadTask.cancel();
-        }
+        avatarUploadHelper.cancel();
+        coverUploadHelper.cancel();
     }
 
     private void showViews(UserProfile userProfile) {
@@ -238,8 +258,8 @@ public class ProfileEditActivity extends AppCompatActivity implements View.OnCli
             break;
 
             case R.id.action_submit: {
-                if (avatarUploadTask != null || coverUploadTask != null) {
-                    Toast.makeText(this, R.string.upload_task_not_done,Toast.LENGTH_SHORT).show();
+                if (avatarUploadHelper.isPerformingUploadTask() || coverUploadHelper.isPerformingUploadTask()) {
+                    Toast.makeText(this, R.string.upload_task_not_done, Toast.LENGTH_SHORT).show();
                     return false;
                 }
 
@@ -421,35 +441,18 @@ public class ProfileEditActivity extends AppCompatActivity implements View.OnCli
         buttonCameraAvatar.setVisibility(View.INVISIBLE);
         buttonReUploadAvatar.setVisibility(View.INVISIBLE);
         buttonReUploadAvatar.setTag(null);
-        avatarUploadTask = FirebaseUploadImageHelper.uploadImageToStorage(UserAuth.getAuthUser().getId(),
-                Constant.AVATARS,
-                imageFile,
-                taskSnapshot -> progressAvatar.setProgress((int) (taskSnapshot.getBytesTransferred() * 100 / taskSnapshot.getTotalByteCount())),
-                taskSnapshot -> {
-                    showProgress(progressAvatar, false);
-                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    if (downloadUrl == null) {
-                        Log.i(TAG, "onUploadAvatarSuccess: Uri null, can't get image url");
-                        buttonReUploadAvatar.setVisibility(View.VISIBLE);
-                        buttonReUploadAvatar.setTag(imageFile);
-                        Toast.makeText(ProfileEditActivity.this, R.string.upload_failed, Toast.LENGTH_SHORT).show();
-                    } else {
-                        buttonReUploadAvatar.setTag(null);
-                        userProfile.setAvatarUrl(downloadUrl.toString());
-                        Toast.makeText(ProfileEditActivity.this, R.string.upload_success, Toast.LENGTH_SHORT).show();
-                    }
-                    buttonCameraAvatar.setVisibility(View.VISIBLE);
-                    avatarUploadTask = null;
-                },
-                e -> {
-                    Log.i(TAG, "onUploadAvatarFailed: " + e);
-                    avatarUploadTask = null;
-                    buttonCameraAvatar.setVisibility(View.VISIBLE);
-                    buttonReUploadAvatar.setVisibility(View.VISIBLE);
-                    buttonReUploadAvatar.setTag(imageFile);
-                    showProgress(progressAvatar, false);
-                    Toast.makeText(ProfileEditActivity.this, R.string.upload_failed, Toast.LENGTH_SHORT).show();
-                });
+
+        avatarUploadHelper.setOnFailureListener((index, total, e) -> {
+            Log.i(TAG, "uploadAvatarImage: " + e);
+            Toast.makeText(ProfileEditActivity.this, R.string.upload_failed, Toast.LENGTH_SHORT).show();
+
+            buttonReUploadAvatar.setVisibility(View.VISIBLE);
+            buttonReUploadAvatar.setTag(imageFile);
+            showProgress(progressAvatar, false);
+            buttonCameraAvatar.setVisibility(View.VISIBLE);
+        });
+
+        avatarUploadHelper.uploadImageToStorage(UserAuth.getAuthUser().getId(), Constant.AVATARS, imageFile);
     }
 
     private void uploadCoverImage(File imageFile) {
@@ -457,35 +460,18 @@ public class ProfileEditActivity extends AppCompatActivity implements View.OnCli
         buttonCameraCover.setVisibility(View.INVISIBLE);
         buttonReUploadCover.setVisibility(View.INVISIBLE);
         buttonReUploadCover.setTag(null);
-        coverUploadTask = FirebaseUploadImageHelper.uploadImageToStorage(UserAuth.getAuthUser().getId(),
-                Constant.COVERS,
-                imageFile,
-                taskSnapshot -> progressCover.setProgress((int) (taskSnapshot.getBytesTransferred() * 100 / taskSnapshot.getTotalByteCount())),
-                taskSnapshot -> {
-                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    showProgress(progressCover, false);
-                    if (downloadUrl == null) {
-                        Log.i(TAG, "onUploadAvatarSuccess: Download URL is NULL");
-                        buttonReUploadCover.setVisibility(View.VISIBLE);
-                        buttonReUploadCover.setTag(imageFile);
-                        Toast.makeText(ProfileEditActivity.this, R.string.upload_failed, Toast.LENGTH_SHORT).show();
-                    } else {
-                        buttonReUploadCover.setTag(null);
-                        userProfile.setCoverUrl(downloadUrl.toString());
-                        Toast.makeText(ProfileEditActivity.this, R.string.upload_success, Toast.LENGTH_SHORT).show();
-                    }
-                    buttonCameraCover.setVisibility(View.VISIBLE);
-                    coverUploadTask = null;
-                },
-                e -> {
-                    Log.i(TAG, "onUploadAvatarFailed: " + e);
-                    coverUploadTask = null;
-                    buttonCameraCover.setVisibility(View.VISIBLE);
-                    buttonReUploadCover.setVisibility(View.VISIBLE);
-                    buttonReUploadCover.setTag(imageFile);
-                    showProgress(progressCover, false);
-                    Toast.makeText(ProfileEditActivity.this, R.string.upload_failed, Toast.LENGTH_SHORT).show();
-                });
+
+        coverUploadHelper.setOnFailureListener((index, total, e) -> {
+            Log.i(TAG, "onUploadAvatarFailed: " + e);
+            Toast.makeText(ProfileEditActivity.this, R.string.upload_failed, Toast.LENGTH_SHORT).show();
+
+            buttonReUploadCover.setVisibility(View.VISIBLE);
+            buttonReUploadCover.setTag(imageFile);
+            showProgress(progressCover, false);
+            buttonCameraCover.setVisibility(View.VISIBLE);
+        });
+
+        coverUploadHelper.uploadImageToStorage(UserAuth.getAuthUser().getId(), Constant.COVERS, imageFile);
     }
 
     public void showProgress(ProgressBar progressBar, boolean isVisible) {

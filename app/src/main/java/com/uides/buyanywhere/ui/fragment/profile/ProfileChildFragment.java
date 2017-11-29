@@ -159,6 +159,8 @@ public class ProfileChildFragment extends Fragment implements View.OnClickListen
     private void showViews(UserProfile userProfile) {
         Context context = getActivity();
         Picasso.with(context).load(userProfile.getCoverUrl())
+                .placeholder(R.drawable.profile_cover)
+                .fit()
                 .into(imageCover);
         Picasso.with(context).load(userProfile.getAvatarUrl())
                 .placeholder(R.drawable.avatar_placeholder)

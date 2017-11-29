@@ -32,9 +32,12 @@ import com.uides.buyanywhere.custom_view.PriceTextView;
 import com.uides.buyanywhere.custom_view.dialog.RatingDialog;
 import com.uides.buyanywhere.custom_view.StrikeThroughPriceTextView;
 import com.uides.buyanywhere.model.Product;
+import com.uides.buyanywhere.model.Rating;
+import com.uides.buyanywhere.model.RatingResult;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.service.cart.AddCartService;
 import com.uides.buyanywhere.service.cart.DeleteCartService;
+import com.uides.buyanywhere.service.user.RateProductService;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -83,6 +86,8 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     Button ratingButton;
     @BindView(R.id.btn_purchase)
     Button purchaseButton;
+    @BindView(R.id.btn_to_shop)
+    Button toShopButton;
     @BindView(R.id.fab_shopping_cart)
     FloatingActionButton addToCartFab;
 
@@ -90,7 +95,11 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     private MenuItem addToCartButton;
     private AddCartService addCartService;
     private DeleteCartService deleteCartService;
+    private RateProductService rateProductService;
     private CompositeDisposable compositeDisposable;
+    private RatingDialog ratingDialog;
+    private boolean isFromShopView;
+    private boolean isViewByShopOwner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +110,8 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             product = (Product) bundle.getSerializable(Constant.PRODUCT);
+            isFromShopView = bundle.getBoolean(Constant.IS_FROM_SHOP, false);
+            isViewByShopOwner = bundle.getBoolean(Constant.IS_VIEW_BY_SHOP_OWNER, false);
         }
         showViews(product);
     }
@@ -115,13 +126,15 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
 
     private void initService() {
         compositeDisposable = new CompositeDisposable();
-        addCartService = Network.getInstance().createService(AddCartService.class);
-        deleteCartService = Network.getInstance().createService(DeleteCartService.class);
+        Network network = Network.getInstance();
+        addCartService = network.createService(AddCartService.class);
+        deleteCartService = network.createService(DeleteCartService.class);
+        rateProductService = network.createService(RateProductService.class);
     }
 
     private void showViews(Product product) {
         initToolBar();
-        initFloatingButton();
+        initCartButton();
         initImageSlider(product.getDescriptiveImageUrl());
 
         textName.setText(product.getName());
@@ -133,7 +146,7 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
         textCurrentPrice.setPrice("" + currentPrice, Constant.PRICE_UNIT);
         long originPrice = product.getOriginPrice();
         if (currentPrice < originPrice) {
-            int discountPercentage = Math.round((originPrice - currentPrice) * 1.0f / originPrice * 100);
+            int discountPercentage = (int) Math.floor((originPrice - currentPrice) * 1.0f / originPrice * 100);
             textOriginPrice.setPrice("" + originPrice, Constant.PRICE_UNIT);
             textDiscountPercentage.setText("-" + discountPercentage + "%");
         } else {
@@ -147,8 +160,19 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
         textRatingCount.setText("" + product.getRatingCount());
         textDescription.setText(product.getDescription());
 
-        ratingButton.setOnClickListener(this);
-        purchaseButton.setOnClickListener(this);
+        if(isViewByShopOwner) {
+            ratingButton.setVisibility(View.GONE);
+            purchaseButton.setVisibility(View.GONE);
+        } else {
+            ratingButton.setOnClickListener(this);
+            purchaseButton.setOnClickListener(this);
+        }
+
+        if (isFromShopView || isViewByShopOwner) {
+            toShopButton.setVisibility(View.GONE);
+        } else {
+            toShopButton.setOnClickListener(this);
+        }
     }
 
     private void initToolBar() {
@@ -156,7 +180,6 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        addToCartButton = toolbar.getMenu().findItem(R.id.action_add_to_cart);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -164,11 +187,15 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
         }
     }
 
-    private void initFloatingButton() {
-        addToCartFab.setOnClickListener(this);
+    private void initCartButton() {
+        if(isViewByShopOwner) {
+            addToCartFab.setVisibility(View.GONE);
+        } else {
+            addToCartFab.setOnClickListener(this);
 
-        if (product.isAddedToCart()) {
-            addToCartFab.setImageResource(R.drawable.ic_added_to_cart);
+            if (product.isAddedToCart()) {
+                addToCartFab.setImageResource(R.drawable.ic_added_to_cart);
+            }
         }
     }
 
@@ -196,8 +223,8 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
         if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
-            CollapsingToolbarLayout collapsing_toolbar_layout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
-            collapsing_toolbar_layout.setExpandedTitleTextColor(ColorStateList.valueOf(Color.TRANSPARENT));
+            CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
+            collapsingToolbarLayout.setExpandedTitleTextColor(ColorStateList.valueOf(Color.TRANSPARENT));
         } else {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
@@ -207,6 +234,11 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.product_detail_tool_bar, menu);
         addToCartButton = menu.findItem(R.id.action_add_to_cart);
+        if(isViewByShopOwner) {
+            addToCartButton.setVisible(false);
+        } else if(product.isAddedToCart()) {
+            addToCartButton.setIcon(R.drawable.ic_added_to_cart);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -247,14 +279,24 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
             break;
 
             case R.id.btn_rating: {
-                new RatingDialog(this)
+                ratingDialog = new RatingDialog(this)
                         .setOnPositiveButtonClickListener((rating, textFeedback) -> {
                             //TODO send rating
-                            Toast.makeText(ProductDetailActivity.this,
-                                    R.string.feedback_sent,
-                                    Toast.LENGTH_SHORT).show();
+                            Rating ratingModel = new Rating();
+                            ratingModel.setRating(rating);
+                            ratingModel.setComment(textFeedback);
+
+                            compositeDisposable.add(
+                                    rateProductService.rateProduct(UserAuth.getAuthUser().getAccessToken(),
+                                            product.getId(),
+                                            ratingModel)
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribeOn(Schedulers.newThread())
+                                            .subscribe(this::onRatingSuccess, this::onRatingFailed)
+                            );
                             return true;
-                        }).show();
+                        });
+                ratingDialog.show();
             }
             break;
 
@@ -263,10 +305,36 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
             }
             break;
 
+            case R.id.btn_to_shop: {
+                Intent intent = new Intent(this, ShopActivity.class);
+                intent.putExtra(Constant.SHOP_ID, product.getShopID());
+                startActivity(intent);
+            }
+            break;
+
             default: {
                 break;
             }
         }
+    }
+
+    private void onRatingSuccess(RatingResult ratingResult) {
+        ratingDialog.dismiss();
+        product.setRatingCount(ratingResult.getRatingCount());
+        product.setRating(ratingResult.getAverageRating());
+        textRatingCount.setText(product.getRatingCount());
+        ratingBar.setStar(product.getRating());
+        textRatingScore.setText(product.getRating());
+        Toast.makeText(ProductDetailActivity.this,
+                R.string.feedback_sent,
+                Toast.LENGTH_SHORT).show();
+    }
+
+    private void onRatingFailed(Throwable e) {
+        Log.i(TAG, "onRatingFailed: " + e);
+        Toast.makeText(ProductDetailActivity.this,
+                R.string.unexpected_error_message,
+                Toast.LENGTH_SHORT).show();
     }
 
     private void removeProductFromCart(Product product) {

@@ -79,6 +79,7 @@ public class ChildShopFragment extends LoadingFragment {
     public void showShopPagerFragment(Shop shop) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(Constant.SHOP, shop);
+        bundle.putBoolean(Constant.IS_VIEW_BY_SHOP_OWNER, true);
         shopPagerFragment.setArguments(bundle);
         showFragment(shopPagerFragment);
     }

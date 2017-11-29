@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -60,8 +61,24 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         loadingDialog = new LoadingDialog(getActivity());
         initService();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:{
+
+            }
+            break;
+
+            default: {
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initService() {
@@ -134,6 +151,8 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
         Bundle bundle = new Bundle();
         product.setAddedToCart(true);
         bundle.putSerializable(Constant.PRODUCT, product);
+        boolean userIsShopOwner = UserAuth.getAuthUser().getShopID().equals(product.getShopID());
+        bundle.putBoolean(Constant.IS_VIEW_BY_SHOP_OWNER, userIsShopOwner);
         intent.putExtras(bundle);
         startActivityForResult(intent, PRODUCT_DETAIL_REQUEST_CODE);
     }

@@ -46,6 +46,7 @@ public class ShopPagerFragment extends Fragment {
         if (shop != null) {
             coverUrl = shop.getCoverUrl();
             avatarUrl = shop.getAvatarUrl();
+            bundle.putString(Constant.SHOP_ID, shop.getId());
         }
         initAdapter(bundle);
     }

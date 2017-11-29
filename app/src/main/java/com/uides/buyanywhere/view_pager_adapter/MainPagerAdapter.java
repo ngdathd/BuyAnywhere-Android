@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.uides.buyanywhere.R;
-import com.uides.buyanywhere.ui.fragment.product.ProductFragment;
+import com.uides.buyanywhere.ui.fragment.product.AllProductsFragment;
 import com.uides.buyanywhere.ui.fragment.location.FindByLocationFragment;
 import com.uides.buyanywhere.ui.fragment.profile.ProfileFragment;
 import com.uides.buyanywhere.ui.fragment.shop.ShopFragment;
@@ -33,7 +33,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
 
     private void initFragments() {
         fragments = new ArrayList<>(4);
-        fragments.add(new ProductFragment());
+        fragments.add(new AllProductsFragment());
         fragments.add(new FindByLocationFragment());
         fragments.add(new ShoppingCartFragment());
         fragments.add(new ShopFragment());
@@ -52,9 +52,9 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
 
     public static int getNavigationButtonID(int position) {
         switch (position) {
-            case FIND_BY_LOCATION_FRAGMENT_INDEX: {
-                return R.id.navigation_location;
-            }
+//            case FIND_BY_LOCATION_FRAGMENT_INDEX: {
+//                return R.id.navigation_location;
+//            }
 
             case SHOPPING_CART_FRAGMENT_INDEX: {
                 return R.id.navigation_shopping_cart;

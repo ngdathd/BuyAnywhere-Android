@@ -36,8 +36,8 @@ import io.reactivex.schedulers.Schedulers;
  * Created by TranThanhTung on 25/11/2017.
  */
 
-public class FragmentShopInformation extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
-    private static final String TAG = "FragmentShopInformation";
+public class ShopInformationFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+    private static final String TAG = "ShopInformationFragment";
     private static final int SHOP_EDIT_REQUEST_CODE = 0;
 
     @BindView(R.id.txt_shop_name)
@@ -74,6 +74,7 @@ public class FragmentShopInformation extends Fragment implements View.OnClickLis
     SwipeRefreshLayout refreshLayout;
 
     private Shop shop;
+    private boolean isGuest;
     private CompositeDisposable compositeDisposable;
     private GetOwnerShop getOwnerShop;
 
@@ -83,6 +84,7 @@ public class FragmentShopInformation extends Fragment implements View.OnClickLis
         initServices();
         Bundle bundle = getArguments();
         shop = (Shop) bundle.getSerializable(Constant.SHOP);
+        isGuest = bundle.getBoolean(Constant.IS_GUEST, false);
     }
 
     private void initServices() {
@@ -149,7 +151,7 @@ public class FragmentShopInformation extends Fragment implements View.OnClickLis
             websiteGroup.setVisibility(View.GONE);
         } else {
             websiteGroup.setVisibility(View.VISIBLE);
-            textWebsite.setText(website);
+//            textWebsite.setText(website);
             websiteRedirectButton.setOnClickListener(this);
         }
 
@@ -171,7 +173,11 @@ public class FragmentShopInformation extends Fragment implements View.OnClickLis
             textDescription.setText(description);
         }
 
-        fabEdit.setOnClickListener(this);
+        if(isGuest) {
+            fabEdit.setVisibility(View.INVISIBLE);
+        } else {
+            fabEdit.setOnClickListener(this);
+        }
     }
 
     @Override

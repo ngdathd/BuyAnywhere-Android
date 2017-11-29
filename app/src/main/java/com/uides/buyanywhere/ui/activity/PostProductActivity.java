@@ -1,29 +1,20 @@
 package com.uides.buyanywhere.ui.activity;
 
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-
-import com.esafirm.imagepicker.model.Image;
-import com.squareup.picasso.Picasso;
 import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.model.Category;
+import com.uides.buyanywhere.model.ProductReview;
 import com.uides.buyanywhere.network.Network;
-import com.uides.buyanywhere.recyclerview_adapter.RecyclerViewAdapter;
 import com.uides.buyanywhere.service.categories.GetCategoriesService;
 import com.uides.buyanywhere.ui.fragment.shop.ChildPostProductFragment;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,5 +96,12 @@ public class PostProductActivity extends LoadingActivity {
     protected void onStop() {
         super.onStop();
         compositeDisposable.clear();
+    }
+
+    public void returnPostProductAndFinish(ProductReview productReview) {
+        Intent intent = new Intent();
+        intent.putExtra(Constant.PRODUCT_REVIEW, productReview);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 }

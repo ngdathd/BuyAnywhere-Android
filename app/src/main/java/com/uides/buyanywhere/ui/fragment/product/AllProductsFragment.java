@@ -1,42 +1,31 @@
 package com.uides.buyanywhere.ui.fragment.product;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cunoraz.tagview.Tag;
-import com.cunoraz.tagview.TagView;
-import com.hedgehog.ratingbar.RatingBar;
-import com.squareup.picasso.Picasso;
 import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
+import com.uides.buyanywhere.adapter.ProductAdapter;
 import com.uides.buyanywhere.auth.UserAuth;
 import com.uides.buyanywhere.custom_view.dialog.LoadingDialog;
-import com.uides.buyanywhere.custom_view.PriceTextView;
-import com.uides.buyanywhere.custom_view.StrikeThroughPriceTextView;
 import com.uides.buyanywhere.model.PageResult;
 import com.uides.buyanywhere.model.Product;
 import com.uides.buyanywhere.model.ProductReview;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.service.product.GetProductService;
-import com.uides.buyanywhere.service.product.GetProductsService;
 import com.uides.buyanywhere.recyclerview_adapter.EndlessLoadingRecyclerViewAdapter;
 import com.uides.buyanywhere.recyclerview_adapter.RecyclerViewAdapter;
+import com.uides.buyanywhere.service.product.GetProductsService;
 import com.uides.buyanywhere.service.user.CheckUserCartService;
 import com.uides.buyanywhere.ui.activity.ProductDetailActivity;
 import com.uides.buyanywhere.ui.fragment.RecyclerViewFragment;
-import com.uides.buyanywhere.utils.DateUtil;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -47,8 +36,8 @@ import io.reactivex.schedulers.Schedulers;
  * Created by TranThanhTung on 19/11/2017.
  */
 
-public class ProductFragment extends RecyclerViewFragment implements EndlessLoadingRecyclerViewAdapter.OnLoadingMoreListener, RecyclerViewAdapter.OnItemClickListener {
-    private static final String TAG = "ProductFragment";
+public class AllProductsFragment extends RecyclerViewFragment implements EndlessLoadingRecyclerViewAdapter.OnLoadingMoreListener, RecyclerViewAdapter.OnItemClickListener {
+    private static final String TAG = "AllProductsFragment";
     public static final int LIMIT_PRODUCT = 10;
 
     private GetProductsService getProductReviewsService;
@@ -60,9 +49,24 @@ public class ProductFragment extends RecyclerViewFragment implements EndlessLoad
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         initServices();
         this.loadingDialog = new LoadingDialog(getActivity());
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:{
+
+            }
+            break;
+
+            default: {
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initServices() {
@@ -88,11 +92,13 @@ public class ProductFragment extends RecyclerViewFragment implements EndlessLoad
                 .subscribeOn(Schedulers.newThread())
                 .subscribe(this::onRefreshSuccess, this::onRefreshError);
         addDisposable(disposable);
+        ((EndlessLoadingRecyclerViewAdapter) getAdapter()).disableLoadingMore(true);
     }
 
     private void onRefreshError(Throwable e) {
+        ((EndlessLoadingRecyclerViewAdapter) getAdapter()).disableLoadingMore(false);
         Log.i(TAG, "onRefreshError: " + e);
-        Toast.makeText(ProductFragment.this.getActivity(),
+        Toast.makeText(AllProductsFragment.this.getActivity(),
                 R.string.unexpected_error_message,
                 Toast.LENGTH_SHORT)
                 .show();
@@ -100,6 +106,7 @@ public class ProductFragment extends RecyclerViewFragment implements EndlessLoad
     }
 
     private void onRefreshSuccess(PageResult<ProductReview> pageResult) {
+        ((EndlessLoadingRecyclerViewAdapter) getAdapter()).disableLoadingMore(false);
         ProductAdapter productAdapter = (ProductAdapter) getAdapter();
         productAdapter.clear();
         productAdapter.disableLoadingMore(false);
@@ -128,15 +135,18 @@ public class ProductFragment extends RecyclerViewFragment implements EndlessLoad
                 .subscribeOn(Schedulers.newThread())
                 .subscribe(this::onLoadMoreSuccess, this::onLoadMoreError);
         addDisposable(disposable);
+        getSwipeRefreshLayout().setEnabled(false);
     }
 
     private void onLoadMoreError(Throwable e) {
+        getSwipeRefreshLayout().setEnabled(true);
         Log.i(TAG, "onLoadMoreError: " + e);
         ProductAdapter productAdapter = (ProductAdapter) getAdapter();
         productAdapter.hideLoadingItem();
     }
 
     private void onLoadMoreSuccess(PageResult<ProductReview> pageResult) {
+        getSwipeRefreshLayout().setEnabled(true);
         ProductAdapter productAdapter = (ProductAdapter) getAdapter();
         productAdapter.hideLoadingItem();
         productAdapter.addModels(pageResult.getResults(), false);
@@ -168,7 +178,10 @@ public class ProductFragment extends RecyclerViewFragment implements EndlessLoad
         loadingDialog.dismiss();
         Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
         Bundle bundle = new Bundle();
+
+        boolean userIsShopOwner = UserAuth.getAuthUser().getShopID().equals(product.getShopID());
         bundle.putSerializable(Constant.PRODUCT, product);
+        bundle.putBoolean(Constant.IS_VIEW_BY_SHOP_OWNER, userIsShopOwner);
         intent.putExtras(bundle);
         startActivity(intent);
     }
@@ -177,85 +190,5 @@ public class ProductFragment extends RecyclerViewFragment implements EndlessLoad
         loadingDialog.dismiss();
         Log.i(TAG, "onFetchProductFailed: " + e);
         Toast.makeText(getActivity(), R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
-    }
-
-    private class ProductAdapter extends EndlessLoadingRecyclerViewAdapter {
-        ProductAdapter(Context context) {
-            super(context, false);
-        }
-
-        @Override
-        protected RecyclerView.ViewHolder initLoadingViewHolder(ViewGroup parent) {
-            View loadingView = getInflater().inflate(R.layout.item_loading, parent, false);
-            return new LoadingViewHolder(loadingView);
-        }
-
-        @Override
-        protected void bindLoadingViewHolder(LoadingViewHolder loadingViewHolder, int position) {
-
-        }
-
-        @Override
-        protected RecyclerView.ViewHolder initNormalViewHolder(ViewGroup parent) {
-            View productView = getInflater().inflate(R.layout.item_product, parent, false);
-            return new ProductViewHolder(productView);
-        }
-
-        @Override
-        protected void bindNormalViewHolder(NormalViewHolder holder, int position) {
-            ProductReview productReview = getItem(position, ProductReview.class);
-            ProductViewHolder productViewHolder = (ProductViewHolder) holder;
-            Picasso.with(getActivity())
-                    .load(productReview.getPreviewUrl())
-                    .placeholder(R.drawable.image_placeholder)
-                    .fit()
-                    .centerCrop()
-                    .into(productViewHolder.imagePreview);
-            productViewHolder.textName.setText(productReview.getName());
-            productViewHolder.textShop.setText(productReview.getShopName());
-            long currentPrice = productReview.getCurrentPrice();
-            long originPrice = productReview.getOriginPrice();
-            if (currentPrice < originPrice) {
-                productViewHolder.textCurrentPrice.setPrice("" + currentPrice, Constant.PRICE_UNIT);
-                productViewHolder.textOriginPrice.setVisibility(View.VISIBLE);
-                productViewHolder.textOriginPrice.setPrice("" + originPrice, Constant.PRICE_UNIT);
-            } else {
-                productViewHolder.textCurrentPrice.setPrice("" + originPrice, Constant.PRICE_UNIT);
-                productViewHolder.textOriginPrice.setVisibility(View.INVISIBLE);
-            }
-            productViewHolder.textQuantity.setText("" + productReview.getQuantity());
-            productViewHolder.tagGroup.removeAll();
-            Tag tag = new Tag(productReview.getCategoryName());
-            tag.tagTextSize = 11;
-            productViewHolder.tagGroup.addTag(tag);
-            productViewHolder.ratingBar.setStar(productReview.getRating());
-            productViewHolder.textTime.setText(DateUtil.getDateDiffNow(productReview.getCreatedDate()));
-        }
-    }
-
-    class ProductViewHolder extends RecyclerViewAdapter.NormalViewHolder {
-        @BindView(R.id.img_preview)
-        ImageView imagePreview;
-        @BindView(R.id.txt_name)
-        TextView textName;
-        @BindView(R.id.txt_shop_name)
-        TextView textShop;
-        @BindView(R.id.txt_current_price)
-        PriceTextView textCurrentPrice;
-        @BindView(R.id.txt_origin_price)
-        StrikeThroughPriceTextView textOriginPrice;
-        @BindView(R.id.txt_quantity)
-        TextView textQuantity;
-        @BindView(R.id.tag_group)
-        TagView tagGroup;
-        @BindView(R.id.rating_bar)
-        RatingBar ratingBar;
-        @BindView(R.id.txt_time)
-        TextView textTime;
-
-        ProductViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
     }
 }

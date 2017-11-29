@@ -21,7 +21,7 @@
     <string name="rating_count">lượt đánh giá</string>
     <string name="product_description">Mô tả sản phẩm</string>
     <string name="add_to_cart">Thêm vào giỏ hàng</string>
-    <string name="created_date">Ngày đăng:</string>
+    <string name="createdDate">Ngày đăng:</string>
     <string name="add_product_success">Đã thêm sản phẩm vào giỏ hàng</string>
     <string name="remove_product_success">Đã xóa sản phẩm khỏi giỏ hàng</string>
     <string name="purchase">Đặt Hàng</string>
@@ -58,10 +58,11 @@
     <string name="email">Email</string>
     <string name="favorite">Yêu thích</string>
     <string name="address">Địa chỉ</string>
+    <string name="address_required">Địa chỉ*</string>
     <string name="retry">Thử lại</string>
     <string name="an_error_occured">Có lỗi xảy ra</string>
     <string name="register_shop">Đăng ký shop</string>
-    <string name="name">Họ và tên</string>
+    <string name="name">Họ và tên*</string>
     <string name="submit">Ghi nhận</string>
     <string name="edit_profile">Chỉnh sửa hồ sơ</string>
     <string name="field_required">Thông tin bắt buộc</string>
@@ -74,20 +75,20 @@
     <string name="confirm">Xác nhận</string>
     <string name="upload_success">Upload thành công</string>
     <string name="select_an_image">Chọn một ảnh</string>
-    <string name="shop_name">Tên shop</string>
+    <string name="shop_name">Tên shop*</string>
     <string name="shop_address">Địa chỉ</string>
-    <string name="contact">Điện thoại liên lạc</string>
+    <string name="contact">Điện thoại liên lạc*</string>
     <string name="shop_register">Đăng ký shop</string>
     <string name="shop_unregistered">Shop chưa được đăng ký</string>
     <string name="register_now">Đăng ký ngay</string>
     <string name="shop_description">Thông tin shop</string>
     <string name="facebook">Facebook</string>
     <string name="edit_shop">Chỉnh sửa thông tin shop</string>
-    <string name="product_name">Tên sản phẩm</string>
-    <string name="product_origin_price">Giá gốc</string>
+    <string name="product_name">Tên sản phẩm*</string>
+    <string name="product_origin_price">Giá gốc*</string>
     <string name="off_price">Giảm giá</string>
     <string name="percent">Phần trăm</string>
-    <string name="select_category">Chọn danh mục</string>
+    <string name="select_category">Chọn danh mục*</string>
     <string name="post_product">Đăng sản phẩm</string>
     <string name="register_failed">Đăng ký thất bại, vui long thử lại</string>
     <string name="website">Website</string>
@@ -95,6 +96,17 @@
     <string name="upload_task_not_done">Tác vụ upload chưa hoàn thành</string>
     <string name="delete_failed">Xóa thất bại</string>
     <string name="item_deleting">Sản phẩm đang được xóa</string>
+    <string name="invalid_price">Gía gốc phải lớn hơn giá giảm</string>
+    <string name="processing">Đang xử lí...</string>
+    <string name="quantity_positive">Số lượng tối thiểu là 1</string>
+    <string name="price_is_equal_or_more_than_1000">Giá tối thiểu là 1000 VND</string>
+    <string name="quantity_required">Số lượng*</string>
+    <string name="vnd">VND</string>
+    <string name="to_shop">Đến cửa hàng</string>
+    <string name="input_key">Nhập tên sản phẩm</string>
+    <string name="action_filter">Bộ lọc</string>
+    <string name="action_sort">Sắp xếp</string>
+    <string name="search">Tìm kiếm</string>
     <item name="visible" type="id"/>
     <item name="masked" type="id"/>
 </resources>

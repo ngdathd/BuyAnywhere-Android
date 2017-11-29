@@ -18,6 +18,12 @@ public class Constant {
     public static final String SHOP_ID = "SHOP_ID";
     public static final String CART_REMOVED = "CART_REMOVED";
     public static final String PRODUCT_REVIEW = "PRODUCT_REVIEW";
+    public static final String IS_GUEST = "IS_GUEST";
+    public static final String IS_FROM_SHOP = "IS_FROM_SHOP";
+    public static final String IS_VIEW_BY_SHOP_OWNER = "VBO";
+    public static final String PAGE_PRODUCTS = "PAGE_PRODUCTS";
+    public static final String PRODUCT_NAME = "PRODUCT_NAME";
+    public static final String CATEGORY_NAME = "CATEGORY_NAME";
     public static final int SLIDE_DURATION = 5000;
 
     public static final String PRICE_UNIT = "đ";
@@ -30,4 +36,6 @@ public class Constant {
     public static final String COVERS = "covers";
     public static final String SHOP_AVATARS = "shop_avatars";
     public static final String SHOP_COVERS = "shop_covers";
+    public static final String DESC = "Desc";
+    public static final String ASC = "Asc";
 }

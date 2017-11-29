@@ -11,6 +11,7 @@ import java.util.List;
 public class Product implements Serializable{
     public static final String ID = "Id";
     public static final String SHOP_NAME = "ShopName";
+    public static final String SHOP_ID = "ShopId";
     public static final String CATEGORY_NAME = "CategoryName";
     public static final String NAME = "Name";
     public static final String QUANTITY = "Quantity";
@@ -32,6 +33,9 @@ public class Product implements Serializable{
     @SerializedName(SHOP_NAME)
     @Expose
     private String shopName;
+    @SerializedName(SHOP_ID)
+    @Expose
+    private String shopID;
     @SerializedName(CURRENT_PRICE)
     @Expose
     private long currentPrice;
@@ -65,6 +69,21 @@ public class Product implements Serializable{
 
     private boolean isAddedToCart;
 
+    public ProductReview toProductReview() {
+        ProductReview productReview = new ProductReview();
+        productReview.setName(name);
+        productReview.setShopName(shopName);
+        productReview.setCategoryName(categoryName);
+        productReview.setCurrentPrice(currentPrice);
+        productReview.setOriginPrice(originPrice);
+        productReview.setPreviewUrl(previewUrl);
+        productReview.setId(id);
+        productReview.setQuantity(quantity);
+        productReview.setCreatedDate(createdDate);
+        productReview.setRating(rating);
+        return productReview;
+    }
+
     public String getId() {
         return id;
     }
@@ -87,6 +106,14 @@ public class Product implements Serializable{
 
     public void setShopName(String shopName) {
         this.shopName = shopName;
+    }
+
+    public String getShopID() {
+        return shopID;
+    }
+
+    public void setShopID(String shopID) {
+        this.shopID = shopID;
     }
 
     public String getPreviewUrl() {

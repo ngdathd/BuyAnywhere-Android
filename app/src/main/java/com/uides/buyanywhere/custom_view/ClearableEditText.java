@@ -55,7 +55,11 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
         editText.setHint(a.getString(R.styleable.ClearableEditText_android_hint));
         int lineNumber = a.getInt(R.styleable.ClearableEditText_android_lines, 1);
         editText.setLines(lineNumber);
-        editText.setInputType(a.getInt(R.styleable.ClearableEditText_android_inputType, EditorInfo.TYPE_CLASS_TEXT));
+        if(lineNumber == 1) {
+            editText.setInputType(a.getInt(R.styleable.ClearableEditText_android_inputType, EditorInfo.TYPE_CLASS_TEXT));
+        } else {
+            editText.setInputType(a.getInt(R.styleable.ClearableEditText_android_inputType, EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE));
+        }
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 textInputLayout.setError(null);
@@ -97,6 +101,10 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
         }
         textInputLayout.setError(null);
         return true;
+    }
+
+    public void setError(String text) {
+        textInputLayout.setError(text);
     }
 
     public String getText() {
