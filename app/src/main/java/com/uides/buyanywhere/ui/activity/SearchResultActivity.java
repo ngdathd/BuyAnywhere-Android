@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -183,6 +182,9 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
 
     private void onGetCategoriesSuccess(List<Category> categories) {
         this.categories = categories;
+        Category all = new Category();
+        all.setName(getString(R.string.all));
+        this.categories.add(0, all);
         searchView.setVisibility(View.VISIBLE);
         filterItem.setVisible(true);
         sortItem.setVisible(true);
@@ -204,7 +206,11 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
     private PopupMenu.OnMenuItemClickListener onFilterItemClickListener = new PopupMenu.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
-            category = categories.get(item.getItemId()).getName();
+            if(item.getItemId() == 0) {
+                category = null;
+            } else {
+                category = categories.get(item.getItemId()).getName();
+            }
             filterProducts(true);
             return true;
         }

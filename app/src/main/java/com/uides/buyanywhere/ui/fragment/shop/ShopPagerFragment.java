@@ -44,8 +44,8 @@ public class ShopPagerFragment extends Fragment {
         Bundle bundle = getArguments();
         Shop shop = (Shop) bundle.getSerializable(Constant.SHOP);
         if (shop != null) {
-            coverUrl = shop.getCoverUrl();
-            avatarUrl = shop.getAvatarUrl();
+            coverUrl = shop.getCover();
+            avatarUrl = shop.getAvatar();
             bundle.putString(Constant.SHOP_ID, shop.getId());
         }
         initAdapter(bundle);
@@ -70,8 +70,8 @@ public class ShopPagerFragment extends Fragment {
     }
 
     public void onShopUpdated(Shop shop) {
-        this.avatarUrl = shop.getAvatarUrl();
-        this.coverUrl = shop.getCoverUrl();
+        this.avatarUrl = shop.getAvatar();
+        this.coverUrl = shop.getCover();
         showImage(avatarUrl, coverUrl);
         ((ChildShopFragment) getParentFragment()).onShopUpdated(shop);
     }

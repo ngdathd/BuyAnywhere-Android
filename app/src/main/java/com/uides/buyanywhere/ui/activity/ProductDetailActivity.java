@@ -11,12 +11,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,19 +27,28 @@ import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.hedgehog.ratingbar.RatingBar;
+import com.squareup.picasso.Picasso;
 import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.auth.UserAuth;
 import com.uides.buyanywhere.custom_view.PriceTextView;
+import com.uides.buyanywhere.custom_view.dialog.LoadingDialog;
+import com.uides.buyanywhere.custom_view.dialog.OrderDialog;
 import com.uides.buyanywhere.custom_view.dialog.RatingDialog;
 import com.uides.buyanywhere.custom_view.StrikeThroughPriceTextView;
+import com.uides.buyanywhere.model.Feedback;
 import com.uides.buyanywhere.model.Product;
 import com.uides.buyanywhere.model.Rating;
 import com.uides.buyanywhere.model.RatingResult;
+import com.uides.buyanywhere.model.UserOrder;
+import com.uides.buyanywhere.model.UserProfile;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.service.cart.AddCartService;
 import com.uides.buyanywhere.service.cart.DeleteCartService;
+import com.uides.buyanywhere.service.user.GetUserProfileService;
 import com.uides.buyanywhere.service.user.RateProductService;
+import com.uides.buyanywhere.ui.fragment.product.AllProductsFragment;
+import com.uides.buyanywhere.utils.DateUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -45,6 +56,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -56,6 +68,8 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ProductDetailActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "ProductDetailActivity";
+    private static final int LIST_FEEDBACK_REQUEST_CODE = 0;
+
     @BindView(R.id.image_slider)
     SliderLayout imageSlider;
     @BindView(R.id.txt_name)
@@ -90,21 +104,29 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     Button toShopButton;
     @BindView(R.id.fab_shopping_cart)
     FloatingActionButton addToCartFab;
+    @BindView(R.id.ln_feedback)
+    LinearLayout feedbackLayout;
+    @BindView(R.id.btn_view_more)
+    Button viewMoreButton;
+    private LayoutInflater inflater;
 
     private Product product;
     private MenuItem addToCartButton;
     private AddCartService addCartService;
     private DeleteCartService deleteCartService;
     private RateProductService rateProductService;
+    private GetUserProfileService getUserProfileService;
     private CompositeDisposable compositeDisposable;
     private RatingDialog ratingDialog;
     private boolean isFromShopView;
     private boolean isViewByShopOwner;
+    private OrderDialog orderDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
+        inflater = LayoutInflater.from(this);
         ButterKnife.bind(this);
         initService();
         Bundle bundle = getIntent().getExtras();
@@ -113,7 +135,24 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
             isFromShopView = bundle.getBoolean(Constant.IS_FROM_SHOP, false);
             isViewByShopOwner = bundle.getBoolean(Constant.IS_VIEW_BY_SHOP_OWNER, false);
         }
+        initViews();
         showViews(product);
+    }
+
+    private void initViews() {
+        orderDialog = new OrderDialog(this, product.getQuantity());
+        orderDialog.setOnSubmitSuccessListener((orderDialog, userOrder) -> {
+
+        });
+    }
+
+    private void onOrderSuccess() {
+        Toast.makeText(this, R.string.order_success, Toast.LENGTH_SHORT).show();
+    }
+
+    private void onOrderFailure(Throwable e) {
+        Log.i(TAG, "onOrderFailure: " + e);
+        Toast.makeText(this, R.string.order_failure, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -130,6 +169,7 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
         addCartService = network.createService(AddCartService.class);
         deleteCartService = network.createService(DeleteCartService.class);
         rateProductService = network.createService(RateProductService.class);
+        getUserProfileService = network.createService(GetUserProfileService.class);
     }
 
     private void showViews(Product product) {
@@ -160,7 +200,7 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
         textRatingCount.setText("" + product.getRatingCount());
         textDescription.setText(product.getDescription());
 
-        if(isViewByShopOwner) {
+        if (isViewByShopOwner) {
             ratingButton.setVisibility(View.GONE);
             purchaseButton.setVisibility(View.GONE);
         } else {
@@ -172,6 +212,47 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
             toShopButton.setVisibility(View.GONE);
         } else {
             toShopButton.setOnClickListener(this);
+        }
+
+        List<Feedback> previewFeedback = product.getPreviewFeedback();
+        if (previewFeedback != null && !previewFeedback.isEmpty()) {
+            if (product.getRatingCount() > AllProductsFragment.LATEST_FEEDBACK_COUNT) {
+                viewMoreButton.setVisibility(View.VISIBLE);
+            }
+            viewMoreButton.setOnClickListener(this);
+            for (Feedback fb : previewFeedback) {
+                addLatestFeedBack(fb, -1);
+            }
+            viewMoreButton.setText(getString(R.string.view_more) + " (" + product.getRatingCount() + ")");
+        }
+    }
+
+    @Override
+    public void finish() {
+        Intent intent = new Intent();
+        intent.putExtra(Constant.RATING, product.getRating());
+        setResult(RESULT_OK, intent);
+        super.finish();
+    }
+
+    private void addLatestFeedBack(Feedback feedback, int index) {
+        View view = inflater.inflate(R.layout.item_rating, feedbackLayout, false);
+        Picasso.with(this)
+                .load(feedback.getAvatarUrl())
+                .placeholder(R.drawable.avatar_placeholder)
+                .fit().into((CircleImageView) view.findViewById(R.id.img_avatar));
+        ((TextView) view.findViewById(R.id.txt_name)).setText(feedback.getOwnerName());
+        ((RatingBar) view.findViewById(R.id.rating_bar)).setStar(feedback.getRating());
+        ((TextView) view.findViewById(R.id.txt_feedback)).setText(feedback.getComment());
+        ((TextView) view.findViewById(R.id.txt_created_date)).setText(DateUtil.getDateDiffNow(feedback.getCreatedDate()));
+        if (feedbackLayout.getChildCount() == AllProductsFragment.LATEST_FEEDBACK_COUNT) {
+            if (index < AllProductsFragment.LATEST_FEEDBACK_COUNT - 1) {
+                feedbackLayout.removeViewAt(AllProductsFragment.LATEST_FEEDBACK_COUNT - 1);
+                feedbackLayout.addView(view, index);
+            }
+            viewMoreButton.setVisibility(View.VISIBLE);
+        } else {
+            feedbackLayout.addView(view, index);
         }
     }
 
@@ -188,7 +269,7 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     }
 
     private void initCartButton() {
-        if(isViewByShopOwner) {
+        if (isViewByShopOwner) {
             addToCartFab.setVisibility(View.GONE);
         } else {
             addToCartFab.setOnClickListener(this);
@@ -234,9 +315,9 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.product_detail_tool_bar, menu);
         addToCartButton = menu.findItem(R.id.action_add_to_cart);
-        if(isViewByShopOwner) {
+        if (isViewByShopOwner) {
             addToCartButton.setVisible(false);
-        } else if(product.isAddedToCart()) {
+        } else if (product.isAddedToCart()) {
             addToCartButton.setIcon(R.drawable.ic_added_to_cart);
         }
         return super.onCreateOptionsMenu(menu);
@@ -281,7 +362,6 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
             case R.id.btn_rating: {
                 ratingDialog = new RatingDialog(this)
                         .setOnPositiveButtonClickListener((rating, textFeedback) -> {
-                            //TODO send rating
                             Rating ratingModel = new Rating();
                             ratingModel.setRating(rating);
                             ratingModel.setComment(textFeedback);
@@ -301,7 +381,13 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
             break;
 
             case R.id.btn_purchase: {
-                //TODO purchasing product logic
+                compositeDisposable.add(getUserProfileService.getUserProfile(UserAuth.getAuthUser().getAccessToken())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.newThread())
+                        .subscribe(this::onFetchUserProfileSuccess, this::onFetchUserProfileFailure));
+
+                orderDialog.showProgressBar(true);
+                orderDialog.show();
             }
             break;
 
@@ -309,6 +395,49 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
                 Intent intent = new Intent(this, ShopActivity.class);
                 intent.putExtra(Constant.SHOP_ID, product.getShopID());
                 startActivity(intent);
+            }
+            break;
+
+            case R.id.btn_view_more: {
+                Intent intent = new Intent(this, ListFeedbackActivity.class);
+                intent.putExtra(Constant.PRODUCT_ID, product.getId());
+                startActivityForResult(intent, LIST_FEEDBACK_REQUEST_CODE);
+            }
+            break;
+
+            default: {
+                break;
+            }
+        }
+    }
+
+    private void onFetchUserProfileSuccess(UserProfile userProfile) {
+        orderDialog.showData(userProfile);
+        orderDialog.showProgressBar(false);
+    }
+
+    private void onFetchUserProfileFailure(Throwable e) {
+        Log.i(TAG, "onFetchUserProfileFailure: ");
+        orderDialog.dismiss();
+        Toast.makeText(this, R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case LIST_FEEDBACK_REQUEST_CODE: {
+                if (resultCode == RESULT_OK) {
+                    RatingResult ratingResult = (RatingResult) data.getSerializableExtra(Constant.RATING_RESULT);
+                    product.setRating(ratingResult.getAverageRating());
+                    product.setRatingCount(ratingResult.getRatingCount());
+
+                    textRatingScore.setText("" + product.getRating());
+                    textRatingCount.setText("" + product.getRatingCount());
+                    addLatestFeedBack(ratingResult.getUserRating(), 0);
+
+                    viewMoreButton.setText(getString(R.string.view_more) + " (" + product.getRatingCount() + ")");
+                }
             }
             break;
 
@@ -322,15 +451,25 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
         ratingDialog.dismiss();
         product.setRatingCount(ratingResult.getRatingCount());
         product.setRating(ratingResult.getAverageRating());
-        textRatingCount.setText(product.getRatingCount());
         ratingBar.setStar(product.getRating());
-        textRatingScore.setText(product.getRating());
+        textRatingCount.setText("" + product.getRatingCount());
+        textRatingScore.setText("" + product.getRating());
+        addLatestFeedBack(ratingResult.getUserRating(), 0);
+
+        viewMoreButton.setText(getString(R.string.view_more) + " (" + product.getRatingCount() + ")");
+
+        Intent intent = new Intent();
+        intent.putExtra(Constant.RATING, ratingResult.getAverageRating());
+        setResult(RESULT_OK, intent);
+
+        Log.i(TAG, "onRatingSuccess: " + ratingResult);
         Toast.makeText(ProductDetailActivity.this,
                 R.string.feedback_sent,
                 Toast.LENGTH_SHORT).show();
     }
 
     private void onRatingFailed(Throwable e) {
+        ratingDialog.dismiss();
         Log.i(TAG, "onRatingFailed: " + e);
         Toast.makeText(ProductDetailActivity.this,
                 R.string.unexpected_error_message,

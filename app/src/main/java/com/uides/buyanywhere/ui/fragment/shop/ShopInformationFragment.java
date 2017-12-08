@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -151,7 +150,7 @@ public class ShopInformationFragment extends Fragment implements View.OnClickLis
             websiteGroup.setVisibility(View.GONE);
         } else {
             websiteGroup.setVisibility(View.VISIBLE);
-//            textWebsite.setText(website);
+            textWebsite.setText(website);
             websiteRedirectButton.setOnClickListener(this);
         }
 

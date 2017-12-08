@@ -52,9 +52,9 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
 
     public static int getNavigationButtonID(int position) {
         switch (position) {
-//            case FIND_BY_LOCATION_FRAGMENT_INDEX: {
-//                return R.id.navigation_location;
-//            }
+            case FIND_BY_LOCATION_FRAGMENT_INDEX: {
+                return R.id.navigation_location;
+            }
 
             case SHOPPING_CART_FRAGMENT_INDEX: {
                 return R.id.navigation_shopping_cart;

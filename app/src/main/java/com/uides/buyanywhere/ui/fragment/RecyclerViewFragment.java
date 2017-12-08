@@ -11,8 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
+import com.uides.buyanywhere.model.Feedback;
 import com.uides.buyanywhere.recyclerview_adapter.RecyclerViewAdapter;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,6 +43,10 @@ public abstract class RecyclerViewFragment extends Fragment implements SwipeRefr
         super.onCreate(savedInstanceState);
         compositeDisposable = new CompositeDisposable();
         recyclerViewAdapter = initAdapter();
+    }
+
+    public ImageView getImageEmpty() {
+        return imageEmpty;
     }
 
     public void showEmptyImage(boolean isShow) {

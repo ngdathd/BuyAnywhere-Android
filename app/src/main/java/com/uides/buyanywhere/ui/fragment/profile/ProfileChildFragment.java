@@ -119,7 +119,7 @@ public class ProfileChildFragment extends Fragment implements View.OnClickListen
 
         Disposable disposable = Observable.combineLatest(observableUserProfile, observableFavoriteCategories, (userProfile, categories) -> {
             userProfile.setFavoriteCategories(categories);
-            return userProfile;//Hoài Đức
+            return userProfile;
         })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())

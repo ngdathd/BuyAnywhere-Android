@@ -196,7 +196,9 @@ public class ChildPostProductFragment extends Fragment {
         long date = new Date().getTime();
         String imageDir = "products/" + UserAuth.getAuthUser().getShopID() + "/" + date + "/";
 
-        int imageCount = imageAdapter.getItemCount();
+        int itemCount = imageAdapter.getItemCount();
+        int imageCount = itemCount == MAX_IMAGE_SELECTED? itemCount : itemCount - 1;
+
         List<Image> images = new ArrayList<>(imageAdapter.getItemCount() - 1);
         for (int i = 0; i < imageCount; i++) {
             images.add(imageAdapter.getItem(i, Image.class));

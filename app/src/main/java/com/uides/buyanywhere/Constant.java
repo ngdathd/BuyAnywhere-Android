@@ -5,7 +5,7 @@ package com.uides.buyanywhere;
  */
 
 public class Constant {
-    public static final String BASE_URL = "https://shoppingcoltech.azurewebsites.net/";
+    public static final String BASE_URL = "http://buyanywhere.azurewebsites.net";
     public static final String EMAIL = "email";
     public static final String PUBLIC_PROFILE = "public_profile";
     public static final String IMAGE_PICKER_DEFAULT_TITLE = "Pick up image";
@@ -21,9 +21,13 @@ public class Constant {
     public static final String IS_GUEST = "IS_GUEST";
     public static final String IS_FROM_SHOP = "IS_FROM_SHOP";
     public static final String IS_VIEW_BY_SHOP_OWNER = "VBO";
-    public static final String PAGE_PRODUCTS = "PAGE_PRODUCTS";
     public static final String PRODUCT_NAME = "PRODUCT_NAME";
-    public static final String CATEGORY_NAME = "CATEGORY_NAME";
+    public static final String PRODUCT_ID = "PRODUCT_ID";
+    public static final String LIST_FEEDBACK = "LIST_FEEDBACK";
+    public static final String RATING_RESULT = "RATING_RESULT";
+    public static final String RATING = "RATING";
+    public static final String FEEDBACK = "FEEDBACK";
+
     public static final int SLIDE_DURATION = 5000;
 
     public static final String PRICE_UNIT = "đ";

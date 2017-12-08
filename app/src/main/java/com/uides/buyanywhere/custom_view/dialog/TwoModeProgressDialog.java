@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ProgressBar;
@@ -22,6 +23,7 @@ import butterknife.ButterKnife;
  */
 
 public class TwoModeProgressDialog extends Dialog implements FirebaseUploadImageHelper.OnProgressListener, FirebaseUploadImageHelper.OnNextTaskListener {
+    private static final String TAG = "TwoModeProgressDialog";
     @BindView(R.id.fl_indeterminate)
     RelativeLayout layoutIndeterminate;
 
@@ -59,7 +61,7 @@ public class TwoModeProgressDialog extends Dialog implements FirebaseUploadImage
 
     @Override
     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-        int progress = (int) (taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+        int progress = (int) (taskSnapshot.getBytesTransferred() * 100 / taskSnapshot.getTotalByteCount());
         textPercent.setText("" + progress);
         progressBar.setProgress(progress);
     }

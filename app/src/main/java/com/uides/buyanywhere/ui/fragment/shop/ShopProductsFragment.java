@@ -198,6 +198,7 @@ public class ShopProductsFragment extends RecyclerViewFragment implements Endles
         Bundle bundle = new Bundle();
         bundle.putSerializable(Constant.PRODUCT, product);
         bundle.putBoolean(Constant.IS_FROM_SHOP, true);
+        bundle.putBoolean(Constant.IS_VIEW_BY_SHOP_OWNER, true);
         intent.putExtras(bundle);
         startActivity(intent);
     }

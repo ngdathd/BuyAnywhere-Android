@@ -55,6 +55,7 @@
     <string name="check_box_auto_sign_in_content">Tự động đăng nhập</string>
     <string name="edit">Chỉnh sửa</string>
     <string name="phone">Di động</string>
+    <string name="phone_required">Di động*</string>
     <string name="email">Email</string>
     <string name="favorite">Yêu thích</string>
     <string name="address">Địa chỉ</string>
@@ -86,7 +87,7 @@
     <string name="edit_shop">Chỉnh sửa thông tin shop</string>
     <string name="product_name">Tên sản phẩm*</string>
     <string name="product_origin_price">Giá gốc*</string>
-    <string name="off_price">Giảm giá</string>
+    <string name="off_price">Giảm giá còn</string>
     <string name="percent">Phần trăm</string>
     <string name="select_category">Chọn danh mục*</string>
     <string name="post_product">Đăng sản phẩm</string>
@@ -97,7 +98,7 @@
     <string name="delete_failed">Xóa thất bại</string>
     <string name="item_deleting">Sản phẩm đang được xóa</string>
     <string name="invalid_price">Gía gốc phải lớn hơn giá giảm</string>
-    <string name="processing">Đang xử lí...</string>
+    <string name="processing">Đang xử lí</string>
     <string name="quantity_positive">Số lượng tối thiểu là 1</string>
     <string name="price_is_equal_or_more_than_1000">Giá tối thiểu là 1000 VND</string>
     <string name="quantity_required">Số lượng*</string>
@@ -107,6 +108,16 @@
     <string name="action_filter">Bộ lọc</string>
     <string name="action_sort">Sắp xếp</string>
     <string name="search">Tìm kiếm</string>
+    <string name="feedback">Nhận xét</string>
+    <string name="view_more">Xem thêm</string>
+    <string name="not_have">Chưa có</string>
+    <string name="all">Tất cả</string>
+    <string name="ship">Đặt hàng</string>
+    <string name="order_failure">Đặt hàng thất bại, vui lòng thử lại</string>
+    <string name="order_success">Đặt hàng thành công</string>
+    <string name="order_dialog">Đặt hàng</string>
+    <string name="shipped">Đã giao hàng</string>
+    <string name="dial">Liên hệ</string>
     <item name="visible" type="id"/>
     <item name="masked" type="id"/>
 </resources>

@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,13 +37,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     Toolbar toolbar;
 
     private SearchView searchView;
+    private MenuItem searchItem;
     private MainPagerAdapter mainPagerAdapter;
     private ActionBar actionBar;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.tool_bar, menu);
-        MenuItem searchItem = menu.findItem(R.id.action_search);
+        searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(this);
         searchView.setQueryHint(getString(R.string.input_key));
@@ -116,55 +118,46 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        Log.i("ABC", "onPrepareOptionsMenu: ");
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.navigation_product: {
                 actionBar.setTitle(R.string.product);
-                if(searchView != null) {
-                    searchView.setVisibility(View.VISIBLE);
-                }
                 viewPager.setCurrentItem(MainPagerAdapter.PRODUCT_FRAGMENT_INDEX);
+                return true;
             }
-            return true;
 
-//            case R.id.navigation_location: {
-//                actionBar.setTitle(R.string.location_search);
-//                if(searchView != null) {
-//                    searchView.setVisibility(View.VISIBLE);
-//                }
-//                viewPager.setCurrentItem(MainPagerAdapter.FIND_BY_LOCATION_FRAGMENT_INDEX);
-//            }
-//            return true;
+            case R.id.navigation_location: {
+                actionBar.setTitle(R.string.location_search);
+                viewPager.setCurrentItem(MainPagerAdapter.FIND_BY_LOCATION_FRAGMENT_INDEX);
+                return true;
+            }
 
             case R.id.navigation_shopping_cart: {
                 actionBar.setTitle(R.string.shopping_cart);
-                if(searchView != null) {
-                    searchView.setVisibility(View.INVISIBLE);
-                }
                 viewPager.setCurrentItem(MainPagerAdapter.SHOPPING_CART_FRAGMENT_INDEX);
+                return true;
             }
-            return true;
 
             case R.id.navigation_shop: {
                 actionBar.setTitle(R.string.shop);
-                if(searchView != null) {
-                    searchView.setVisibility(View.INVISIBLE);
-                }
                 viewPager.setCurrentItem(MainPagerAdapter.SHOP_FRAGMENT_INDEX);
+                return true;
             }
-            return true;
 
             case R.id.navigation_profile: {
                 actionBar.setTitle(R.string.profile);
-                if(searchView != null) {
-                    searchView.setVisibility(View.INVISIBLE);
-                }
                 viewPager.setCurrentItem(MainPagerAdapter.PROFILE_FRAGMENT_INDEX);
+                return true;
             }
-            return true;
 
             default: {
-                return false;
+                return true;
             }
         }
     }

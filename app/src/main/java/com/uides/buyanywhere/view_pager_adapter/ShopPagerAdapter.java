@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.uides.buyanywhere.ui.fragment.shop.ShopInformationFragment;
+import com.uides.buyanywhere.ui.fragment.shop.ShopOrderFragment;
 import com.uides.buyanywhere.ui.fragment.shop.ShopProductsFragment;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.List;
 public class ShopPagerAdapter extends FragmentPagerAdapter {
     public static final int SHOP_INFORMATION_FRAGMENT_INDEX = 0;
     public static final int SHOP_PRODUCT_FRAGMENT_INDEX = 1;
+    public static final int SHOP_ORDER_FRAGMENT_INDEX = 2;
 
     private List<Fragment> fragments;
 
@@ -30,6 +32,9 @@ public class ShopPagerAdapter extends FragmentPagerAdapter {
         ShopProductsFragment shopProductsFragment = new ShopProductsFragment();
         shopProductsFragment.setArguments(shopBundle);
         fragments.add(shopProductsFragment);
+        ShopOrderFragment shopOrderFragment = new ShopOrderFragment();
+        shopOrderFragment.setArguments(shopBundle);
+        fragments.add(shopOrderFragment);
     }
 
     @Override
@@ -51,6 +56,10 @@ public class ShopPagerAdapter extends FragmentPagerAdapter {
 
             case SHOP_PRODUCT_FRAGMENT_INDEX: {
                 return "Sản phẩm shop";
+            }
+
+            case SHOP_ORDER_FRAGMENT_INDEX: {
+                return "Đặt hàng";
             }
 
             default: {

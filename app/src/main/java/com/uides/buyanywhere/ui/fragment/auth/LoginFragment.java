@@ -30,6 +30,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.auth.UserAuth;
@@ -38,6 +39,7 @@ import com.uides.buyanywhere.custom_view.dialog.MessageDialog;
 import com.uides.buyanywhere.model.User;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.service.auth.LoginService;
+import com.uides.buyanywhere.service.auth.RegisterGCMTokenService;
 import com.uides.buyanywhere.ui.activity.AuthActivity;
 import com.uides.buyanywhere.ui.activity.MainActivity;
 import com.uides.buyanywhere.utils.SharedPreferencesOpenHelper;
@@ -47,6 +49,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -260,8 +263,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Fir
         if (!loadingDialog.isShowing()) {
             loadingDialog.show();
         }
-        LoginService loginService = Network.getInstance().createService(LoginService.class);
-        Disposable disposable = loginService.facebookSignIn(token)
+        Network network = Network.getInstance();
+        LoginService loginService = network.createService(LoginService.class);
+        Disposable disposable = loginService.facebookSignIn(token, FirebaseInstanceId.getInstance().getToken())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onSignInSuccess, this::onSignInError);

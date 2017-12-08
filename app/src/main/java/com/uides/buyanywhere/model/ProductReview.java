@@ -48,7 +48,7 @@ public class ProductReview implements Serializable {
     private int quantity;
     @SerializedName(RATING)
     @Expose
-    private float rating;
+    private int rating;
     @SerializedName(CREATED_DATE)
     @Expose
     private Date createdDate;
@@ -117,11 +117,11 @@ public class ProductReview implements Serializable {
         this.quantity = quantity;
     }
 
-    public float getRating() {
+    public int getRating() {
         return rating;
     }
 
-    public void setRating(float rating) {
+    public void setRating(int rating) {
         this.rating = rating;
     }
 

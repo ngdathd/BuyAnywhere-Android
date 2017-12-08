@@ -43,10 +43,10 @@ public class Shop implements Serializable {
     private Date createdDate;
     @SerializedName("AvatarUrl")
     @Expose
-    private String avatarUrl;
+    private String avatar;
     @SerializedName("CoverUrl")
     @Expose
-    private String coverUrl;
+    private String cover;
 
     public String getId() {
         return id;
@@ -128,20 +128,20 @@ public class Shop implements Serializable {
         this.facebookSite = facebookSite;
     }
 
-    public String getAvatarUrl() {
-        return avatarUrl;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
-    public String getCoverUrl() {
-        return coverUrl;
+    public String getCover() {
+        return cover;
     }
 
-    public void setCoverUrl(String coverUrl) {
-        this.coverUrl = coverUrl;
+    public void setCover(String cover) {
+        this.cover = cover;
     }
 
     public String getAddress() {

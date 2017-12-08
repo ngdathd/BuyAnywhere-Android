@@ -254,7 +254,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
-                    android:src="@drawable/ic_plus"
+                    android:src="@drawable/ic_plus_blue"
                     android:layout_alignTop="@id/tag_group_favorite"
                     android:background="?selectableItemBackgroundBorderless"/>
 

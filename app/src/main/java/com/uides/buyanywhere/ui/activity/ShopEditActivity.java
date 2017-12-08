@@ -1,7 +1,6 @@
 package com.uides.buyanywhere.ui.activity;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -17,13 +16,12 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.esafirm.imagepicker.model.Image;
-import com.google.firebase.storage.StorageTask;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.auth.UserAuth;
 import com.uides.buyanywhere.custom_view.ClearableEditText;
+import com.uides.buyanywhere.custom_view.dialog.LoadingDialog;
 import com.uides.buyanywhere.model.Shop;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.service.user.UpdateOwnerShopService;
@@ -31,7 +29,6 @@ import com.uides.buyanywhere.utils.FirebaseUploadImageHelper;
 import com.uides.buyanywhere.utils.ImagePickerHelper;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -82,6 +79,8 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
     @BindView(R.id.btn_camera_cover)
     ImageButton buttonCameraCover;
 
+    private LoadingDialog loadingDialog;
+
     private CompositeDisposable compositeDisposable;
 
     private Shop shop;
@@ -106,7 +105,7 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
 
         avatarUploadHelper = new FirebaseUploadImageHelper();
         avatarUploadHelper.setOnSuccessListener((index, total, taskSnapshot) -> {
-            shop.setAvatarUrl(taskSnapshot.getDownloadUrl().toString());
+            shop.setAvatar(taskSnapshot.getDownloadUrl().toString());
             Toast.makeText(ShopEditActivity.this, R.string.upload_success, Toast.LENGTH_SHORT).show();
 
             buttonReUploadAvatar.setTag(null);
@@ -116,7 +115,7 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
 
         coverUploadHelper = new FirebaseUploadImageHelper();
         coverUploadHelper.setOnSuccessListener((index, total, taskSnapshot) -> {
-            shop.setCoverUrl(taskSnapshot.getDownloadUrl().toString());
+            shop.setCover(taskSnapshot.getDownloadUrl().toString());
             Toast.makeText(ShopEditActivity.this, R.string.upload_success, Toast.LENGTH_SHORT).show();
 
             buttonReUploadCover.setTag(null);
@@ -128,6 +127,7 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
     private void initViews() {
         buttonCameraCover.setOnClickListener(this);
         buttonCameraAvatar.setOnClickListener(this);
+        loadingDialog = new LoadingDialog(this);
     }
 
     private void initToolBar() {
@@ -150,11 +150,11 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void showViews(Shop shop) {
-        Picasso.with(this).load(shop.getCoverUrl())
+        Picasso.with(this).load(shop.getCover())
                 .placeholder(R.drawable.shop_cover_place_holder)
                 .fit()
                 .into(imageCover);
-        Picasso.with(this).load(shop.getAvatarUrl())
+        Picasso.with(this).load(shop.getAvatar())
                 .placeholder(R.drawable.shop_avatar_placeholder)
                 .into(imageAvatar);
 
@@ -219,8 +219,8 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
                     return false;
                 }
                 Shop shop = new Shop();
-                shop.setCoverUrl(this.shop.getCoverUrl());
-                shop.setAvatarUrl(this.shop.getAvatarUrl());
+                shop.setCover(this.shop.getCover());
+                shop.setAvatar(this.shop.getAvatar());
                 shop.setName(editShopName.getText());
                 shop.setAddress(editAddress.getText());
                 shop.setPhone(editPhone.getText());
@@ -241,6 +241,7 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void updateShop(Shop shop) {
+        loadingDialog.show();
         compositeDisposable = new CompositeDisposable();
         UpdateOwnerShopService updateOwnerShopService = Network.getInstance().createService(UpdateOwnerShopService.class);
         compositeDisposable.add(updateOwnerShopService.updateOwnerShop(UserAuth.getAuthUser().getAccessToken(), shop)
@@ -253,8 +254,9 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
     }
 
     void onUpdateSuccess(Shop newShop) {
-        shop.setCoverUrl(newShop.getCoverUrl());
-        shop.setAvatarUrl(newShop.getAvatarUrl());
+        loadingDialog.hide();
+        shop.setCover(newShop.getCover());
+        shop.setAvatar(newShop.getAvatar());
         shop.setName(newShop.getName());
         shop.setAddress(newShop.getAddress());
         shop.setPhone(newShop.getPhone());
@@ -270,6 +272,7 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
     }
 
     void onUpdateFailed(Throwable throwable) {
+        loadingDialog.hide();
         Log.i(TAG, "onUpdateFailed: " + throwable);
         Toast.makeText(this, R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
     }

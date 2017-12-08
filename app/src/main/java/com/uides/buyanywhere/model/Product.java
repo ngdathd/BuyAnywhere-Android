@@ -66,6 +66,7 @@ public class Product implements Serializable{
     @SerializedName(RATING_COUNT)
     @Expose
     private int ratingCount;
+    private List<Feedback> previewFeedback;
 
     private boolean isAddedToCart;
 
@@ -202,5 +203,13 @@ public class Product implements Serializable{
 
     public void setRatingCount(int ratingCount) {
         this.ratingCount = ratingCount;
+    }
+
+    public List<Feedback> getPreviewFeedback() {
+        return previewFeedback;
+    }
+
+    public void setPreviewFeedback(List<Feedback> previewFeedback) {
+        this.previewFeedback = previewFeedback;
     }
 }
