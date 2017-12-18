@@ -32,19 +32,20 @@ import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.auth.UserAuth;
 import com.uides.buyanywhere.custom_view.PriceTextView;
-import com.uides.buyanywhere.custom_view.dialog.LoadingDialog;
 import com.uides.buyanywhere.custom_view.dialog.OrderDialog;
 import com.uides.buyanywhere.custom_view.dialog.RatingDialog;
 import com.uides.buyanywhere.custom_view.StrikeThroughPriceTextView;
 import com.uides.buyanywhere.model.Feedback;
+import com.uides.buyanywhere.model.OrderBody;
 import com.uides.buyanywhere.model.Product;
 import com.uides.buyanywhere.model.Rating;
 import com.uides.buyanywhere.model.RatingResult;
-import com.uides.buyanywhere.model.UserOrder;
+import com.uides.buyanywhere.model.User;
 import com.uides.buyanywhere.model.UserProfile;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.service.cart.AddCartService;
 import com.uides.buyanywhere.service.cart.DeleteCartService;
+import com.uides.buyanywhere.service.user.CreateOrderService;
 import com.uides.buyanywhere.service.user.GetUserProfileService;
 import com.uides.buyanywhere.service.user.RateProductService;
 import com.uides.buyanywhere.ui.fragment.product.AllProductsFragment;
@@ -116,6 +117,7 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     private DeleteCartService deleteCartService;
     private RateProductService rateProductService;
     private GetUserProfileService getUserProfileService;
+    private CreateOrderService createOrderService;
     private CompositeDisposable compositeDisposable;
     private RatingDialog ratingDialog;
     private boolean isFromShopView;
@@ -142,17 +144,32 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     private void initViews() {
         orderDialog = new OrderDialog(this, product.getQuantity());
         orderDialog.setOnSubmitSuccessListener((orderDialog, userOrder) -> {
-
+            orderDialog.showProgressBar(true);
+            User user = UserAuth.getAuthUser();
+            OrderBody orderBody = new OrderBody();
+            orderBody.setProductID(product.getId());
+            orderBody.setShopID(product.getShopID());
+            orderBody.setName(userOrder.getUser());
+            orderBody.setAddress(userOrder.getAddress());
+            orderBody.setPhone(userOrder.getPhone());
+            orderBody.setQuantity(userOrder.getQuantity());
+            compositeDisposable.add(createOrderService.createOrder(user.getAccessToken(), user.getId(), orderBody)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::onCreateOrderSuccess, this::onCreateOrderFailed));
         });
     }
 
-    private void onOrderSuccess() {
+    private void onCreateOrderSuccess(Object object) {
+        orderDialog.showProgressBar(false);
+        orderDialog.dismiss();
         Toast.makeText(this, R.string.order_success, Toast.LENGTH_SHORT).show();
     }
 
-    private void onOrderFailure(Throwable e) {
-        Log.i(TAG, "onOrderFailure: " + e);
-        Toast.makeText(this, R.string.order_failure, Toast.LENGTH_SHORT).show();
+    private void onCreateOrderFailed(Throwable e) {
+        orderDialog.showProgressBar(false);
+        Log.i(TAG, "onCreateOrderFailed: ");
+        Toast.makeText(this, R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -170,6 +187,7 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
         deleteCartService = network.createService(DeleteCartService.class);
         rateProductService = network.createService(RateProductService.class);
         getUserProfileService = network.createService(GetUserProfileService.class);
+        createOrderService = network.createService(CreateOrderService.class);
     }
 
     private void showViews(Product product) {

@@ -1,5 +1,6 @@
 package com.uides.buyanywhere.ui.fragment.shop;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -17,17 +18,16 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
-import com.uides.buyanywhere.model.Order;
+import com.uides.buyanywhere.model.ShopOrder;
 import com.uides.buyanywhere.model.PageResult;
-import com.uides.buyanywhere.model.Shop;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.recyclerview_adapter.EndlessLoadingRecyclerViewAdapter;
 import com.uides.buyanywhere.recyclerview_adapter.RecyclerViewAdapter;
 import com.uides.buyanywhere.service.shop.GetShopOrderService;
+import com.uides.buyanywhere.service.shop.ShippedService;
 import com.uides.buyanywhere.ui.fragment.RecyclerViewFragment;
 import com.uides.buyanywhere.utils.DateUtil;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -46,6 +46,7 @@ public class ShopOrderFragment extends RecyclerViewFragment implements RecyclerV
     public static final int LIMIT_ORDER = 10;
 
     private GetShopOrderService getShopOrderService;
+    private ShippedService shippedService;
     private String shopID;
 
     @Override
@@ -59,6 +60,7 @@ public class ShopOrderFragment extends RecyclerViewFragment implements RecyclerV
     private void initServices() {
         Network network = Network.getInstance();
         getShopOrderService = network.createService(GetShopOrderService.class);
+        shippedService = network.createService(ShippedService.class);
     }
 
     @Override
@@ -71,68 +73,18 @@ public class ShopOrderFragment extends RecyclerViewFragment implements RecyclerV
 
     @Override
     public void onRefresh() {
-        List<Order> orders = new ArrayList<>();
-
-        Order order = new Order();
-        order.setName("Trần Thanh Tùng");
-        order.setAvatarUrl("https://vignette.wikia.nocookie.net/sengokujidai/images/e/ef/Oda_Mon.png/revision/latest?cb=20111127212220");
-        order.setAddress("Hoài Đức - Hà Nội");
-        order.setPhone("0961569816");
-        order.setProduct("Đế Lót LEGO Classic 10700 - Xanh Lá");
-        order.setQuantity(5);
-        order.setTime(new Date(1512745121));
-        orders.add(order);
-
-        Order order1 = new Order();
-        order1.setName("Trần Thanh Tùng");
-        order1.setAvatarUrl("https://vignette.wikia.nocookie.net/sengokujidai/images/e/ef/Oda_Mon.png/revision/latest?cb=20111127212220");
-        order1.setAddress("Hoài Đức - Hà Nội");
-        order1.setPhone("0961569816");
-        order1.setProduct("Boxset Harry Potter - Tiếng Việt (Trọn Bộ 7 Tập)");
-        order1.setQuantity(2);
-        order1.setTime(new Date(1512710121));
-        orders.add(order1);
-
-        Order order2 = new Order();
-        order2.setName("Trần Thanh Tùng");
-        order2.setAvatarUrl("https://vignette.wikia.nocookie.net/sengokujidai/images/e/ef/Oda_Mon.png/revision/latest?cb=20111127212220");
-        order2.setAddress("Hoài Đức - Hà Nội");
-        order2.setPhone("0961569816");
-        order2.setProduct("Tâm Sáng Dung Mạo Sáng");
-        order2.setQuantity(10);
-        order2.setTime(new Date(1512545021));
-        orders.add(order2);
-
-        Order order3 = new Order();
-        order3.setName("Trần Thanh Tùng");
-        order3.setAvatarUrl("https://vignette.wikia.nocookie.net/sengokujidai/images/e/ef/Oda_Mon.png/revision/latest?cb=20111127212220");
-        order3.setAddress("Hoài Đức - Hà Nội");
-        order3.setPhone("0961569816");
-        order3.setProduct("Tã Dán Goo.n Slim Gói Đại M38 (38 Miếng)");
-        order3.setQuantity(1);
-        order3.setTime(new Date(1512740121));
-        orders.add(order3);
-
-        PageResult<Order> pageResult = new PageResult<>();
-        pageResult.setResults(orders);
-        pageResult.setPageIndex(0);
-        pageResult.setPageSize(10);
-        pageResult.setTotalPages(1);
-
-        onRefreshOrderSuccess(pageResult);
-
-//        addDisposable(getShopOrderService.getShopOrders(shopID,
-//                0,
-//                null,
-//                Order.TIME,
-//                Constant.DESC)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribeOn(Schedulers.newThread())
-//                .subscribe(this::onRefreshOrderSuccess, this::onRefreshOrderFailure));
-//        ((ShopOrderAdapter) getAdapter()).disableLoadingMore(true);
+        addDisposable(getShopOrderService.getShopOrders(shopID,
+                0,
+                null,
+                ShopOrder.TIME,
+                Constant.DESC)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(this::onRefreshOrderSuccess, this::onRefreshOrderFailure));
+        ((ShopOrderAdapter) getAdapter()).disableLoadingMore(true);
     }
 
-    private void onRefreshOrderSuccess(PageResult<Order> orderPageResult) {
+    private void onRefreshOrderSuccess(PageResult<ShopOrder> orderPageResult) {
         ShopOrderAdapter shopOrderAdapter = (ShopOrderAdapter) getAdapter();
         shopOrderAdapter.disableLoadingMore(false);
         shopOrderAdapter.clear();
@@ -163,7 +115,7 @@ public class ShopOrderFragment extends RecyclerViewFragment implements RecyclerV
                 .getShopOrders(shopID,
                         shopOrderAdapter.getItemCount() / LIMIT_ORDER + 1,
                         LIMIT_ORDER,
-                        Order.TIME,
+                        ShopOrder.TIME,
                         Constant.DESC)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
@@ -172,7 +124,7 @@ public class ShopOrderFragment extends RecyclerViewFragment implements RecyclerV
         getSwipeRefreshLayout().setEnabled(false);
     }
 
-    private void onLoadMoreSuccess(PageResult<Order> pageResult) {
+    private void onLoadMoreSuccess(PageResult<ShopOrder> pageResult) {
         getSwipeRefreshLayout().setEnabled(true);
         ShopOrderAdapter shopOrderAdapter = (ShopOrderAdapter) getAdapter();
         shopOrderAdapter.hideLoadingItem();
@@ -202,24 +154,36 @@ public class ShopOrderFragment extends RecyclerViewFragment implements RecyclerV
 
         @Override
         protected RecyclerView.ViewHolder initNormalViewHolder(ViewGroup parent) {
-            View view = getInflater().inflate(R.layout.item_order, parent, false);
+            View view = getInflater().inflate(R.layout.item_shop_order, parent, false);
             return new ShopOrderViewHolder(view);
         }
 
         @Override
         protected void bindNormalViewHolder(NormalViewHolder holder, int position) {
             ShopOrderViewHolder shopOrderViewHolder = (ShopOrderViewHolder) holder;
-            Order order = getItem(position, Order.class);
-            Picasso.with(getActivity())
-                    .load(order.getAvatarUrl())
+            ShopOrder shopOrder = getItem(position, ShopOrder.class);
+            Activity activity = getActivity();
+
+            Picasso.with(activity)
+                    .load(shopOrder.getAvatarUrl())
                     .into(shopOrderViewHolder.imageAvatar);
-            shopOrderViewHolder.textName.setText(order.getName());
-            shopOrderViewHolder.textAddress.setText(order.getAddress());
-            shopOrderViewHolder.textPhone.setText(order.getPhone());
-            shopOrderViewHolder.textProduct.setText(order.getProduct());
-            shopOrderViewHolder.textQuantity.setText(""+order.getQuantity());
-            shopOrderViewHolder.textTime.setText(DateUtil.getDateDiffNow(order.getTime()));
-            shopOrderViewHolder.buttonShipped.setVisibility(order.isShipped() ? View.INVISIBLE : View.VISIBLE);
+            shopOrderViewHolder.textName.setText(shopOrder.getName());
+            shopOrderViewHolder.textAddress.setText(shopOrder.getAddress());
+            shopOrderViewHolder.textPhone.setText(shopOrder.getPhone());
+            shopOrderViewHolder.textProduct.setText(shopOrder.getProductName());
+            shopOrderViewHolder.textQuantity.setText("" + shopOrder.getQuantity());
+            shopOrderViewHolder.textTime.setText(DateUtil.getDateDiffNow(shopOrder.getOrderDate()));
+            Date shippedDate = shopOrder.getShippedDate();
+            Button buttonShipped = shopOrderViewHolder.buttonShipped;
+            if (shippedDate == null) {
+                buttonShipped.setEnabled(true);
+                buttonShipped.setTextColor(activity.getResources().getColor(R.color.colorPrimary));
+                buttonShipped.setText(R.string.ship_complete);
+            } else {
+                buttonShipped.setEnabled(false);
+                buttonShipped.setTextColor(activity.getResources().getColor(R.color.dark_gray));
+                buttonShipped.setText(R.string.shipped);
+            }
         }
 
         @Override
@@ -286,15 +250,26 @@ public class ShopOrderFragment extends RecyclerViewFragment implements RecyclerV
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btn_shipped: {
-
+                    int position = getAdapterPosition();
+                    ShopOrder shopOrder = getAdapter().getItem(position, ShopOrder.class);
+                    addDisposable(shippedService.ship(shopOrder.getId())
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(success -> {
+                                shopOrder.setShippedDate(success.getShippedDate());
+                                getAdapter().notifyItemChanged(position);
+                            }, failure -> {
+                                Log.i(TAG, "onShipFailure: " + failure);
+                                Toast.makeText(getActivity(), R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
+                            }));
                 }
                 break;
 
                 case R.id.btn_dial: {
                     int position = getAdapterPosition();
-                    Order order = getAdapter().getItem(position, Order.class);
-                    Intent intent = new Intent(Intent.ACTION_CALL);
-                    intent.setData(Uri.parse("tel:" + order.getPhone()));
+                    ShopOrder shopOrder = getAdapter().getItem(position, ShopOrder.class);
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                    intent.setData(Uri.parse("tel:" + shopOrder.getPhone()));
                     startActivity(intent);
                 }
                 break;

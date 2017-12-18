@@ -3,12 +3,14 @@ package com.uides.buyanywhere.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.uides.buyanywhere.Constant;
@@ -16,6 +18,7 @@ import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.auth.UserAuth;
 import com.uides.buyanywhere.custom_view.ClearableEditText;
 import com.uides.buyanywhere.custom_view.dialog.LoadingDialog;
+import com.uides.buyanywhere.model.google_map.Location;
 import com.uides.buyanywhere.model.Shop;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.service.user.ShopRegisterService;
@@ -32,17 +35,22 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ShopRegisterActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "ShopRegisterActivity";
+    private static final int MAP_REQUEST_CODE = 0;
+
     @BindView(R.id.txt_input_shop_name)
     ClearableEditText textShopName;
     @BindView(R.id.txt_input_phone)
     ClearableEditText textPhone;
     @BindView(R.id.txt_input_address)
-    ClearableEditText textAddress;
+    TextInputLayout textInputAddress;
+    @BindView(R.id.txt_address)
+    EditText textAddress;
     @BindView(R.id.tool_bar)
     Toolbar toolbar;
 
     private CompositeDisposable compositeDisposable;
     private LoadingDialog loadingDialog;
+    private Location location;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,6 +68,8 @@ public class ShopRegisterActivity extends AppCompatActivity implements View.OnCl
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(R.string.shop_register);
         }
+
+        textAddress.setOnClickListener(this);
     }
 
     @Override
@@ -93,22 +103,54 @@ public class ShopRegisterActivity extends AppCompatActivity implements View.OnCl
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_register_shop: {
-                if (!textShopName.validate() || !textAddress.validate() || !textPhone.validate()) {
+                if (!textShopName.validate() || !textPhone.validate()) {
                     return;
                 }
+
+                String address = textAddress.getText().toString();
+                if(address.isEmpty()) {
+                    textInputAddress.setError(getString(R.string.pick_address_required));
+                    return;
+                }
+
                 Shop shop = new Shop();
                 shop.setName(textShopName.getText());
                 shop.setPhone(textPhone.getText());
-                shop.setAddress(textAddress.getText());
+                shop.setAddress(address);
                 shop.setOwnerId(UserAuth.getAuthUser().getId());
+                shop.setLat(location.getLat());
+                shop.setLon(location.getLng());
 
                 registerShop(shop);
+            }
+            break;
+
+            case R.id.txt_address:{
+                Intent intent = new Intent(this, MapsActivity.class);
+                startActivityForResult(intent, MAP_REQUEST_CODE);
             }
             break;
 
             default: {
                 break;
             }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case MAP_REQUEST_CODE:{
+                if(resultCode == RESULT_OK) {
+                    String address = data.getStringExtra(Constant.ADDRESS);
+                    textAddress.setText(address);
+                    textInputAddress.setError(null);
+
+                    location = (Location) data.getSerializableExtra(Constant.LOCATION);
+                }
+            }
+            break;
         }
     }
 

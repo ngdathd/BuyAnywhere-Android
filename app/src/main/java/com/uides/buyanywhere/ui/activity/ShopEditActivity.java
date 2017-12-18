@@ -3,6 +3,7 @@ package com.uides.buyanywhere.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -22,6 +24,7 @@ import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.auth.UserAuth;
 import com.uides.buyanywhere.custom_view.ClearableEditText;
 import com.uides.buyanywhere.custom_view.dialog.LoadingDialog;
+import com.uides.buyanywhere.model.google_map.Location;
 import com.uides.buyanywhere.model.Shop;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.service.user.UpdateOwnerShopService;
@@ -45,11 +48,14 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
     private static final String TAG = "ShopEditActivity";
     private static final int COVER_IMAGE_PICKER_REQUEST_CODE = 0;
     private static final int AVATAR_IMAGE_PICKER_REQUEST_CODE = 1;
+    private static final int LOCATION_REQUEST_CODE = 2;
 
     @BindView(R.id.txt_input_name)
     ClearableEditText editShopName;
     @BindView(R.id.txt_input_address)
-    ClearableEditText editAddress;
+    TextInputLayout textInputAddress;
+    @BindView(R.id.edt_address)
+    EditText editAddress;
     @BindView(R.id.txt_input_phone)
     ClearableEditText editPhone;
     @BindView(R.id.txt_input_email)
@@ -84,6 +90,8 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
     private CompositeDisposable compositeDisposable;
 
     private Shop shop;
+    private Shop tempShop;
+
     private FirebaseUploadImageHelper avatarUploadHelper;
     private FirebaseUploadImageHelper coverUploadHelper;
 
@@ -94,10 +102,30 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
         ButterKnife.bind(this);
         Intent intent = getIntent();
         shop = (Shop) intent.getSerializableExtra(Constant.SHOP);
+        initTempShop(shop);
         initServices();
         initViews();
         initToolBar();
         showViews(shop);
+    }
+
+    private void initTempShop(Shop shop) {
+        tempShop = new Shop();
+        tempShop.setId(shop.getId());
+        tempShop.setOwnerId(shop.getOwnerId());
+        tempShop.setName(shop.getName());
+        tempShop.setAddress(shop.getAddress());
+        tempShop.setPhone(shop.getPhone());
+        tempShop.setEmail(shop.getEmail());
+        tempShop.setWebsite(shop.getWebsite());
+        tempShop.setFacebookSite(shop.getFacebookSite());
+        tempShop.setDescription(shop.getDescription());
+        tempShop.setRating(shop.getRating());
+        tempShop.setCreatedDate(shop.getCreatedDate());
+        tempShop.setAvatar(shop.getAvatar());
+        tempShop.setCover(shop.getCover());
+        tempShop.setLat(shop.getLat());
+        tempShop.setLon(shop.getLon());
     }
 
     private void initServices() {
@@ -105,7 +133,7 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
 
         avatarUploadHelper = new FirebaseUploadImageHelper();
         avatarUploadHelper.setOnSuccessListener((index, total, taskSnapshot) -> {
-            shop.setAvatar(taskSnapshot.getDownloadUrl().toString());
+            tempShop.setAvatar(taskSnapshot.getDownloadUrl().toString());
             Toast.makeText(ShopEditActivity.this, R.string.upload_success, Toast.LENGTH_SHORT).show();
 
             buttonReUploadAvatar.setTag(null);
@@ -115,7 +143,7 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
 
         coverUploadHelper = new FirebaseUploadImageHelper();
         coverUploadHelper.setOnSuccessListener((index, total, taskSnapshot) -> {
-            shop.setCover(taskSnapshot.getDownloadUrl().toString());
+            tempShop.setCover(taskSnapshot.getDownloadUrl().toString());
             Toast.makeText(ShopEditActivity.this, R.string.upload_success, Toast.LENGTH_SHORT).show();
 
             buttonReUploadCover.setTag(null);
@@ -128,6 +156,7 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
         buttonCameraCover.setOnClickListener(this);
         buttonCameraAvatar.setOnClickListener(this);
         loadingDialog = new LoadingDialog(this);
+        editAddress.setOnClickListener(this);
     }
 
     private void initToolBar() {
@@ -205,12 +234,11 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
             case R.id.action_submit: {
 
                 if (avatarUploadHelper.isPerformingUploadTask() || coverUploadHelper.isPerformingUploadTask()) {
-                    Toast.makeText(this, R.string.upload_task_not_done,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.upload_task_not_done, Toast.LENGTH_SHORT).show();
                     return false;
                 }
 
                 if (!editShopName.validate() ||
-                        !editAddress.validate() ||
                         !editPhone.validate() ||
                         !editEmail.validate() ||
                         !editWebsite.validate() ||
@@ -218,18 +246,22 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
                         !editDescription.validate()) {
                     return false;
                 }
-                Shop shop = new Shop();
-                shop.setCover(this.shop.getCover());
-                shop.setAvatar(this.shop.getAvatar());
-                shop.setName(editShopName.getText());
-                shop.setAddress(editAddress.getText());
-                shop.setPhone(editPhone.getText());
-                shop.setEmail(editEmail.getText());
-                shop.setWebsite(editWebsite.getText());
-                shop.setFacebookSite(editFacebook.getText());
-                shop.setDescription(editDescription.getText());
 
-                updateShop(shop);
+                String address = editAddress.getText().toString();
+                if (address.isEmpty()) {
+                    textInputAddress.setError(getString(R.string.pick_address_required));
+                    return false;
+                }
+
+//                tempShop.setName(editShopName.getText());//not able to update name yet :v
+                tempShop.setAddress(address);
+                tempShop.setPhone(editPhone.getText());
+                tempShop.setEmail(editEmail.getText());
+                tempShop.setWebsite(editWebsite.getText());
+                tempShop.setFacebookSite(editFacebook.getText());
+                tempShop.setDescription(editDescription.getText());
+
+                updateShop(tempShop);
             }
             break;
 
@@ -302,6 +334,14 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
             }
             break;
 
+            case R.id.edt_address: {
+                Intent intent = new Intent(this, MapsActivity.class);
+                intent.putExtra(Constant.ADDRESS, tempShop.getAddress());
+                intent.putExtra(Constant.LOCATION, new Location(tempShop.getLat(), tempShop.getLon()));
+                startActivityForResult(intent, LOCATION_REQUEST_CODE);
+            }
+            break;
+
             default: {
                 break;
             }
@@ -330,6 +370,19 @@ public class ShopEditActivity extends AppCompatActivity implements View.OnClickL
                     File imageFile = new File(image.getPath());
                     Picasso.with(this).load(imageFile).into(imageCover);
                     uploadCoverImage(imageFile);
+                }
+            }
+            break;
+
+            case LOCATION_REQUEST_CODE: {
+                if (resultCode == RESULT_OK) {
+                    String address = data.getStringExtra(Constant.ADDRESS);
+                    tempShop.setAddress(address);
+                    editAddress.setText(address);
+
+                    Location location = (Location) data.getSerializableExtra(Constant.LOCATION);
+                    tempShop.setLat(location.getLat());
+                    tempShop.setLon(location.getLng());
                 }
             }
             break;

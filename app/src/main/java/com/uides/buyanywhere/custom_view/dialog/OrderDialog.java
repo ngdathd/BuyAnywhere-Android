@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.custom_view.ClearableEditText;
-import com.uides.buyanywhere.model.UserOrder;
+import com.uides.buyanywhere.model.Order;
 import com.uides.buyanywhere.model.UserProfile;
 
 import butterknife.BindView;
@@ -66,6 +66,18 @@ public class OrderDialog implements View.OnClickListener, DialogInterface.OnShow
                 .create();
     }
 
+    public int getMaxQuantity() {
+        return maxQuantity;
+    }
+
+    public void setCurrentQuantity(int currentQuantity) {
+        this.currentQuantity = currentQuantity;
+    }
+
+    public void setMaxQuantity(int maxQuantity) {
+        this.maxQuantity = maxQuantity;
+    }
+
     public void show() {
         alertDialog.setOnShowListener(this);
         alertDialog.show();
@@ -80,16 +92,19 @@ public class OrderDialog implements View.OnClickListener, DialogInterface.OnShow
         Button buttonPositive = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
         buttonPositive.setOnClickListener(v -> {
             if (onSubmitSuccessListener != null) {
-                if (textName.validate() || textAddress.validate() || textPhone.validate()) {
+                if (!textName.validate() || !textAddress.validate() || !textPhone.validate()) {
                     return;
                 }
-                UserOrder userOrder = new UserOrder(textName.getText(), textAddress.getText(), textPhone.getText(), currentQuantity);
-                onSubmitSuccessListener.onSubmitSuccess(OrderDialog.this, userOrder);
+                Order order = new Order(textName.getText(), textAddress.getText(), textPhone.getText(), currentQuantity);
+                onSubmitSuccessListener.onSubmitSuccess(OrderDialog.this, order);
             }
         });
     }
 
     public void showProgressBar(boolean isShow) {
+        alertDialog.setCancelable(!isShow);
+//        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(!isShow);
+//        alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setEnabled(!isShow);
         progressBar.setVisibility(isShow ? View.VISIBLE : View.INVISIBLE);
         contentLayout.setVisibility(isShow ? View.INVISIBLE : View.VISIBLE);
     }
@@ -130,6 +145,6 @@ public class OrderDialog implements View.OnClickListener, DialogInterface.OnShow
     }
 
     public interface OnSubmitSuccessListener {
-        void onSubmitSuccess(OrderDialog orderDialog, UserOrder userOrder);
+        void onSubmitSuccess(OrderDialog orderDialog, Order order);
     }
 }

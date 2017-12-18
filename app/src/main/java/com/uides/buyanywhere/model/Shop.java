@@ -47,6 +47,12 @@ public class Shop implements Serializable {
     @SerializedName("CoverUrl")
     @Expose
     private String cover;
+    @SerializedName("Lat")
+    @Expose
+    private Double lat;
+    @SerializedName("Lon")
+    @Expose
+    private Double lon;
 
     public String getId() {
         return id;
@@ -142,6 +148,22 @@ public class Shop implements Serializable {
 
     public void setCover(String cover) {
         this.cover = cover;
+    }
+
+    public Double getLat() {
+        return lat;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public Double getLon() {
+        return lon;
+    }
+
+    public void setLon(Double lon) {
+        this.lon = lon;
     }
 
     public String getAddress() {

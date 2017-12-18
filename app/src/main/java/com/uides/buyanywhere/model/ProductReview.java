@@ -53,6 +53,8 @@ public class ProductReview implements Serializable {
     @Expose
     private Date createdDate;
 
+    private String shopID;
+
     public String getId() {
         return id;
     }
@@ -131,5 +133,13 @@ public class ProductReview implements Serializable {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public String getShopID() {
+        return shopID;
+    }
+
+    public void setShopID(String shopID) {
+        this.shopID = shopID;
     }
 }

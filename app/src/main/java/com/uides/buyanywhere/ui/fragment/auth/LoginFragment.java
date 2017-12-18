@@ -39,7 +39,6 @@ import com.uides.buyanywhere.custom_view.dialog.MessageDialog;
 import com.uides.buyanywhere.model.User;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.service.auth.LoginService;
-import com.uides.buyanywhere.service.auth.RegisterGCMTokenService;
 import com.uides.buyanywhere.ui.activity.AuthActivity;
 import com.uides.buyanywhere.ui.activity.MainActivity;
 import com.uides.buyanywhere.utils.SharedPreferencesOpenHelper;
@@ -49,7 +48,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -127,13 +125,29 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Fir
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        if(accessToken != null && accessToken.getToken() != null) {
+            String token = accessToken.getToken();
+            Log.i(TAG, "onStart: "+token);
+            Context context = getActivity();
+            if(SharedPreferencesOpenHelper.isAccessTokenValid(context, token)) {
+                Activity activity = getActivity();
+                UserAuth.setAuthUser(SharedPreferencesOpenHelper.getUser(context));
+                Intent intent = new Intent(activity, MainActivity.class);
+                startActivity(intent);
+                activity.finish();
+            } else {
+                signIn(accessToken.getToken());
+            }
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-
-//        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-//        if(accessToken != null && accessToken.getToken() != null) {
-//            signIn(accessToken.getToken());
-//        }
 
 //        String acc;
 //        String pass;
@@ -264,17 +278,21 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Fir
             loadingDialog.show();
         }
         Network network = Network.getInstance();
+        String cloudToken = FirebaseInstanceId.getInstance().getToken();
         LoginService loginService = network.createService(LoginService.class);
-        Disposable disposable = loginService.facebookSignIn(token, FirebaseInstanceId.getInstance().getToken())
+        Disposable disposable = loginService.facebookSignIn(token, cloudToken)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onSignInSuccess, this::onSignInError);
+                .subscribe(success -> onSignInSuccess(success, cloudToken), this::onSignInError);
         compositeDisposable.add(disposable);
     }
 
-    private void onSignInSuccess(User user) {
+    private void onSignInSuccess(User user, String cloudToken) {
         loadingDialog.dismiss();
         Log.i(TAG, "onSignInSuccess: " + user);
+
+        SharedPreferencesOpenHelper.saveUser(getActivity(), user);
+
         Activity activity = getActivity();
         UserAuth.setAuthUser(user);
         Intent intent = new Intent(activity, MainActivity.class);

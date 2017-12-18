@@ -97,7 +97,7 @@
                 android:layout_alignBottom="@id/img_time"
                 android:layout_marginStart="@dimen/text_margin_start"
                 android:layout_toEndOf="@id/img_time"
-                android:text="@string/createdDate"
+                android:text="@string/orderDate"
                 android:textSize="@dimen/large_text_font" />
 
             <TextView

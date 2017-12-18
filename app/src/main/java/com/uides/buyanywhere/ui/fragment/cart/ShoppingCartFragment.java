@@ -24,14 +24,21 @@ import com.uides.buyanywhere.auth.UserAuth;
 import com.uides.buyanywhere.custom_view.PriceTextView;
 import com.uides.buyanywhere.custom_view.StrikeThroughPriceTextView;
 import com.uides.buyanywhere.custom_view.dialog.LoadingDialog;
+import com.uides.buyanywhere.custom_view.dialog.OrderDialog;
+import com.uides.buyanywhere.model.OrderBody;
 import com.uides.buyanywhere.model.PageResult;
 import com.uides.buyanywhere.model.Product;
 import com.uides.buyanywhere.model.ProductReview;
+import com.uides.buyanywhere.model.User;
+import com.uides.buyanywhere.model.UserProfile;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.recyclerview_adapter.RecyclerViewAdapter;
 import com.uides.buyanywhere.service.cart.DeleteCartService;
 import com.uides.buyanywhere.service.cart.GetCartService;
 import com.uides.buyanywhere.service.product.GetProductService;
+import com.uides.buyanywhere.service.shop.GetShopIDService;
+import com.uides.buyanywhere.service.user.CreateOrderService;
+import com.uides.buyanywhere.service.user.GetUserProfileService;
 import com.uides.buyanywhere.ui.activity.ProductDetailActivity;
 import com.uides.buyanywhere.ui.fragment.RecyclerViewFragment;
 
@@ -39,8 +46,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -55,8 +64,15 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
     private DeleteCartService deleteCartService;
     private LoadingDialog loadingDialog;
     private GetProductService getProductService;
+    private GetUserProfileService getUserProfileService;
+    private CreateOrderService createOrderService;
+    private GetShopIDService getShopIDService;
     private boolean hasItemDeleting = false;
     private int detailProductPosition;
+    private OrderDialog orderDialog;
+
+    private String selectedProductID;
+    private String selectedShopID;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,12 +80,44 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
         setHasOptionsMenu(true);
         loadingDialog = new LoadingDialog(getActivity());
         initService();
+        initViews();
+    }
+
+    private void initViews() {
+        orderDialog = new OrderDialog(getActivity(), 1);
+        orderDialog.setOnSubmitSuccessListener((orderDialog, userOrder) -> {
+            orderDialog.showProgressBar(true);
+            User user = UserAuth.getAuthUser();
+            OrderBody orderBody = new OrderBody();
+            orderBody.setProductID(selectedProductID);
+            orderBody.setShopID(selectedShopID);
+            orderBody.setName(userOrder.getUser());
+            orderBody.setAddress(userOrder.getAddress());
+            orderBody.setPhone(userOrder.getPhone());
+            orderBody.setQuantity(userOrder.getQuantity());
+            addDisposable(createOrderService.createOrder(user.getAccessToken(), user.getId(), orderBody)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::onCreateOrderSuccess, this::onCreateOrderFailed));
+        });
+    }
+
+    private void onCreateOrderSuccess(Object object) {
+        orderDialog.showProgressBar(false);
+        orderDialog.dismiss();
+        Toast.makeText(getActivity(), R.string.order_success, Toast.LENGTH_SHORT).show();
+    }
+
+    private void onCreateOrderFailed(Throwable e) {
+        orderDialog.showProgressBar(false);
+        Log.i(TAG, "onCreateOrderFailed: ");
+        Toast.makeText(getActivity(), R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_search:{
+            case R.id.action_search: {
 
             }
             break;
@@ -86,6 +134,9 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
         getCartService = network.createService(GetCartService.class);
         deleteCartService = network.createService(DeleteCartService.class);
         getProductService = network.createService(GetProductService.class);
+        getUserProfileService = network.createService(GetUserProfileService.class);
+        createOrderService = network.createService(CreateOrderService.class);
+        getShopIDService = network.createService(GetShopIDService.class);
     }
 
     @Override
@@ -123,7 +174,7 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
         shoppingCartAdapter.clear();
         shoppingCartAdapter.addCarts(pageResult.getResults(), false);
         getSwipeRefreshLayout().setRefreshing(false);
-        if(shoppingCartAdapter.getItemCount() == 0) {
+        if (shoppingCartAdapter.getItemCount() == 0) {
             showEmptyImage(true);
         } else {
             showEmptyImage(false);
@@ -239,6 +290,23 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
         }
     }
 
+    private void onFetchUserProfileSuccess(ProductReview productReview, UserProfile userProfile) {
+        selectedProductID = productReview.getId();
+        selectedShopID = productReview.getShopID();
+
+        orderDialog.showData(userProfile);
+        orderDialog.setMaxQuantity(productReview.getQuantity());
+        orderDialog.setCurrentQuantity(1);
+        orderDialog.showProgressBar(false);
+        orderDialog.show();
+    }
+
+    private void onFetchUserProfileFailure(Throwable e) {
+        Log.i(TAG, "onFetchUserProfileFailure: ");
+        orderDialog.dismiss();
+        Toast.makeText(getActivity(), R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
+    }
+
     public class ShoppingCartViewHolder extends RecyclerViewAdapter.NormalViewHolder implements View.OnClickListener {
         @BindView(R.id.txt_name)
         TextView textName;
@@ -272,7 +340,28 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btn_purchase: {
+                    int position = getAdapterPosition();
+                    CartWrapper cartWrapper = getAdapter().getItem(position, CartWrapper.class);
 
+                    if (cartWrapper.productReview.getShopID() == null) {
+                        Observable<UserProfile> userProfileObservable = getUserProfileService.getUserProfile(UserAuth.getAuthUser().getAccessToken());
+                        Observable<String> shopIDObservable = getShopIDService.getShopID(cartWrapper.productReview.getShopName());
+                        addDisposable(Observable.combineLatest(userProfileObservable, shopIDObservable, (userProfile, shopID) -> {
+                            cartWrapper.productReview.setShopID(shopID);
+                            return userProfile;
+                        }).observeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(Schedulers.newThread())
+                                .subscribe(success -> onFetchUserProfileSuccess(cartWrapper.productReview, success),
+                                        ShoppingCartFragment.this::onFetchUserProfileFailure));
+                    } else {
+                        addDisposable(getUserProfileService.getUserProfile(UserAuth.getAuthUser().getAccessToken())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(Schedulers.newThread())
+                                .subscribe(success -> onFetchUserProfileSuccess(cartWrapper.productReview, success),
+                                        ShoppingCartFragment.this::onFetchUserProfileFailure));
+                    }
+
+                    orderDialog.show();
                 }
                 break;
 
@@ -316,7 +405,7 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
 
             getAdapter().removeModel(position);
 
-            if(getAdapter().getItemCount() == 0) {
+            if (getAdapter().getItemCount() == 0) {
                 showEmptyImage(true);
             } else {
                 showEmptyImage(false);
@@ -345,7 +434,7 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
                 if (data.getBooleanExtra(Constant.CART_REMOVED, false)) {
                     RecyclerViewAdapter recyclerViewAdapter = getAdapter();
                     recyclerViewAdapter.removeModel(detailProductPosition);
-                    if(recyclerViewAdapter.getItemCount() == 0) {
+                    if (recyclerViewAdapter.getItemCount() == 0) {
                         showEmptyImage(true);
                     } else {
                         showEmptyImage(false);

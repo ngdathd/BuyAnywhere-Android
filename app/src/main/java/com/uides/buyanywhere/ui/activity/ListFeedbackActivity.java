@@ -48,7 +48,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by TranThanhTung on 02/12/2017.
  */
 
-public class ListFeedbackActivity extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class ListFeedbackActivity extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, EndlessLoadingRecyclerViewAdapter.OnLoadingMoreListener {
     private static final String TAG = "PostProductActivity";
 
     private RatingResult ratingResult;
@@ -80,6 +80,7 @@ public class ListFeedbackActivity extends AppCompatActivity implements View.OnCl
         productID = getIntent().getStringExtra(Constant.PRODUCT_ID);
 
         feedbackAdapter = new FeedbackAdapter(this);
+        feedbackAdapter.setLoadingMoreListener(this);
 
         initToolBar();
         initViews();
@@ -122,6 +123,37 @@ public class ListFeedbackActivity extends AppCompatActivity implements View.OnCl
         Network network = Network.getInstance();
         getFeedbackService = network.createService(GetFeedbackService.class);
         rateProductService = network.createService(RateProductService.class);
+    }
+
+    @Override
+    public void onLoadMore() {
+        feedbackAdapter.showLoadingItem(true);
+
+        compositeDisposable.add(getFeedbackService
+                .getAllFeedback(productID,
+                        feedbackAdapter.getItemCount() / LIMIT_FEEDBACK + 1,
+                        LIMIT_FEEDBACK,
+                        Feedback.CREATED_DATE,
+                        Constant.DESC)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(this::onLoadMoreSuccess, this::onLoadMoreError));
+        swipeRefreshLayout.setEnabled(false);
+    }
+
+    private void onLoadMoreSuccess(PageResult<Feedback> pageResult) {
+        swipeRefreshLayout.setEnabled(true);
+        feedbackAdapter.hideLoadingItem();
+        feedbackAdapter.addModels(pageResult.getResults(), false);
+        if (pageResult.getPageIndex() == pageResult.getTotalPages()) {
+            feedbackAdapter.disableLoadingMore(true);
+        }
+    }
+
+    private void onLoadMoreError(Throwable e) {
+        swipeRefreshLayout.setEnabled(true);
+        Log.i(TAG, "onLoadMoreError: " + e);
+        feedbackAdapter.hideLoadingItem();
     }
 
     @Override

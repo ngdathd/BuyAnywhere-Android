@@ -4,37 +4,53 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
+import com.uides.buyanywhere.auth.UserAuth;
+import com.uides.buyanywhere.model.User;
 import com.uides.buyanywhere.utils.BottomNavigationViewHelper;
+import com.uides.buyanywhere.utils.SharedPreferencesOpenHelper;
 import com.uides.buyanywhere.view_pager_adapter.MainPagerAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by TranThanhTung on 15/09/2017.
  */
 
-public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, BottomNavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, BottomNavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener, NavigationView.OnNavigationItemSelectedListener {
     @BindView(R.id.view_pager)
     ViewPager viewPager;
     @BindView(R.id.bottom_navigation)
     BottomNavigationView bottomNavigationView;
     @BindView(R.id.tool_bar)
     Toolbar toolbar;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
+    @BindView(R.id.navigation_view)
+    NavigationView navigationView;
+
+    CircleImageView imageAvatar;
+    TextView textName;
+    TextView textEmail;
 
     private SearchView searchView;
     private MenuItem searchItem;
@@ -56,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-
+                drawerLayout.openDrawer(Gravity.START);
             }
             break;
 
@@ -87,6 +103,32 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         mainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mainPagerAdapter);
         viewPager.addOnPageChangeListener(this);
+
+        navigationView.setNavigationItemSelectedListener(this);
+        View header = navigationView.getHeaderView(0);
+        imageAvatar = (CircleImageView) header.findViewById(R.id.img_avatar);
+        textName = (TextView) header.findViewById(R.id.txt_name);
+        textEmail = (TextView) header.findViewById(R.id.txt_email);
+
+        User user = UserAuth.getAuthUser();
+        if(user == null) {
+            user = SharedPreferencesOpenHelper.getUser(this);
+            UserAuth.setAuthUser(user);
+        }
+        updateDrawerHeader(user.getName(), user.getEmail(), user.getAvatarUrl());
+    }
+
+    public void updateDrawerHeader(String name,
+                                   String email,
+                                   String avatar) {
+
+        Picasso.with(this)
+                .load(avatar)
+                .placeholder(R.drawable.avatar_placeholder)
+                .into(imageAvatar);
+
+        textName.setText(name);
+        textEmail.setText(email);
     }
 
     private void initBottomNavigation() {
@@ -118,17 +160,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        Log.i("ABC", "onPrepareOptionsMenu: ");
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.navigation_product: {
                 actionBar.setTitle(R.string.product);
                 viewPager.setCurrentItem(MainPagerAdapter.PRODUCT_FRAGMENT_INDEX);
+                navigationView.setCheckedItem(R.id.navigation_drawer_product);
                 return true;
             }
 
@@ -141,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             case R.id.navigation_shopping_cart: {
                 actionBar.setTitle(R.string.shopping_cart);
                 viewPager.setCurrentItem(MainPagerAdapter.SHOPPING_CART_FRAGMENT_INDEX);
+                navigationView.setCheckedItem(R.id.navigation_drawer_shopping_cart);
                 return true;
             }
 
@@ -153,6 +191,48 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             case R.id.navigation_profile: {
                 actionBar.setTitle(R.string.profile);
                 viewPager.setCurrentItem(MainPagerAdapter.PROFILE_FRAGMENT_INDEX);
+                return true;
+            }
+
+            case R.id.navigation_drawer_product: {
+                actionBar.setTitle(R.string.product);
+                viewPager.setCurrentItem(MainPagerAdapter.PRODUCT_FRAGMENT_INDEX);
+                drawerLayout.closeDrawer(Gravity.START);
+                return true;
+            }
+
+            case R.id.navigation_drawer_location: {
+                actionBar.setTitle(R.string.location_search);
+                viewPager.setCurrentItem(MainPagerAdapter.FIND_BY_LOCATION_FRAGMENT_INDEX);
+                drawerLayout.closeDrawer(Gravity.START);
+                return true;
+            }
+
+            case R.id.navigation_drawer_order: {
+                Intent intent = new Intent(this, OrderActivity.class);
+                startActivity(intent);
+                drawerLayout.closeDrawer(Gravity.START);
+                return false;
+            }
+
+            case R.id.navigation_drawer_shopping_cart: {
+                actionBar.setTitle(R.string.shopping_cart);
+                viewPager.setCurrentItem(MainPagerAdapter.SHOPPING_CART_FRAGMENT_INDEX);
+                drawerLayout.closeDrawer(Gravity.START);
+                return true;
+            }
+
+            case R.id.navigation_drawer_profile: {
+                actionBar.setTitle(R.string.profile);
+                viewPager.setCurrentItem(MainPagerAdapter.PROFILE_FRAGMENT_INDEX);
+                drawerLayout.closeDrawer(Gravity.START);
+                return true;
+            }
+
+            case R.id.navigation_drawer_shop: {
+                actionBar.setTitle(R.string.shop);
+                viewPager.setCurrentItem(MainPagerAdapter.SHOP_FRAGMENT_INDEX);
+                drawerLayout.closeDrawer(Gravity.START);
                 return true;
             }
 
@@ -169,7 +249,36 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public void onPageSelected(int position) {
-        bottomNavigationView.setSelectedItemId(MainPagerAdapter.getNavigationButtonID(position));
+        switch (position) {
+            case MainPagerAdapter.FIND_BY_LOCATION_FRAGMENT_INDEX: {
+                bottomNavigationView.setSelectedItemId(R.id.navigation_location);
+                navigationView.setCheckedItem(R.id.navigation_drawer_location);
+            }
+            break;
+
+            case MainPagerAdapter.SHOPPING_CART_FRAGMENT_INDEX: {
+                bottomNavigationView.setSelectedItemId(R.id.navigation_shopping_cart);
+                navigationView.setCheckedItem(R.id.navigation_drawer_shopping_cart);
+            }
+            break;
+
+            case MainPagerAdapter.SHOP_FRAGMENT_INDEX: {
+                bottomNavigationView.setSelectedItemId(R.id.navigation_shop);
+                navigationView.setCheckedItem(R.id.navigation_drawer_shop);
+            }
+            break;
+
+            case MainPagerAdapter.PROFILE_FRAGMENT_INDEX: {
+                bottomNavigationView.setSelectedItemId(R.id.navigation_profile);
+                navigationView.setCheckedItem(R.id.navigation_drawer_profile);
+            }
+            break;
+
+            default: {
+                bottomNavigationView.setSelectedItemId(R.id.navigation_product);
+                navigationView.setCheckedItem(R.id.navigation_drawer_product);
+            }
+        }
     }
 
     @Override

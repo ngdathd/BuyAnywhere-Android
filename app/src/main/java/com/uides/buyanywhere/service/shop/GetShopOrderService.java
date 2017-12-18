@@ -1,6 +1,6 @@
 package com.uides.buyanywhere.service.shop;
 
-import com.uides.buyanywhere.model.Order;
+import com.uides.buyanywhere.model.ShopOrder;
 import com.uides.buyanywhere.model.PageResult;
 
 import io.reactivex.Observable;
@@ -13,10 +13,10 @@ import retrofit2.http.Query;
  */
 
 public interface GetShopOrderService {
-    @GET("")
-    Observable<PageResult<Order>> getShopOrders(@Path("shopId") String shopID,
-                                               @Query("pageIndex") int pageIndex,
-                                               @Query("pageSize") Integer pageSize,
-                                               @Query("orderBy") String field,
-                                               @Query("orderType") String type);
+    @GET("/api/Procurement/Shops/{shopId}/Orders")
+    Observable<PageResult<ShopOrder>> getShopOrders(@Path("shopId") String shopID,
+                                                    @Query("pageIndex") int pageIndex,
+                                                    @Query("pageSize") Integer pageSize,
+                                                    @Query("orderBy") String field,
+                                                    @Query("orderType") String type);
 }

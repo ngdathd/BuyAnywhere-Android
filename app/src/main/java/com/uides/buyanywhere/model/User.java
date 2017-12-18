@@ -10,20 +10,37 @@ public class User implements Serializable{
     public static final String ID = "Id";
     public static final String FACEBOOK_ID = "FbId";
     public static final String ACCESS_TOKEN = "AccessToken";
+    public static final String CLOUD_TOKEN = "CloudToken";
     private static final String SHOP_ID = "ShopId";
+    private static final String NAME = "Name";
+    private static final String EMAIL = "Email";
+    private static final String AVATAR_URL = "AvatarUrl";
+    private static final String COVER = "Cover";
 
     @SerializedName(ID)
     @Expose
     private String id;
-    @SerializedName(FACEBOOK_ID)
-    @Expose
-    private String facebookID;
     @SerializedName(ACCESS_TOKEN)
     @Expose
     private String accessToken;
-    @SerializedName(SHOP_ID)//TODO need shop id
+    @SerializedName(CLOUD_TOKEN)
+    @Expose
+    private String cloudToken;
+    @SerializedName(SHOP_ID)
     @Expose
     private String shopID;
+    @SerializedName("Name")
+    @Expose
+    private String name;
+    @SerializedName("Email")
+    @Expose
+    private String email;
+    @SerializedName("AvatarUrl")
+    @Expose
+    private String avatarUrl;
+    @SerializedName("Cover")
+    @Expose
+    private String coverUrl;
 
     public String getId() {
         return id;
@@ -31,14 +48,6 @@ public class User implements Serializable{
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getFacebookID() {
-        return facebookID;
-    }
-
-    public void setFacebookID(String facebookID) {
-        this.facebookID = facebookID;
     }
 
     public String getAccessToken() {
@@ -49,6 +58,14 @@ public class User implements Serializable{
         this.accessToken = accessToken;
     }
 
+    public String getCloudToken() {
+        return cloudToken;
+    }
+
+    public void setCloudToken(String cloudToken) {
+        this.cloudToken = cloudToken;
+    }
+
     public String getShopID() {
         return shopID;
     }
@@ -57,13 +74,35 @@ public class User implements Serializable{
         this.shopID = shopID;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", facebookID='" + facebookID + '\'' +
-                ", accessToken='" + accessToken + '\'' +
-                ", shopID='" + shopID + '\'' +
-                '}';
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public String getCoverUrl() {
+        return coverUrl;
+    }
+
+    public void setCoverUrl(String coverUrl) {
+        this.coverUrl = coverUrl;
     }
 }

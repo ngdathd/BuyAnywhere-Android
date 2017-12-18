@@ -146,7 +146,7 @@ public class ShopInformationFragment extends Fragment implements View.OnClickLis
         }
 
         String website = shop.getWebsite();
-        if (website == null) {
+        if (website == null || website.isEmpty()) {
             websiteGroup.setVisibility(View.GONE);
         } else {
             websiteGroup.setVisibility(View.VISIBLE);
@@ -155,7 +155,7 @@ public class ShopInformationFragment extends Fragment implements View.OnClickLis
         }
 
         String facebook = shop.getFacebookSite();
-        if (facebook == null) {
+        if (facebook == null || facebook.isEmpty()) {
             facebookGroup.setVisibility(View.GONE);
         } else {
             facebookGroup.setVisibility(View.VISIBLE);

@@ -83,6 +83,12 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         notifyDataSetChanged();
     }
 
+    public <T> void refresh(List<T> models) {
+        listWrapperModels.clear();
+        listBackupWrapperModels.clear();
+        addModels(models, false);
+    }
+
     public <T> void addModels(List<T> listModels, boolean isScroll) {
         addModels(listModels, VIEW_TYPE_NORMAL, isScroll);
     }

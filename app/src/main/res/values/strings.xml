@@ -21,7 +21,7 @@
     <string name="rating_count">lượt đánh giá</string>
     <string name="product_description">Mô tả sản phẩm</string>
     <string name="add_to_cart">Thêm vào giỏ hàng</string>
-    <string name="createdDate">Ngày đăng:</string>
+    <string name="orderDate">Ngày đăng:</string>
     <string name="add_product_success">Đã thêm sản phẩm vào giỏ hàng</string>
     <string name="remove_product_success">Đã xóa sản phẩm khỏi giỏ hàng</string>
     <string name="purchase">Đặt Hàng</string>
@@ -113,11 +113,24 @@
     <string name="not_have">Chưa có</string>
     <string name="all">Tất cả</string>
     <string name="ship">Đặt hàng</string>
+    <string name="ship_complete">Giao hàng</string>
     <string name="order_failure">Đặt hàng thất bại, vui lòng thử lại</string>
     <string name="order_success">Đặt hàng thành công</string>
     <string name="order_dialog">Đặt hàng</string>
     <string name="shipped">Đã giao hàng</string>
     <string name="dial">Liên hệ</string>
+    <string name="click_to_choose_address">Click để chọn một địa điểm</string>
+    <string name="auto_locate_failed">Tự động định vị thất bại</string>
+    <string name="locating">Đang định vị...</string>
+    <string name="pick_address_required">Chưa chọn địa chỉ</string>
+    <string name="pick_address">Chọn địa điểm</string>
+    <string name="input_address">Nhập tên địa điểm</string>
+    <string name="gps_title">GPS</string>
+    <string name="gps_message">Your GPS seems to be disabled, do you want to enable it?</string>
+    <string name="shopOrder">Lịch sử mua hàng</string>
+    <string name="about_us">Về chúng tôi</string>
+    <string name="help">Trợ giúp</string>
+    <string name="searching">Đang tìm kiếm...</string>
     <item name="visible" type="id"/>
     <item name="masked" type="id"/>
 </resources>

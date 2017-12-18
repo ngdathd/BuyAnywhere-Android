@@ -27,8 +27,10 @@ import com.uides.buyanywhere.model.UserProfile;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.service.user.GetFavoriteCategoriesService;
 import com.uides.buyanywhere.service.user.GetUserProfileService;
+import com.uides.buyanywhere.ui.activity.MainActivity;
 import com.uides.buyanywhere.ui.activity.ProfileEditActivity;
 import com.uides.buyanywhere.utils.GenderUtils;
+import com.uides.buyanywhere.utils.SharedPreferencesOpenHelper;
 
 import java.util.List;
 
@@ -230,6 +232,18 @@ public class ProfileChildFragment extends Fragment implements View.OnClickListen
                 if (resultCode == Activity.RESULT_OK) {
                     UserProfile userProfile = (UserProfile) data.getSerializableExtra(Constant.USER_PROFILE);
                     this.userProfile = userProfile;
+
+                    MainActivity mainActivity = (MainActivity) getActivity();
+
+                    String name = userProfile.getName();
+                    String email = userProfile.getEmail();
+                    String avatar = userProfile.getAvatarUrl();
+                    String cover = userProfile.getCoverUrl();
+
+                    SharedPreferencesOpenHelper.saveUserProfile(mainActivity, name, email, avatar, cover);
+
+                    mainActivity.updateDrawerHeader(name, email, avatar);
+
                     showViews(userProfile);
                 }
             }

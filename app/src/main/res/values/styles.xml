@@ -21,6 +21,10 @@
         <item name="android:textColorSecondary">@android:color/white</item>
     </style>
 
+    <style name="DrawerNavigationTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textColorPrimary">@android:color/black</item>
+    </style>
+
     <style name="PopupMenu" parent="@android:style/Widget.PopupMenu">
         <item name="android:popupBackground">@android:color/white</item>
         <item name="android:textColor">@android:color/black</item>
@@ -52,4 +56,8 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <dimen name="medium_font_size">15sp</dimen>
+
+    <style name="AlertDialogBlackText" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:colorAccent">@android:color/black</item>
+    </style>
 </resources>
