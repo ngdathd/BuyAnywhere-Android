@@ -4,7 +4,7 @@
     <string name="google_client_id">328783804062-m45nqe2mh32m4u9tq9jc5vu27nn9vqba.apps.googleusercontent.com</string>
     <string name="app_name">Buy Anywhere</string>
     <string name="title_activity_maps">Map</string>
-    <string name="log_out">Log out</string>
+    <string name="log_out">Đăng xuất</string>
     <string name="sign_out">Sign out</string>
     <string name="sign_in_failed">Đăng nhập thất bại</string>
     <string name="facebook_login_button">Log in with Facebook</string>
@@ -126,11 +126,14 @@
     <string name="pick_address">Chọn địa điểm</string>
     <string name="input_address">Nhập tên địa điểm</string>
     <string name="gps_title">GPS</string>
-    <string name="gps_message">Your GPS seems to be disabled, do you want to enable it?</string>
+    <string name="gps_message">Định vị vị trí chưa được bật, bạn có muốn bật?</string>
     <string name="shopOrder">Lịch sử mua hàng</string>
     <string name="about_us">Về chúng tôi</string>
     <string name="help">Trợ giúp</string>
     <string name="searching">Đang tìm kiếm...</string>
+    <string name="distance">Khoảng cách</string>
+    <string name="delete_cart">Xóa khỏi giỏ hàng</string>
+    <string name="sure_to_delete">Chắc chắn muốn xóa sản phẩm khỏi giỏ hàng</string>
     <item name="visible" type="id"/>
     <item name="masked" type="id"/>
 </resources>

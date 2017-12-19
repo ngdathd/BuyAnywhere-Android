@@ -28,8 +28,7 @@ import com.uides.buyanywhere.custom_view.ClearableEditText;
 import com.uides.buyanywhere.custom_view.dialog.TwoModeProgressDialog;
 import com.uides.buyanywhere.model.Category;
 import com.uides.buyanywhere.model.PostProduct;
-import com.uides.buyanywhere.model.Product;
-import com.uides.buyanywhere.model.ProductReview;
+import com.uides.buyanywhere.model.ProductPreview;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.recyclerview_adapter.RecyclerViewAdapter;
 import com.uides.buyanywhere.service.user.PostProductService;
@@ -226,9 +225,9 @@ public class ChildPostProductFragment extends Fragment {
                 .subscribe(this::onPostProductSuccess, this::onPostProductFailed));
     }
 
-    private void onPostProductSuccess(ProductReview productReview) {
+    private void onPostProductSuccess(ProductPreview productPreview) {
         twoModeProgressDialog.dismiss();
-        ((PostProductActivity) getActivity()).returnPostProductAndFinish(productReview);
+        ((PostProductActivity) getActivity()).returnPostProductAndFinish(productPreview);
     }
 
     private void onPostProductFailed(Throwable e) {

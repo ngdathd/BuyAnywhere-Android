@@ -15,7 +15,7 @@ import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.custom_view.PriceTextView;
 import com.uides.buyanywhere.custom_view.StrikeThroughPriceTextView;
-import com.uides.buyanywhere.model.ProductReview;
+import com.uides.buyanywhere.model.ProductPreview;
 import com.uides.buyanywhere.recyclerview_adapter.EndlessLoadingRecyclerViewAdapter;
 import com.uides.buyanywhere.recyclerview_adapter.RecyclerViewAdapter;
 import com.uides.buyanywhere.utils.DateUtil;
@@ -54,18 +54,18 @@ public class ProductAdapter extends EndlessLoadingRecyclerViewAdapter {
 
     @Override
     protected void bindNormalViewHolder(NormalViewHolder holder, int position) {
-        ProductReview productReview = getItem(position, ProductReview.class);
+        ProductPreview productPreview = getItem(position, ProductPreview.class);
         ProductViewHolder productViewHolder = (ProductViewHolder) holder;
         Picasso.with(context)
-                .load(productReview.getPreviewUrl())
+                .load(productPreview.getPreviewUrl())
                 .placeholder(R.drawable.image_placeholder)
                 .fit()
                 .centerCrop()
                 .into(productViewHolder.imagePreview);
-        productViewHolder.textName.setText(productReview.getName());
-        productViewHolder.textShop.setText(productReview.getShopName());
-        long currentPrice = productReview.getCurrentPrice();
-        long originPrice = productReview.getOriginPrice();
+        productViewHolder.textName.setText(productPreview.getName());
+        productViewHolder.textShop.setText(productPreview.getShopName());
+        long currentPrice = productPreview.getCurrentPrice();
+        long originPrice = productPreview.getOriginPrice();
         if (currentPrice < originPrice) {
             productViewHolder.textCurrentPrice.setPrice("" + currentPrice, Constant.PRICE_UNIT);
             productViewHolder.textOriginPrice.setVisibility(View.VISIBLE);
@@ -74,13 +74,13 @@ public class ProductAdapter extends EndlessLoadingRecyclerViewAdapter {
             productViewHolder.textCurrentPrice.setPrice("" + originPrice, Constant.PRICE_UNIT);
             productViewHolder.textOriginPrice.setVisibility(View.INVISIBLE);
         }
-        productViewHolder.textQuantity.setText("" + productReview.getQuantity());
+        productViewHolder.textQuantity.setText("" + productPreview.getQuantity());
         productViewHolder.tagGroup.removeAll();
-        Tag tag = new Tag(productReview.getCategoryName());
+        Tag tag = new Tag(productPreview.getCategoryName());
         tag.tagTextSize = 11;
         productViewHolder.tagGroup.addTag(tag);
-        productViewHolder.ratingBar.setStar(productReview.getRating());
-        productViewHolder.textTime.setText(DateUtil.getDateDiffNow(productReview.getCreatedDate()));
+        productViewHolder.ratingBar.setStar(productPreview.getRating());
+        productViewHolder.textTime.setText(DateUtil.getDateDiffNow(productPreview.getCreatedDate()));
     }
 
     public class ProductViewHolder extends RecyclerViewAdapter.NormalViewHolder {

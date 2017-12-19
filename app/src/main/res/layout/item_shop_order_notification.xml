@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="76dp"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/img_avatar"
+        android:layout_width="@dimen/ava_comment"
+        android:layout_height="@dimen/ava_comment"
+        android:src="@drawable/ic_logo"
+        android:layout_marginEnd="16dp"
+        android:layout_centerVertical="true"/>
+
+    <TextView
+        android:id="@+id/txt_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/img_avatar"
+        android:text="Yêu Cầu Đặt Hàng"
+        android:textStyle="bold"
+        android:layout_alignTop="@id/img_avatar"
+        android:layout_marginBottom="5dp"
+        android:textSize="@dimen/large_text_font"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/txt_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@id/txt_title"
+        android:layout_below="@id/txt_title"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/secondary_text_font"
+        android:text="Có n yêu cầu đặt hàng mới"/>
+</RelativeLayout>

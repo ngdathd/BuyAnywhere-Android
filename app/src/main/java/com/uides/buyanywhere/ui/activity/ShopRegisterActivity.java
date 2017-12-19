@@ -35,7 +35,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ShopRegisterActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "ShopRegisterActivity";
-    private static final int MAP_REQUEST_CODE = 0;
+    private static final int LOCATION_REQUEST_CODE = 0;
 
     @BindView(R.id.txt_input_shop_name)
     ClearableEditText textShopName;
@@ -43,20 +43,24 @@ public class ShopRegisterActivity extends AppCompatActivity implements View.OnCl
     ClearableEditText textPhone;
     @BindView(R.id.txt_input_address)
     TextInputLayout textInputAddress;
-    @BindView(R.id.txt_address)
-    EditText textAddress;
+    @BindView(R.id.edt_address)
+    EditText editAddress;
     @BindView(R.id.tool_bar)
     Toolbar toolbar;
 
     private CompositeDisposable compositeDisposable;
     private LoadingDialog loadingDialog;
     private Location location;
+    private Shop shop;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.actitvity_shop_register);
         ButterKnife.bind(this);
+
+        shop = new Shop();
+
         initToolBar();
         initViews();
     }
@@ -68,8 +72,6 @@ public class ShopRegisterActivity extends AppCompatActivity implements View.OnCl
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(R.string.shop_register);
         }
-
-        textAddress.setOnClickListener(this);
     }
 
     @Override
@@ -97,6 +99,7 @@ public class ShopRegisterActivity extends AppCompatActivity implements View.OnCl
     private void initViews() {
         findViewById(R.id.btn_register_shop).setOnClickListener(this);
         loadingDialog = new LoadingDialog(this);
+        editAddress.setOnClickListener(this);
     }
 
     @Override
@@ -107,13 +110,12 @@ public class ShopRegisterActivity extends AppCompatActivity implements View.OnCl
                     return;
                 }
 
-                String address = textAddress.getText().toString();
+                String address = editAddress.getText().toString();
                 if(address.isEmpty()) {
                     textInputAddress.setError(getString(R.string.pick_address_required));
                     return;
                 }
 
-                Shop shop = new Shop();
                 shop.setName(textShopName.getText());
                 shop.setPhone(textPhone.getText());
                 shop.setAddress(address);
@@ -125,9 +127,13 @@ public class ShopRegisterActivity extends AppCompatActivity implements View.OnCl
             }
             break;
 
-            case R.id.txt_address:{
+            case R.id.edt_address: {
                 Intent intent = new Intent(this, MapsActivity.class);
-                startActivityForResult(intent, MAP_REQUEST_CODE);
+                intent.putExtra(Constant.ADDRESS, shop.getAddress());
+                if(location != null) {
+                    intent.putExtra(Constant.LOCATION, location);
+                }
+                startActivityForResult(intent, LOCATION_REQUEST_CODE);
             }
             break;
 
@@ -141,16 +147,22 @@ public class ShopRegisterActivity extends AppCompatActivity implements View.OnCl
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case MAP_REQUEST_CODE:{
-                if(resultCode == RESULT_OK) {
+            case LOCATION_REQUEST_CODE: {
+                if (resultCode == RESULT_OK) {
                     String address = data.getStringExtra(Constant.ADDRESS);
-                    textAddress.setText(address);
-                    textInputAddress.setError(null);
+                    shop.setAddress(address);
+                    editAddress.setText(address);
 
                     location = (Location) data.getSerializableExtra(Constant.LOCATION);
+                    shop.setLat(location.getLat());
+                    shop.setLon(location.getLng());
                 }
             }
             break;
+
+            default:{
+                break;
+            }
         }
     }
 

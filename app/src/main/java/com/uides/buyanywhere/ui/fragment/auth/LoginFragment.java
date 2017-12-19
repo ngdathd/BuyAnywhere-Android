@@ -73,6 +73,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Fir
     @BindView(R.id.check_box_auto_sign_in)
     CheckBox autoSignInCheckBox;
 
+    private boolean isAutoSignIn;
+
     private LoadingDialog loadingDialog;
     private CompositeDisposable compositeDisposable;
     private CallbackManager callbackManager;
@@ -82,6 +84,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Fir
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         compositeDisposable = new CompositeDisposable();
+        isAutoSignIn = getArguments().getBoolean(Constant.KEY_AUTO_SIGN_IN, true);
         initFacebookSignIn();
     }
 
@@ -128,19 +131,22 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Fir
     public void onStart() {
         super.onStart();
 
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        if(accessToken != null && accessToken.getToken() != null) {
-            String token = accessToken.getToken();
-            Log.i(TAG, "onStart: "+token);
-            Context context = getActivity();
-            if(SharedPreferencesOpenHelper.isAccessTokenValid(context, token)) {
-                Activity activity = getActivity();
-                UserAuth.setAuthUser(SharedPreferencesOpenHelper.getUser(context));
-                Intent intent = new Intent(activity, MainActivity.class);
-                startActivity(intent);
-                activity.finish();
-            } else {
-                signIn(accessToken.getToken());
+        if (isAutoSignIn) {
+            AccessToken accessToken = AccessToken.getCurrentAccessToken();
+            if (accessToken != null && accessToken.getToken() != null) {
+                String token = accessToken.getToken();
+                Log.i(TAG, "onStart: " + token);
+                Context context = getActivity();
+                if (SharedPreferencesOpenHelper.isAccessTokenValid(context, token) &&
+                        SharedPreferencesOpenHelper.isCloudTokenValid(context, FirebaseInstanceId.getInstance().getToken())) {
+                    Activity activity = getActivity();
+                    UserAuth.setAuthUser(SharedPreferencesOpenHelper.getUser(context));
+                    Intent intent = new Intent(activity, MainActivity.class);
+                    startActivity(intent);
+                    activity.finish();
+                } else {
+                    signIn(accessToken.getToken());
+                }
             }
         }
     }

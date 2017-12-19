@@ -1,9 +1,12 @@
 package com.uides.buyanywhere.ui.fragment.cart;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
@@ -28,7 +31,7 @@ import com.uides.buyanywhere.custom_view.dialog.OrderDialog;
 import com.uides.buyanywhere.model.OrderBody;
 import com.uides.buyanywhere.model.PageResult;
 import com.uides.buyanywhere.model.Product;
-import com.uides.buyanywhere.model.ProductReview;
+import com.uides.buyanywhere.model.ProductPreview;
 import com.uides.buyanywhere.model.User;
 import com.uides.buyanywhere.model.UserProfile;
 import com.uides.buyanywhere.network.Network;
@@ -40,6 +43,7 @@ import com.uides.buyanywhere.service.shop.GetShopIDService;
 import com.uides.buyanywhere.service.user.CreateOrderService;
 import com.uides.buyanywhere.service.user.GetUserProfileService;
 import com.uides.buyanywhere.ui.activity.ProductDetailActivity;
+import com.uides.buyanywhere.ui.activity.ProductDetailLoadingActivity;
 import com.uides.buyanywhere.ui.fragment.RecyclerViewFragment;
 
 import java.util.List;
@@ -49,7 +53,6 @@ import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -62,8 +65,6 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
 
     private GetCartService getCartService;
     private DeleteCartService deleteCartService;
-    private LoadingDialog loadingDialog;
-    private GetProductService getProductService;
     private GetUserProfileService getUserProfileService;
     private CreateOrderService createOrderService;
     private GetShopIDService getShopIDService;
@@ -78,7 +79,6 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        loadingDialog = new LoadingDialog(getActivity());
         initService();
         initViews();
     }
@@ -133,7 +133,6 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
         Network network = Network.getInstance();
         getCartService = network.createService(GetCartService.class);
         deleteCartService = network.createService(DeleteCartService.class);
-        getProductService = network.createService(GetProductService.class);
         getUserProfileService = network.createService(GetUserProfileService.class);
         createOrderService = network.createService(CreateOrderService.class);
         getShopIDService = network.createService(GetShopIDService.class);
@@ -152,7 +151,7 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
                 .getProductsInCart(UserAuth.getAuthUser().getAccessToken(),
                         null,
                         null,
-                        ProductReview.CREATED_DATE,
+                        ProductPreview.CREATED_DATE,
                         1)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
@@ -169,7 +168,7 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
         getSwipeRefreshLayout().setRefreshing(false);
     }
 
-    private void onRefreshSuccess(PageResult<ProductReview> pageResult) {
+    private void onRefreshSuccess(PageResult<ProductPreview> pageResult) {
         ShoppingCartAdapter shoppingCartAdapter = (ShoppingCartAdapter) getAdapter();
         shoppingCartAdapter.clear();
         shoppingCartAdapter.addCarts(pageResult.getResults(), false);
@@ -187,31 +186,11 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
         if (cartWrapper.isDeleting) {
             return;
         }
-        loadingDialog.show();
-        Disposable disposable = getProductService.getProduct(cartWrapper.productReview.getId())
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(product -> onFetchProductSuccess(position, product), this::onFetchProductFailed);
-        addDisposable(disposable);
-    }
-
-    private void onFetchProductSuccess(int position, Product product) {
-        loadingDialog.dismiss();
         detailProductPosition = position;
-        Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
-        Bundle bundle = new Bundle();
-        product.setAddedToCart(true);
-        bundle.putSerializable(Constant.PRODUCT, product);
-        boolean userIsShopOwner = UserAuth.getAuthUser().getShopID().equals(product.getShopID());
-        bundle.putBoolean(Constant.IS_VIEW_BY_SHOP_OWNER, userIsShopOwner);
-        intent.putExtras(bundle);
-        startActivityForResult(intent, PRODUCT_DETAIL_REQUEST_CODE);
-    }
 
-    private void onFetchProductFailed(Throwable e) {
-        loadingDialog.dismiss();
-        Log.i(TAG, "onFetchProductFailed: " + e);
-        Toast.makeText(getActivity(), R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getActivity(), ProductDetailLoadingActivity.class);
+        intent.putExtra(Constant.PRODUCT_ID, cartWrapper.productPreview.getId());
+        startActivityForResult(intent, PRODUCT_DETAIL_REQUEST_CODE);
     }
 
     private class ShoppingCartAdapter extends RecyclerViewAdapter {
@@ -231,20 +210,20 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
             ShoppingCartViewHolder shoppingCartViewHolder = (ShoppingCartViewHolder) holder;
 
             CartWrapper cartWrapper = getItem(position, CartWrapper.class);
-            ProductReview productReview = cartWrapper.productReview;
+            ProductPreview productPreview = cartWrapper.productPreview;
 
             Picasso.with(getActivity())
-                    .load(productReview.getPreviewUrl())
+                    .load(productPreview.getPreviewUrl())
                     .placeholder(R.drawable.placeholder)
                     .fit()
                     .centerCrop()
                     .into(shoppingCartViewHolder.imagePreview);
 
-            shoppingCartViewHolder.textName.setText(productReview.getName());
-            shoppingCartViewHolder.textShop.setText(productReview.getShopName());
-            shoppingCartViewHolder.textQuantity.setText("" + productReview.getQuantity());
-            long currentPrice = productReview.getCurrentPrice();
-            long originPrice = productReview.getCurrentPrice();
+            shoppingCartViewHolder.textName.setText(productPreview.getName());
+            shoppingCartViewHolder.textShop.setText(productPreview.getShopName());
+            shoppingCartViewHolder.textQuantity.setText("" + productPreview.getQuantity());
+            long currentPrice = productPreview.getCurrentPrice();
+            long originPrice = productPreview.getCurrentPrice();
             if (currentPrice < originPrice) {
                 shoppingCartViewHolder.textCurrentPrice.setPrice("" + currentPrice, Constant.PRICE_UNIT);
                 shoppingCartViewHolder.textOriginPrice.setVisibility(View.VISIBLE);
@@ -254,7 +233,7 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
                 shoppingCartViewHolder.textOriginPrice.setVisibility(View.INVISIBLE);
             }
             shoppingCartViewHolder.tagView.removeAll();
-            Tag tag = new Tag(productReview.getCategoryName());
+            Tag tag = new Tag(productPreview.getCategoryName());
             tag.tagTextSize = 11;
             shoppingCartViewHolder.tagView.addTag(tag);
 
@@ -269,9 +248,9 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
             }
         }
 
-        public void addCarts(List<ProductReview> carts, boolean isScroll) {
-            for (ProductReview productReview : carts) {
-                addModel(new CartWrapper(productReview), false, false);
+        public void addCarts(List<ProductPreview> carts, boolean isScroll) {
+            for (ProductPreview productPreview : carts) {
+                addModel(new CartWrapper(productPreview), false, false);
             }
             notifyDataSetChanged();
             if (isScroll) {
@@ -281,21 +260,21 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
     }
 
     private class CartWrapper {
-        ProductReview productReview;
+        ProductPreview productPreview;
         boolean isDeleting;
 
-        public CartWrapper(ProductReview productReview) {
-            this.productReview = productReview;
+        public CartWrapper(ProductPreview productPreview) {
+            this.productPreview = productPreview;
             this.isDeleting = false;
         }
     }
 
-    private void onFetchUserProfileSuccess(ProductReview productReview, UserProfile userProfile) {
-        selectedProductID = productReview.getId();
-        selectedShopID = productReview.getShopID();
+    private void onFetchUserProfileSuccess(ProductPreview productPreview, UserProfile userProfile) {
+        selectedProductID = productPreview.getId();
+        selectedShopID = productPreview.getShopID();
 
         orderDialog.showData(userProfile);
-        orderDialog.setMaxQuantity(productReview.getQuantity());
+        orderDialog.setMaxQuantity(productPreview.getQuantity());
         orderDialog.setCurrentQuantity(1);
         orderDialog.showProgressBar(false);
         orderDialog.show();
@@ -343,21 +322,21 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
                     int position = getAdapterPosition();
                     CartWrapper cartWrapper = getAdapter().getItem(position, CartWrapper.class);
 
-                    if (cartWrapper.productReview.getShopID() == null) {
+                    if (cartWrapper.productPreview.getShopID() == null) {
                         Observable<UserProfile> userProfileObservable = getUserProfileService.getUserProfile(UserAuth.getAuthUser().getAccessToken());
-                        Observable<String> shopIDObservable = getShopIDService.getShopID(cartWrapper.productReview.getShopName());
+                        Observable<String> shopIDObservable = getShopIDService.getShopID(cartWrapper.productPreview.getShopName());
                         addDisposable(Observable.combineLatest(userProfileObservable, shopIDObservable, (userProfile, shopID) -> {
-                            cartWrapper.productReview.setShopID(shopID);
+                            cartWrapper.productPreview.setShopID(shopID);
                             return userProfile;
                         }).observeOn(AndroidSchedulers.mainThread())
                                 .subscribeOn(Schedulers.newThread())
-                                .subscribe(success -> onFetchUserProfileSuccess(cartWrapper.productReview, success),
+                                .subscribe(success -> onFetchUserProfileSuccess(cartWrapper.productPreview, success),
                                         ShoppingCartFragment.this::onFetchUserProfileFailure));
                     } else {
                         addDisposable(getUserProfileService.getUserProfile(UserAuth.getAuthUser().getAccessToken())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribeOn(Schedulers.newThread())
-                                .subscribe(success -> onFetchUserProfileSuccess(cartWrapper.productReview, success),
+                                .subscribe(success -> onFetchUserProfileSuccess(cartWrapper.productPreview, success),
                                         ShoppingCartFragment.this::onFetchUserProfileFailure));
                     }
 
@@ -370,23 +349,32 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
                         return;
                     }
 
-                    int position = getAdapterPosition();
+                    new AlertDialog.Builder(getActivity(), R.style.AlertDialogBlackText)
+                            .setTitle(R.string.delete_cart)
+                            .setMessage(R.string.sure_to_delete)
+                            .setPositiveButton("Yes", (dialog, which) -> {
+                                int position = getAdapterPosition();
 
-                    RecyclerViewAdapter adapter = getAdapter();
-                    CartWrapper cartWrapper = adapter.getItem(position, CartWrapper.class);
-                    cartWrapper.isDeleting = true;
+                                RecyclerViewAdapter adapter = getAdapter();
+                                CartWrapper cartWrapper = adapter.getItem(position, CartWrapper.class);
+                                cartWrapper.isDeleting = true;
 
-                    hasItemDeleting = true;
-                    getSwipeRefreshLayout().setEnabled(false);
+                                hasItemDeleting = true;
+                                getSwipeRefreshLayout().setEnabled(false);
 
-                    Disposable disposable = deleteCartService.deleteProductFromCart(UserAuth.getAuthUser().getAccessToken(),
-                            cartWrapper.productReview.getId())
-                            .subscribeOn(Schedulers.newThread())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(success -> onDeleteSuccess(position), error -> onDeleteFailed(position, error));
-                    addDisposable(disposable);
+                                Disposable disposable = deleteCartService.deleteProductFromCart(UserAuth.getAuthUser().getAccessToken(),
+                                        cartWrapper.productPreview.getId())
+                                        .subscribeOn(Schedulers.newThread())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(success -> onDeleteSuccess(position), error -> onDeleteFailed(position, error));
+                                addDisposable(disposable);
 
-                    adapter.notifyItemChanged(position);
+                                adapter.notifyItemChanged(position);
+                                dialog.dismiss();
+                            })
+                            .setNegativeButton("No", null)
+                            .setCancelable(true)
+                            .show();
                 }
                 break;
 
@@ -431,13 +419,15 @@ public class ShoppingCartFragment extends RecyclerViewFragment implements Recycl
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case PRODUCT_DETAIL_REQUEST_CODE: {
-                if (data.getBooleanExtra(Constant.CART_REMOVED, false)) {
-                    RecyclerViewAdapter recyclerViewAdapter = getAdapter();
-                    recyclerViewAdapter.removeModel(detailProductPosition);
-                    if (recyclerViewAdapter.getItemCount() == 0) {
-                        showEmptyImage(true);
-                    } else {
-                        showEmptyImage(false);
+                if(resultCode == Activity.RESULT_OK) {
+                    if (data.getBooleanExtra(Constant.CART_REMOVED, false)) {
+                        RecyclerViewAdapter recyclerViewAdapter = getAdapter();
+                        recyclerViewAdapter.removeModel(detailProductPosition);
+                        if (recyclerViewAdapter.getItemCount() == 0) {
+                            showEmptyImage(true);
+                        } else {
+                            showEmptyImage(false);
+                        }
                     }
                 }
             }

@@ -2,7 +2,7 @@ package com.uides.buyanywhere.service.user;
 
 import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.model.PostProduct;
-import com.uides.buyanywhere.model.ProductReview;
+import com.uides.buyanywhere.model.ProductPreview;
 
 import io.reactivex.Observable;
 import retrofit2.http.Body;
@@ -15,6 +15,6 @@ import retrofit2.http.POST;
 
 public interface PostProductService {
     @POST("api/Procurement/Products")
-    Observable<ProductReview> postProduct(@Header(Constant.ACCESS_TOKEN) String accessToken,
-                                          @Body PostProduct postProduct);
+    Observable<ProductPreview> postProduct(@Header(Constant.ACCESS_TOKEN) String accessToken,
+                                           @Body PostProduct postProduct);
 }

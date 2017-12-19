@@ -11,11 +11,14 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,27 +44,45 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
+import com.uides.buyanywhere.adapter.ProductAdapter;
+import com.uides.buyanywhere.auth.UserAuth;
+import com.uides.buyanywhere.custom_view.dialog.LoadingDialog;
+import com.uides.buyanywhere.model.Feedback;
+import com.uides.buyanywhere.model.PageResult;
+import com.uides.buyanywhere.model.Product;
+import com.uides.buyanywhere.model.ProductPreview;
 import com.uides.buyanywhere.model.ShopLocationResult;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.network.SingleShotLocationProvider;
+import com.uides.buyanywhere.recyclerview_adapter.RecyclerViewAdapter;
+import com.uides.buyanywhere.service.product.GetProductService;
+import com.uides.buyanywhere.service.rating.GetFeedbackService;
+import com.uides.buyanywhere.service.user.CheckUserCartService;
 import com.uides.buyanywhere.service.user.GetProductByLocationService;
+import com.uides.buyanywhere.ui.activity.ProductDetailActivity;
+import com.uides.buyanywhere.ui.activity.ProductDetailLoadingActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function3;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.uides.buyanywhere.ui.fragment.product.AllProductsFragment.LATEST_FEEDBACK_COUNT;
 
 /**
  * Created by TranThanhTung on 19/11/2017.
  */
 
-public class FindByLocationFragment extends Fragment implements OnMapReadyCallback, SearchView.OnQueryTextListener, AdapterView.OnItemSelectedListener, View.OnClickListener, GoogleMap.OnMapClickListener {
+public class FindByLocationFragment extends Fragment implements OnMapReadyCallback, SearchView.OnQueryTextListener, AdapterView.OnItemSelectedListener, View.OnClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener, RecyclerViewAdapter.OnItemClickListener {
     private static final String TAG = "FindByLocationFragment";
     private static final int REQUEST_ACCESS_LOCATION_REQUEST_CODE = 0;
     @BindView(R.id.search_view)
@@ -76,23 +97,42 @@ public class FindByLocationFragment extends Fragment implements OnMapReadyCallba
     ProgressBar progressBar;
     @BindView(R.id.txt_searching)
     TextView textSearching;
+    @BindView(R.id.txt_shop_name)
+    TextView textShopName;
+    @BindView(R.id.txt_product_found)
+    TextView textProductFound;
+    @BindView(R.id.txt_distance)
+    TextView textDistance;
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerView;
 
     GoogleMap googleMap;
 
     private Circle circle;
     private Marker myLocationMarker;
+    private List<Marker> shopMarkers;
 
     private CompositeDisposable compositeDisposable;
     private GetProductByLocationService getProductByLocationService;
 
     private Disposable activeDisposable;
     private LatLng selectedLocation;
+    private View rootView;
+    private BottomSheetBehavior<RelativeLayout> bottomSheetBehavior;
+
+    private ProductAdapter productAdapter;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_find_by_location, container, false);
+        rootView = inflater.inflate(R.layout.fragment_find_by_location, container, false);
         ButterKnife.bind(this, rootView);
+
+        shopMarkers = new ArrayList<>();
+        productAdapter = new ProductAdapter(getActivity());
+        productAdapter.setOnItemClickListener(this);
+        productAdapter.disableLoadingMore(true);
+
         initServices();
         initViews();
         initMap(savedInstanceState);
@@ -108,7 +148,10 @@ public class FindByLocationFragment extends Fragment implements OnMapReadyCallba
     @Override
     public void onStop() {
         super.onStop();
-        compositeDisposable.clear();
+        this.compositeDisposable.clear();
+        selectedLocation = null;
+        this.circle = null;
+        this.myLocationMarker = null;
     }
 
     private void initMap(Bundle savedInstanceState) {
@@ -119,6 +162,7 @@ public class FindByLocationFragment extends Fragment implements OnMapReadyCallba
     }
 
     private void initViews() {
+
         spinnerDistance.setAdapter(new DistanceAdapter(getActivity()));
         spinnerDistance.setSelection(0);
         spinnerDistance.setOnItemSelectedListener(this);
@@ -131,6 +175,13 @@ public class FindByLocationFragment extends Fragment implements OnMapReadyCallba
         searchView.setOnCloseListener(() -> true);
 
         fabMyLocation.setOnClickListener(this);
+
+        RelativeLayout bottomSheetLayout = (RelativeLayout) rootView.findViewById(R.id.rl_bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(productAdapter);
     }
 
     @Override
@@ -159,7 +210,7 @@ public class FindByLocationFragment extends Fragment implements OnMapReadyCallba
             if (location != null) {
                 LatLng loc = new LatLng(location.latitude, location.longitude);
 
-                if(loc.equals(selectedLocation)) {
+                if (loc.equals(selectedLocation)) {
                     return;
                 }
 
@@ -185,7 +236,7 @@ public class FindByLocationFragment extends Fragment implements OnMapReadyCallba
             circle.setCenter(location);
         }
 
-        if(myLocationMarker == null) {
+        if (myLocationMarker == null) {
             myLocationMarker = googleMap.addMarker(new MarkerOptions()
                     .position(location)
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_pin)));
@@ -203,6 +254,7 @@ public class FindByLocationFragment extends Fragment implements OnMapReadyCallba
         googleMap.setMyLocationEnabled(false);
         googleMap.getUiSettings().setMapToolbarEnabled(false);
         googleMap.setOnMapClickListener(this);
+        googleMap.setOnMarkerClickListener(this);
     }
 
     private void checkGPS() {
@@ -277,12 +329,12 @@ public class FindByLocationFragment extends Fragment implements OnMapReadyCallba
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        fetchProductByLocation(query, selectedLocation, (double) spinnerDistance.getSelectedItem());
+        fetchProductByLocation(query, selectedLocation, (Integer) spinnerDistance.getSelectedItem());
         return false;
     }
 
     public void showSearchingProgress(boolean isShow) {
-        if(isShow) {
+        if (isShow) {
             progressBar.setVisibility(View.VISIBLE);
             textSearching.setVisibility(View.VISIBLE);
             searchView.setVisibility(View.INVISIBLE);
@@ -310,8 +362,35 @@ public class FindByLocationFragment extends Fragment implements OnMapReadyCallba
         compositeDisposable.add(activeDisposable);
     }
 
-    private void onFetchProductSuccess(List<ShopLocationResult> shopLocationResult) {
+    private void clearAllShopMarker() {
+        int count = shopMarkers.size();
+        for (int i = count - 1; i >= 0; i--) {
+            shopMarkers.remove(i).remove();
+        }
+    }
+
+    private void addShopMarker(ShopLocationResult shopLocationResult) {
+        List<ProductPreview> productPreviews = shopLocationResult.getProducts();
+        if (productPreviews == null || productPreviews.isEmpty()) {
+            return;
+        }
+        Marker shopMarker = googleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(shopLocationResult.getLat(), shopLocationResult.getLon()))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker))
+                .title(shopLocationResult.getShopName()));
+        shopMarker.setTag(shopLocationResult);
+        shopMarkers.add(shopMarker);
+    }
+
+    private void onFetchProductSuccess(List<ShopLocationResult> shopLocationResults) {
+        clearAllShopMarker();
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
         showSearchingProgress(false);
+
+        for (ShopLocationResult shopLocationResult : shopLocationResults) {
+            addShopMarker(shopLocationResult);
+        }
     }
 
     private void onFetchProductFailed(Throwable e) {
@@ -356,6 +435,36 @@ public class FindByLocationFragment extends Fragment implements OnMapReadyCallba
     @Override
     public void onMapClick(LatLng latLng) {
         showSelectedLocationMarkerAt(latLng);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        ShopLocationResult shopLocationResult = (ShopLocationResult) marker.getTag();
+        if (shopLocationResult != null) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            textShopName.setText(shopLocationResult.getShopName());
+            List<ProductPreview> productPreviews = shopLocationResult.getProducts();
+            textProductFound.setText("" + productPreviews.size());
+            double distance = Math.round(shopLocationResult.getDistance() * 10.0) / 10.0;
+            StringBuilder distanceValue = new StringBuilder();
+            if(distance < 1.0) {
+                distanceValue.append(distance * 1000).append(" m");
+            } else {
+                distanceValue.append(distance).append(" Km");
+            }
+            textDistance.setText(distanceValue.toString());
+            productAdapter.refresh(productPreviews);
+        }
+        return false;
+    }
+
+    @Override
+    public void onItemClick(RecyclerView.Adapter adapter, View view, int viewType, int position) {
+        ProductPreview productPreview = productAdapter.getItem(position, ProductPreview.class);
+
+        Intent intent = new Intent(getActivity(), ProductDetailLoadingActivity.class);
+        intent.putExtra(Constant.PRODUCT_ID, productPreview.getId());
+        startActivity(intent);
     }
 
     private class DistanceAdapter extends BaseAdapter {

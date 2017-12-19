@@ -22,9 +22,9 @@ public class ShopLocationResult {
     @SerializedName("Lon")
     @Expose
     private double lon;
-    @SerializedName("Products")
+    @SerializedName("products")
     @Expose
-    private List<ProductReview> products;
+    private List<ProductPreview> products;
 
     public String getShopName() {
         return shopName;
@@ -58,11 +58,11 @@ public class ShopLocationResult {
         this.lon = lon;
     }
 
-    public List<ProductReview> getProducts() {
+    public List<ProductPreview> getProducts() {
         return products;
     }
 
-    public void setProducts(List<ProductReview> products) {
+    public void setProducts(List<ProductPreview> products) {
         this.products = products;
     }
 }

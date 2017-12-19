@@ -19,19 +19,23 @@ import butterknife.ButterKnife;
 
 public abstract class LoadingActivity extends AppCompatActivity implements ProgressFragment.OnRetryListener {
     private ProgressFragment progressFragment;
-    @BindView(R.id.tool_bar)
-    Toolbar toolbar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_blank);
-        ButterKnife.bind(this);
+        setContentView(getLayoutID());
         progressFragment = getProgressFragment();
-        initToolBar();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        if(toolbar != null) {
+            initToolBar(toolbar);
+        }
     }
 
-    protected void initToolBar() {
+    protected int getLayoutID() {
+        return R.layout.activity_blank;
+    }
+
+    protected void initToolBar(Toolbar toolbar) {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null) {

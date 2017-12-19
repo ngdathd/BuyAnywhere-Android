@@ -40,6 +40,7 @@ import com.uides.buyanywhere.service.rating.GetFeedbackService;
 import com.uides.buyanywhere.service.user.CheckUserCartService;
 import com.uides.buyanywhere.service.user.GetUserOrderService;
 import com.uides.buyanywhere.utils.DateUtil;
+import com.uides.buyanywhere.utils.SharedPreferencesOpenHelper;
 
 import java.util.List;
 
@@ -84,6 +85,10 @@ public class OrderActivity extends AppCompatActivity implements SwipeRefreshLayo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
         ButterKnife.bind(this);
+
+        if(UserAuth.getAuthUser() == null) {
+            UserAuth.setAuthUser(SharedPreferencesOpenHelper.getUser(this));
+        }
 
         userOrderAdapter = new UserOrderAdapter(this);
         userOrderAdapter.setLoadingMoreListener(this);
@@ -225,7 +230,7 @@ public class OrderActivity extends AppCompatActivity implements SwipeRefreshLayo
     public void onItemClick(RecyclerView.Adapter adapter, View view, int viewType, int position) {
         loadingDialog.show();
         UserOrder userOrder = userOrderAdapter.getItem(position, UserOrder.class);
-        Observable<Product> productObservable = getProductService.getProduct(userOrder.getProductName());
+        Observable<Product> productObservable = getProductService.getProduct(userOrder.getProductID());
         Observable<Boolean> checkUserCartObservable = checkUserCartService.containProduct(UserAuth.getAuthUser().getAccessToken(),
                 userOrder.getId());
         Observable<PageResult<Feedback>> productFeedback = getFeedbackService.getAllFeedback(userOrder.getId(),

@@ -27,7 +27,7 @@ import com.uides.buyanywhere.custom_view.dialog.LoadingDialog;
 import com.uides.buyanywhere.model.Category;
 import com.uides.buyanywhere.model.PageResult;
 import com.uides.buyanywhere.model.Product;
-import com.uides.buyanywhere.model.ProductReview;
+import com.uides.buyanywhere.model.ProductPreview;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.recyclerview_adapter.EndlessLoadingRecyclerViewAdapter;
 import com.uides.buyanywhere.recyclerview_adapter.RecyclerViewAdapter;
@@ -150,7 +150,7 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
         errorLayout.setVisibility(View.INVISIBLE);
     }
 
-    private void addResult(PageResult<ProductReview> pageResult) {
+    private void addResult(PageResult<ProductPreview> pageResult) {
         hideLoading();
 
         productAdapter.hideLoadingItem();
@@ -270,7 +270,7 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
                 .subscribe(success -> onFilterSuccess(success, isUpdate), this::onFilterFailed));
     }
 
-    private void onFilterSuccess(PageResult<ProductReview> pageResult, boolean isUpdate) {
+    private void onFilterSuccess(PageResult<ProductPreview> pageResult, boolean isUpdate) {
         if (isUpdate) {
             productAdapter.clear();
         }
@@ -370,9 +370,9 @@ public class SearchResultActivity extends AppCompatActivity implements SearchVie
     @Override
     public void onItemClick(RecyclerView.Adapter adapter, View view, int viewType, int position) {
         loadingDialog.show();
-        ProductReview productReview = productAdapter.getItem(position, ProductReview.class);
-        Observable<Product> productObservable = getProductService.getProduct(productReview.getId());
-        Observable<Boolean> checkUserCartObservable = checkUserCartService.containProduct(UserAuth.getAuthUser().getAccessToken(), productReview.getId());
+        ProductPreview productPreview = productAdapter.getItem(position, ProductPreview.class);
+        Observable<Product> productObservable = getProductService.getProduct(productPreview.getId());
+        Observable<Boolean> checkUserCartObservable = checkUserCartService.containProduct(UserAuth.getAuthUser().getAccessToken(), productPreview.getId());
 
         compositeDisposable.add(Observable.combineLatest(productObservable, checkUserCartObservable, new BiFunction<Product, Boolean, Product>() {
             @Override

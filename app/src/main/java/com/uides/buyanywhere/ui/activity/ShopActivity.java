@@ -12,6 +12,7 @@ import com.uides.buyanywhere.model.Shop;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.service.shop.GetShopService;
 import com.uides.buyanywhere.ui.fragment.shop.ShopPagerFragment;
+import com.uides.buyanywhere.utils.SharedPreferencesOpenHelper;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -32,8 +33,14 @@ public class ShopActivity extends LoadingActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (UserAuth.getAuthUser() == null) {
+            UserAuth.setAuthUser(SharedPreferencesOpenHelper.getUser(this));
+        }
+
         shopID = getIntent().getStringExtra(Constant.SHOP_ID);
         shopPagerFragment = new ShopPagerFragment();
+
         initServices();
         showLoadingFragment();
         fetchShops();
@@ -59,6 +66,8 @@ public class ShopActivity extends LoadingActivity {
     public void showShopPagerFragment(Shop shop) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(Constant.SHOP, shop);
+        bundle.putBoolean(Constant.ENABLE_REFRESHING, false);
+        bundle.putInt(Constant.ACTIVE_TAB, getIntent().getIntExtra(Constant.ACTIVE_TAB, 0));
         bundle.putBoolean(Constant.IS_GUEST, true);
         bundle.putBoolean(Constant.IS_VIEW_BY_SHOP_OWNER, UserAuth.getAuthUser().getId().equals(shop.getOwnerId()));
         shopPagerFragment.setArguments(bundle);

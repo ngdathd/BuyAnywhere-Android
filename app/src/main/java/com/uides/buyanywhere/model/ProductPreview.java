@@ -10,7 +10,7 @@ import java.util.Date;
  * Created by TranThanhTung on 19/11/2017.
  */
 
-public class ProductReview implements Serializable {
+public class ProductPreview implements Serializable {
     public static final String ID = "Id";
     public static final String SHOP_NAME = "ShopName";
     public static final String CATEGORY_NAME = "CategoryName";

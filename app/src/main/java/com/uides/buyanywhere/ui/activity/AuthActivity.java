@@ -18,11 +18,13 @@ public class AuthActivity extends AppCompatActivity {
     private static final String BACK_TO_LOGIN = "BACK_TO_LOGIN";
     private LoginFragment loginFragment;
     private RegisterFragment registerFragment;
+    private boolean isAutoSignIn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
+        isAutoSignIn = getIntent().getBooleanExtra(Constant.KEY_AUTO_SIGN_IN, true);
         initViews();
         showLoginFragment();
     }
@@ -38,6 +40,9 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     public void showLoginFragment() {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(Constant.KEY_AUTO_SIGN_IN, isAutoSignIn);
+        loginFragment.setArguments(bundle);
         getFragmentManager().beginTransaction()
                 .replace(R.id.fl_main, loginFragment)
                 .commit();
@@ -45,6 +50,7 @@ public class AuthActivity extends AppCompatActivity {
 
     public void showLogInFragment(String account, String password) {
         Bundle bundle = new Bundle();
+        bundle.putBoolean(Constant.KEY_AUTO_SIGN_IN, isAutoSignIn);
         bundle.putString(Constant.KEY_EMAIL, account);
         bundle.putString(Constant.KEY_PASSWORD, password);
         loginFragment.setArguments(bundle);

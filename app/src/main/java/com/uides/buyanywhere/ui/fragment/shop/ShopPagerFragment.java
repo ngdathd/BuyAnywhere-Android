@@ -66,6 +66,9 @@ public class ShopPagerFragment extends Fragment {
 
     private void showViews() {
         shopViewPager.setAdapter(shopPagerAdapter);
+
+        int activeTab = getArguments().getInt(Constant.ACTIVE_TAB, 0);
+        shopViewPager.setCurrentItem(activeTab);
         showImage(avatarUrl, coverUrl);
     }
 

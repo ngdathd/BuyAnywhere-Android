@@ -104,6 +104,11 @@ public class SharedPreferencesOpenHelper {
                 .apply();
     }
 
+    public static String getShopID(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SAVED_ACCOUNT_SHARE_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        return sharedPreferences.getString(Constant.KEY_SHOP_ID, null);
+    }
+
     public static SignInInfo getSignInInfo(Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences(SAVED_ACCOUNT_SHARE_PREFERENCES_NAME, Context.MODE_PRIVATE);
         String username = sharedPreferences.getString(Constant.KEY_EMAIL, "");

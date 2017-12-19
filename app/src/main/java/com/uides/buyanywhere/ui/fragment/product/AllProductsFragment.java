@@ -18,7 +18,7 @@ import com.uides.buyanywhere.custom_view.dialog.LoadingDialog;
 import com.uides.buyanywhere.model.Feedback;
 import com.uides.buyanywhere.model.PageResult;
 import com.uides.buyanywhere.model.Product;
-import com.uides.buyanywhere.model.ProductReview;
+import com.uides.buyanywhere.model.ProductPreview;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.service.product.GetProductService;
 import com.uides.buyanywhere.recyclerview_adapter.EndlessLoadingRecyclerViewAdapter;
@@ -27,12 +27,12 @@ import com.uides.buyanywhere.service.product.GetProductsService;
 import com.uides.buyanywhere.service.rating.GetFeedbackService;
 import com.uides.buyanywhere.service.user.CheckUserCartService;
 import com.uides.buyanywhere.ui.activity.ProductDetailActivity;
+import com.uides.buyanywhere.ui.activity.ProductDetailLoadingActivity;
 import com.uides.buyanywhere.ui.fragment.RecyclerViewFragment;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Function3;
 import io.reactivex.schedulers.Schedulers;
 
@@ -47,11 +47,7 @@ public class AllProductsFragment extends RecyclerViewFragment implements Endless
     private static final int PRODUCT_DETAIL_REQUEST_CODE = 0;
 
     private GetProductsService getProductReviewsService;
-    private GetProductService getProductService;
-    private CheckUserCartService checkUserCartService;
-    private GetFeedbackService getFeedbackService;
 
-    private LoadingDialog loadingDialog;
     private int selectedProductIndex = -1;
 
     @Override
@@ -59,7 +55,6 @@ public class AllProductsFragment extends RecyclerViewFragment implements Endless
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         initServices();
-        this.loadingDialog = new LoadingDialog(getActivity());
     }
 
     @Override
@@ -80,9 +75,6 @@ public class AllProductsFragment extends RecyclerViewFragment implements Endless
     private void initServices() {
         Network network = Network.getInstance();
         getProductReviewsService = network.createService(GetProductsService.class);
-        getProductService = network.createService(GetProductService.class);
-        checkUserCartService = network.createService(CheckUserCartService.class);
-        getFeedbackService = network.createService(GetFeedbackService.class);
     }
 
     @Override
@@ -96,7 +88,7 @@ public class AllProductsFragment extends RecyclerViewFragment implements Endless
     @Override
     public void onRefresh() {
         Disposable disposable = getProductReviewsService
-                .getProducts(1, LIMIT_PRODUCT, ProductReview.CREATED_DATE, 1)
+                .getProducts(1, LIMIT_PRODUCT, ProductPreview.CREATED_DATE, 1)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe(this::onRefreshSuccess, this::onRefreshError);
@@ -114,7 +106,7 @@ public class AllProductsFragment extends RecyclerViewFragment implements Endless
         getSwipeRefreshLayout().setRefreshing(false);
     }
 
-    private void onRefreshSuccess(PageResult<ProductReview> pageResult) {
+    private void onRefreshSuccess(PageResult<ProductPreview> pageResult) {
         ((EndlessLoadingRecyclerViewAdapter) getAdapter()).disableLoadingMore(false);
         ProductAdapter productAdapter = (ProductAdapter) getAdapter();
         productAdapter.clear();
@@ -138,7 +130,7 @@ public class AllProductsFragment extends RecyclerViewFragment implements Endless
         productAdapter.showLoadingItem(true);
         Disposable disposable = getProductReviewsService
                 .getProducts(productAdapter.getItemCount() / LIMIT_PRODUCT + 1,
-                        LIMIT_PRODUCT, ProductReview.CREATED_DATE,
+                        LIMIT_PRODUCT, ProductPreview.CREATED_DATE,
                         1)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
@@ -154,7 +146,7 @@ public class AllProductsFragment extends RecyclerViewFragment implements Endless
         productAdapter.hideLoadingItem();
     }
 
-    private void onLoadMoreSuccess(PageResult<ProductReview> pageResult) {
+    private void onLoadMoreSuccess(PageResult<ProductPreview> pageResult) {
         getSwipeRefreshLayout().setEnabled(true);
         ProductAdapter productAdapter = (ProductAdapter) getAdapter();
         productAdapter.hideLoadingItem();
@@ -166,27 +158,13 @@ public class AllProductsFragment extends RecyclerViewFragment implements Endless
 
     @Override
     public void onItemClick(RecyclerView.Adapter adapter, View view, int viewType, int position) {
-        loadingDialog.show();
-        ProductReview productReview = getAdapter().getItem(position, ProductReview.class);
-        Observable<Product> productObservable = getProductService.getProduct(productReview.getId());
-        Observable<Boolean> checkUserCartObservable = checkUserCartService.containProduct(UserAuth.getAuthUser().getAccessToken(),
-                productReview.getId());
-        Observable<PageResult<Feedback>> productFeedback = getFeedbackService.getAllFeedback(productReview.getId(),
-                0,
-                LATEST_FEEDBACK_COUNT,
-                Feedback.CREATED_DATE,
-                Constant.DESC);
+        selectedProductIndex = position;
 
-        addDisposable(Observable.combineLatest(productObservable, checkUserCartObservable, productFeedback, new Function3<Product, Boolean, PageResult<Feedback>, Product>() {
-            @Override
-            public Product apply(Product product, Boolean isAdded, PageResult<Feedback> feedbackPageResult) throws Exception {
-                product.setAddedToCart(isAdded);
-                product.setPreviewFeedback(feedbackPageResult.getResults());
-                return product;
-            }
-        }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(success -> onFetchProductSuccess(success, position), this::onFetchProductFailed));
+        ProductPreview productPreview = getAdapter().getItem(position, ProductPreview.class);
+
+        Intent intent = new Intent(getActivity(), ProductDetailLoadingActivity.class);
+        intent.putExtra(Constant.PRODUCT_ID, productPreview.getId());
+        startActivityForResult(intent, PRODUCT_DETAIL_REQUEST_CODE);
     }
 
     @Override
@@ -197,7 +175,7 @@ public class AllProductsFragment extends RecyclerViewFragment implements Endless
                 if (resultCode == Activity.RESULT_OK) {
                     if (selectedProductIndex != -1) {
                         ProductAdapter productAdapter = (ProductAdapter) getAdapter();
-                        ProductReview product = productAdapter.getItem(selectedProductIndex, ProductReview.class);
+                        ProductPreview product = productAdapter.getItem(selectedProductIndex, ProductPreview.class);
                         int rating = data.getIntExtra(Constant.RATING, product.getRating());
                         product.setRating(rating);
                         productAdapter.notifyItemChanged(selectedProductIndex);
@@ -211,25 +189,5 @@ public class AllProductsFragment extends RecyclerViewFragment implements Endless
                 break;
             }
         }
-    }
-
-    private void onFetchProductSuccess(Product product, int index) {
-        loadingDialog.dismiss();
-        this.selectedProductIndex = index;
-        Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
-        Bundle bundle = new Bundle();
-
-        boolean userIsShopOwner = UserAuth.getAuthUser().getShopID().equals(product.getShopID());
-        bundle.putSerializable(Constant.PRODUCT, product);
-        bundle.putBoolean(Constant.IS_VIEW_BY_SHOP_OWNER, userIsShopOwner);
-        intent.putExtras(bundle);
-        startActivityForResult(intent, PRODUCT_DETAIL_REQUEST_CODE);
-    }
-
-    private void onFetchProductFailed(Throwable e) {
-        loadingDialog.dismiss();
-        this.selectedProductIndex = -1;
-        Log.i(TAG, "onFetchProductFailed: " + e);
-        Toast.makeText(getActivity(), R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
     }
 }

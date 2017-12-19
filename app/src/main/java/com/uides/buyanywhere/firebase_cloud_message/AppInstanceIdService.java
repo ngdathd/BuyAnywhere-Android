@@ -22,7 +22,7 @@ public class AppInstanceIdService extends FirebaseInstanceIdService {
     public void onTokenRefresh() {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
 
-        sendRegistrationToServer(refreshedToken);
+//        sendRegistrationToServer(refreshedToken);
     }
 
     private void sendRegistrationToServer(String refreshedToken) {

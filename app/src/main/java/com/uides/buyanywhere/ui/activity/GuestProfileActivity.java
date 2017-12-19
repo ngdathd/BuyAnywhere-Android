@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.uides.buyanywhere.Constant;
+import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.auth.UserAuth;
 import com.uides.buyanywhere.model.UserProfile;
 import com.uides.buyanywhere.network.Network;
@@ -36,6 +37,11 @@ public class GuestProfileActivity extends LoadingActivity{
         initServices();
         showLoadingFragment();
         fetchUser();
+    }
+
+    @Override
+    protected int getLayoutID() {
+        return R.layout.activity_blank_without_tool_bar;
     }
 
     private void initServices() {

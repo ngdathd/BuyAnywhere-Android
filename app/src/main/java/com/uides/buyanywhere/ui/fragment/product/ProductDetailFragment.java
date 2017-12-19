@@ -1,20 +1,25 @@
-package com.uides.buyanywhere.ui.activity;
+package com.uides.buyanywhere.ui.fragment.product;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -32,9 +37,9 @@ import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.auth.UserAuth;
 import com.uides.buyanywhere.custom_view.PriceTextView;
+import com.uides.buyanywhere.custom_view.StrikeThroughPriceTextView;
 import com.uides.buyanywhere.custom_view.dialog.OrderDialog;
 import com.uides.buyanywhere.custom_view.dialog.RatingDialog;
-import com.uides.buyanywhere.custom_view.StrikeThroughPriceTextView;
 import com.uides.buyanywhere.model.Feedback;
 import com.uides.buyanywhere.model.OrderBody;
 import com.uides.buyanywhere.model.Product;
@@ -48,7 +53,10 @@ import com.uides.buyanywhere.service.cart.DeleteCartService;
 import com.uides.buyanywhere.service.user.CreateOrderService;
 import com.uides.buyanywhere.service.user.GetUserProfileService;
 import com.uides.buyanywhere.service.user.RateProductService;
-import com.uides.buyanywhere.ui.fragment.product.AllProductsFragment;
+import com.uides.buyanywhere.ui.activity.ListFeedbackActivity;
+import com.uides.buyanywhere.ui.activity.ProductDetailActivity;
+import com.uides.buyanywhere.ui.activity.ProductDetailLoadingActivity;
+import com.uides.buyanywhere.ui.activity.ShopActivity;
 import com.uides.buyanywhere.utils.DateUtil;
 
 import java.text.SimpleDateFormat;
@@ -64,11 +72,11 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Created by TranThanhTung on 19/11/2017.
+ * Created by TranThanhTung on 19/12/2017.
  */
 
-public class ProductDetailActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final String TAG = "ProductDetailActivity";
+public class ProductDetailFragment extends Fragment implements View.OnClickListener {
+    public static final String TAG = "ProductDetailFragment";
     private static final int LIST_FEEDBACK_REQUEST_CODE = 0;
 
     @BindView(R.id.image_slider)
@@ -123,15 +131,18 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     private boolean isFromShopView;
     private boolean isViewByShopOwner;
     private OrderDialog orderDialog;
+    private View view;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_product_detail);
-        inflater = LayoutInflater.from(this);
-        ButterKnife.bind(this);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.activity_product_detail, container, false);
+        Activity activity = getActivity();
+        setHasOptionsMenu(true);
+        this.inflater = LayoutInflater.from(activity);
+        ButterKnife.bind(this, view);
         initService();
-        Bundle bundle = getIntent().getExtras();
+        Bundle bundle = getArguments();
         if (bundle != null) {
             product = (Product) bundle.getSerializable(Constant.PRODUCT);
             isFromShopView = bundle.getBoolean(Constant.IS_FROM_SHOP, false);
@@ -139,10 +150,11 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
         }
         initViews();
         showViews(product);
+        return view;
     }
 
     private void initViews() {
-        orderDialog = new OrderDialog(this, product.getQuantity());
+        orderDialog = new OrderDialog(getActivity(), product.getQuantity());
         orderDialog.setOnSubmitSuccessListener((orderDialog, userOrder) -> {
             orderDialog.showProgressBar(true);
             User user = UserAuth.getAuthUser();
@@ -163,17 +175,17 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     private void onCreateOrderSuccess(Object object) {
         orderDialog.showProgressBar(false);
         orderDialog.dismiss();
-        Toast.makeText(this, R.string.order_success, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), R.string.order_success, Toast.LENGTH_SHORT).show();
     }
 
     private void onCreateOrderFailed(Throwable e) {
         orderDialog.showProgressBar(false);
         Log.i(TAG, "onCreateOrderFailed: ");
-        Toast.makeText(this, R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         if (compositeDisposable != null) {
             compositeDisposable.clear();
@@ -245,17 +257,9 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
         }
     }
 
-    @Override
-    public void finish() {
-        Intent intent = new Intent();
-        intent.putExtra(Constant.RATING, product.getRating());
-        setResult(RESULT_OK, intent);
-        super.finish();
-    }
-
     private void addLatestFeedBack(Feedback feedback, int index) {
         View view = inflater.inflate(R.layout.item_rating, feedbackLayout, false);
-        Picasso.with(this)
+        Picasso.with(getActivity())
                 .load(feedback.getAvatarUrl())
                 .placeholder(R.drawable.avatar_placeholder)
                 .fit().into((CircleImageView) view.findViewById(R.id.img_avatar));
@@ -275,11 +279,13 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     }
 
     private void initToolBar() {
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        activity.setSupportActionBar(toolbar);
+        ActionBar actionBar = activity.getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
@@ -303,7 +309,7 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
             return;
         }
         for (String imageUrl : imageUrls) {
-            TextSliderView textSliderView = new TextSliderView(this);
+            TextSliderView textSliderView = new TextSliderView(getActivity());
             if (imageUrl.isEmpty()) {
                 textSliderView.image(R.drawable.placeholder);
             } else {
@@ -320,36 +326,36 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         Configuration configuration = getResources().getConfiguration();
         if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
-            CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
+            CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar_layout);
             collapsingToolbarLayout.setExpandedTitleTextColor(ColorStateList.valueOf(Color.TRANSPARENT));
         } else {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.product_detail_tool_bar, menu);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        getActivity().getMenuInflater().inflate(R.menu.product_detail_tool_bar, menu);
         addToCartButton = menu.findItem(R.id.action_add_to_cart);
         if (isViewByShopOwner) {
             addToCartButton.setVisible(false);
         } else if (product.isAddedToCart()) {
             addToCartButton.setIcon(R.drawable.ic_added_to_cart);
         }
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                onBackPressed();
+                getActivity().onBackPressed();
             }
             break;
 
@@ -382,7 +388,7 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
             break;
 
             case R.id.btn_rating: {
-                ratingDialog = new RatingDialog(this)
+                ratingDialog = new RatingDialog(getActivity())
                         .setOnPositiveButtonClickListener((rating, textFeedback) -> {
                             Rating ratingModel = new Rating();
                             ratingModel.setRating(rating);
@@ -414,14 +420,14 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
             break;
 
             case R.id.btn_to_shop: {
-                Intent intent = new Intent(this, ShopActivity.class);
+                Intent intent = new Intent(getActivity(), ShopActivity.class);
                 intent.putExtra(Constant.SHOP_ID, product.getShopID());
                 startActivity(intent);
             }
             break;
 
             case R.id.btn_view_more: {
-                Intent intent = new Intent(this, ListFeedbackActivity.class);
+                Intent intent = new Intent(getActivity(), ListFeedbackActivity.class);
                 intent.putExtra(Constant.PRODUCT_ID, product.getId());
                 startActivityForResult(intent, LIST_FEEDBACK_REQUEST_CODE);
             }
@@ -441,15 +447,15 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     private void onFetchUserProfileFailure(Throwable e) {
         Log.i(TAG, "onFetchUserProfileFailure: ");
         orderDialog.dismiss();
-        Toast.makeText(this, R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case LIST_FEEDBACK_REQUEST_CODE: {
-                if (resultCode == RESULT_OK) {
+                if (resultCode == Activity.RESULT_OK) {
                     RatingResult ratingResult = (RatingResult) data.getSerializableExtra(Constant.RATING_RESULT);
                     product.setRating(ratingResult.getAverageRating());
                     product.setRatingCount(ratingResult.getRatingCount());
@@ -471,6 +477,7 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
 
     private void onRatingSuccess(RatingResult ratingResult) {
         ratingDialog.dismiss();
+
         product.setRatingCount(ratingResult.getRatingCount());
         product.setRating(ratingResult.getAverageRating());
         ratingBar.setStar(product.getRating());
@@ -482,10 +489,10 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
 
         Intent intent = new Intent();
         intent.putExtra(Constant.RATING, ratingResult.getAverageRating());
-        setResult(RESULT_OK, intent);
+        getActivity().setResult(Activity.RESULT_OK, intent);
 
         Log.i(TAG, "onRatingSuccess: " + ratingResult);
-        Toast.makeText(ProductDetailActivity.this,
+        Toast.makeText(getActivity(),
                 R.string.feedback_sent,
                 Toast.LENGTH_SHORT).show();
     }
@@ -493,7 +500,7 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     private void onRatingFailed(Throwable e) {
         ratingDialog.dismiss();
         Log.i(TAG, "onRatingFailed: " + e);
-        Toast.makeText(ProductDetailActivity.this,
+        Toast.makeText(getActivity(),
                 R.string.unexpected_error_message,
                 Toast.LENGTH_SHORT).show();
     }
@@ -518,28 +525,22 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
 
     private void onCartRequestFailed(Throwable e) {
         Log.i(TAG, "onCartRequestFailed: " + e);
-        Toast.makeText(this, R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
     }
 
     void onAddProductToCartSuccess() {
         product.setAddedToCart(true);
-        Toast.makeText(this, R.string.add_product_success, Toast.LENGTH_SHORT).show();
+        ((ProductDetailLoadingActivity) getActivity()).setAddedToCart(true);
+        Toast.makeText(getActivity(), R.string.add_product_success, Toast.LENGTH_SHORT).show();
         addToCartButton.setIcon(R.drawable.ic_added_to_cart);
         addToCartFab.setImageResource(R.drawable.ic_added_to_cart);
     }
 
     void onRemoveProductFromCartSuccess() {
         product.setAddedToCart(false);
-        Toast.makeText(this, R.string.remove_product_success, Toast.LENGTH_SHORT).show();
+        ((ProductDetailLoadingActivity) getActivity()).setAddedToCart(false);
+        Toast.makeText(getActivity(), R.string.remove_product_success, Toast.LENGTH_SHORT).show();
         addToCartButton.setIcon(R.drawable.ic_add_to_cart);
         addToCartFab.setImageResource(R.drawable.ic_add_to_cart);
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent();
-        intent.putExtra(Constant.CART_REMOVED, !product.isAddedToCart());
-        setResult(RESULT_CANCELED, intent);
-        super.onBackPressed();
     }
 }

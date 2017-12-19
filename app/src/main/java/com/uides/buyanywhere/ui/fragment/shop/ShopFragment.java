@@ -9,6 +9,7 @@ import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.auth.UserAuth;
 import com.uides.buyanywhere.ui.activity.ShopRegisterActivity;
 import com.uides.buyanywhere.ui.fragment.LoadingFragment;
+import com.uides.buyanywhere.utils.SharedPreferencesOpenHelper;
 
 /**
  * Created by TranThanhTung on 21/11/2017.
@@ -59,6 +60,8 @@ public class ShopFragment extends LoadingFragment {
                     if (bundle != null) {
                         String shopID = bundle.getString(Constant.SHOP_ID);
                         UserAuth.getAuthUser().setShopID(shopID);
+
+                        SharedPreferencesOpenHelper.saveUser(getActivity(), UserAuth.getAuthUser());
                     }
                 }
             }

@@ -19,6 +19,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.login.LoginManager;
+import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
@@ -234,6 +236,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 viewPager.setCurrentItem(MainPagerAdapter.SHOP_FRAGMENT_INDEX);
                 drawerLayout.closeDrawer(Gravity.START);
                 return true;
+            }
+
+            case R.id.navigation_drawer_logout: {
+                LoginManager.getInstance().logOut();
+                Intent intent = new Intent(this, AuthActivity.class);
+                intent.putExtra(Constant.KEY_AUTO_SIGN_IN, false);
+                startActivity(intent);
+                finish();
+                return false;
             }
 
             default: {

@@ -70,19 +70,19 @@ public class Product implements Serializable{
 
     private boolean isAddedToCart;
 
-    public ProductReview toProductReview() {
-        ProductReview productReview = new ProductReview();
-        productReview.setName(name);
-        productReview.setShopName(shopName);
-        productReview.setCategoryName(categoryName);
-        productReview.setCurrentPrice(currentPrice);
-        productReview.setOriginPrice(originPrice);
-        productReview.setPreviewUrl(previewUrl);
-        productReview.setId(id);
-        productReview.setQuantity(quantity);
-        productReview.setCreatedDate(createdDate);
-        productReview.setRating(rating);
-        return productReview;
+    public ProductPreview toProductReview() {
+        ProductPreview productPreview = new ProductPreview();
+        productPreview.setName(name);
+        productPreview.setShopName(shopName);
+        productPreview.setCategoryName(categoryName);
+        productPreview.setCurrentPrice(currentPrice);
+        productPreview.setOriginPrice(originPrice);
+        productPreview.setPreviewUrl(previewUrl);
+        productPreview.setId(id);
+        productPreview.setQuantity(quantity);
+        productPreview.setCreatedDate(createdDate);
+        productPreview.setRating(rating);
+        return productPreview;
     }
 
     public String getId() {

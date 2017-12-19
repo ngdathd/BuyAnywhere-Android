@@ -37,6 +37,8 @@ public class Constant {
     public static final String ADDRESS = "ADDRESS";
     public static final String LOCATION = "LOCATION";
     public static final String USER_ID = "USER_ID";
+    public static final String ACTIVE_TAB = "ACTIVE_TAB";
+    public static final String ENABLE_REFRESHING = "ENABLE_REFRESHING";
 
     public static final int SLIDE_DURATION = 5000;
 

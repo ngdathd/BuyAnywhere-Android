@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.model.Category;
-import com.uides.buyanywhere.model.ProductReview;
+import com.uides.buyanywhere.model.ProductPreview;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.service.categories.GetCategoriesService;
 import com.uides.buyanywhere.ui.fragment.shop.ChildPostProductFragment;
@@ -98,9 +98,9 @@ public class PostProductActivity extends LoadingActivity {
         compositeDisposable.clear();
     }
 
-    public void returnPostProductAndFinish(ProductReview productReview) {
+    public void returnPostProductAndFinish(ProductPreview productPreview) {
         Intent intent = new Intent();
-        intent.putExtra(Constant.PRODUCT_REVIEW, productReview);
+        intent.putExtra(Constant.PRODUCT_REVIEW, productPreview);
         setResult(RESULT_OK, intent);
         finish();
     }

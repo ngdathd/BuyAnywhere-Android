@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,11 +21,13 @@ import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.R;
 import com.uides.buyanywhere.model.ShopOrder;
 import com.uides.buyanywhere.model.PageResult;
+import com.uides.buyanywhere.model.UserProfile;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.recyclerview_adapter.EndlessLoadingRecyclerViewAdapter;
 import com.uides.buyanywhere.recyclerview_adapter.RecyclerViewAdapter;
 import com.uides.buyanywhere.service.shop.GetShopOrderService;
 import com.uides.buyanywhere.service.shop.ShippedService;
+import com.uides.buyanywhere.ui.activity.GuestProfileActivity;
 import com.uides.buyanywhere.ui.fragment.RecyclerViewFragment;
 import com.uides.buyanywhere.utils.DateUtil;
 
@@ -143,7 +146,10 @@ public class ShopOrderFragment extends RecyclerViewFragment implements RecyclerV
 
     @Override
     public void onItemClick(RecyclerView.Adapter adapter, View view, int viewType, int position) {
-
+        ShopOrder shopOrder = getAdapter().getItem(position, ShopOrder.class);
+        Intent intent = new Intent(getActivity(), GuestProfileActivity.class);
+        intent.putExtra(Constant.USER_ID, shopOrder.getUserID());
+        startActivity(intent);
     }
 
     private class ShopOrderAdapter extends EndlessLoadingRecyclerViewAdapter {
@@ -184,6 +190,8 @@ public class ShopOrderFragment extends RecyclerViewFragment implements RecyclerV
                 buttonShipped.setTextColor(activity.getResources().getColor(R.color.dark_gray));
                 buttonShipped.setText(R.string.shipped);
             }
+
+            shopOrderViewHolder.showProgress(shopOrder, shopOrder.isShipping());
         }
 
         @Override
@@ -237,6 +245,8 @@ public class ShopOrderFragment extends RecyclerViewFragment implements RecyclerV
         Button buttonShipped;
         @BindView(R.id.btn_dial)
         Button buttonDial;
+        @BindView(R.id.progress_bar)
+        ProgressBar progressBar;
 
         public ShopOrderViewHolder(View itemView) {
             super(itemView);
@@ -246,19 +256,33 @@ public class ShopOrderFragment extends RecyclerViewFragment implements RecyclerV
             buttonDial.setOnClickListener(this);
         }
 
+        public void showProgress(ShopOrder shopOrder, boolean isShow) {
+            shopOrder.setShipping(isShow);
+            progressBar.setVisibility(isShow ? View.VISIBLE : View.INVISIBLE);
+            buttonShipped.setVisibility(isShow ? View.INVISIBLE : View.VISIBLE);
+        }
+
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btn_shipped: {
                     int position = getAdapterPosition();
                     ShopOrder shopOrder = getAdapter().getItem(position, ShopOrder.class);
+
+                    showProgress(shopOrder, true);
+
                     addDisposable(shippedService.ship(shopOrder.getId())
                             .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(success -> {
+                                showProgress(shopOrder, false);
                                 shopOrder.setShippedDate(success.getShippedDate());
-                                getAdapter().notifyItemChanged(position);
+
+                                buttonShipped.setEnabled(false);
+                                buttonShipped.setTextColor(getActivity().getResources().getColor(R.color.dark_gray));
+                                buttonShipped.setText(R.string.shipped);
                             }, failure -> {
+                                showProgress(shopOrder, false);
                                 Log.i(TAG, "onShipFailure: " + failure);
                                 Toast.makeText(getActivity(), R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
                             }));

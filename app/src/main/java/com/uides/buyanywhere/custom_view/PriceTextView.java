@@ -32,7 +32,7 @@ public class PriceTextView extends AppCompatTextView {
         setText(reformatPrice(price, unit));
     }
 
-    private String reformatPrice(String price, String unit) {
+    public static String reformatPrice(String price, String unit) {
         StringBuilder newPrice = new StringBuilder(price);
         int priceLength = price.length() - 1;
         for (int i = priceLength - 2; i > 0; i -= 3) {

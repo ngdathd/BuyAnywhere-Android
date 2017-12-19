@@ -32,6 +32,11 @@
             android:id="@+id/navigation_drawer_profile"
             android:icon="@drawable/ic_user"
             android:title="@string/profile" />
+
+        <item
+            android:id="@+id/navigation_drawer_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="@string/log_out" />
     </group>
 
     <group

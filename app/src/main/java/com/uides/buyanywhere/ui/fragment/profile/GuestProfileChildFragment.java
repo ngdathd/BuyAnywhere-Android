@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -48,7 +49,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by TranThanhTung on 18/12/2017.
  */
 
-public class GuestProfileChildFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class GuestProfileChildFragment extends Fragment {
     private static final String TAG = "GPChildFragment";
     @BindView(R.id.img_cover)
     ImageView imageCover;
@@ -68,8 +69,6 @@ public class GuestProfileChildFragment extends Fragment implements SwipeRefreshL
     TextView textGender;
     @BindView(R.id.tag_group_favorite)
     TagView favoriteTagGroup;
-    @BindView(R.id.swipe_refresh)
-    SwipeRefreshLayout refreshLayout;
 
     private View rootView;
 
@@ -89,7 +88,6 @@ public class GuestProfileChildFragment extends Fragment implements SwipeRefreshL
 
         initToolBar();
         initServices();
-        initSwipeRefreshLayout();
         showViews(userProfile);
 
         return rootView;
@@ -110,8 +108,11 @@ public class GuestProfileChildFragment extends Fragment implements SwipeRefreshL
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+            getActivity().finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initServices() {
@@ -119,46 +120,6 @@ public class GuestProfileChildFragment extends Fragment implements SwipeRefreshL
         Network network = Network.getInstance();
         getUserProfileService = network.createService(GetUserProfileService.class);
         getFavoriteCategoriesService = Network.getInstance().createService(GetFavoriteCategoriesService.class);
-    }
-
-    private void initSwipeRefreshLayout() {
-        int firstColor = getResources().getColor(R.color.blue);
-        int secondColor = getResources().getColor(R.color.red);
-        int thirdColor = getResources().getColor(R.color.yellow);
-        int fourthColor = getResources().getColor(R.color.green);
-        refreshLayout.setColorSchemeColors(firstColor, secondColor, thirdColor, fourthColor);
-        refreshLayout.setOnRefreshListener(this);
-    }
-
-    @Override
-    public void onRefresh() {
-        String accessToken = UserAuth.getAuthUser().getAccessToken();
-
-        Observable<UserProfile> observableUserProfile = getUserProfileService
-                .getUserProfile(accessToken);
-
-        Observable<List<Category>> observableFavoriteCategories = getFavoriteCategoriesService
-                .getFavoriteCategories(accessToken);
-
-        Disposable disposable = Observable.combineLatest(observableUserProfile, observableFavoriteCategories, (userProfile, categories) -> {
-            userProfile.setFavoriteCategories(categories);
-            return userProfile;
-        })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onFetchUserProfileSuccess, this::onFetchUserProfileFailed);
-        compositeDisposable.add(disposable);
-    }
-
-    private void onFetchUserProfileSuccess(UserProfile userProfile) {
-        refreshLayout.setRefreshing(false);
-        showViews(userProfile);
-    }
-
-    private void onFetchUserProfileFailed(Throwable e) {
-        refreshLayout.setRefreshing(false);
-        Log.i(TAG, "onFetchUserProfileFailed: " + e);
-        Toast.makeText(getActivity(), R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
     }
 
     @Override

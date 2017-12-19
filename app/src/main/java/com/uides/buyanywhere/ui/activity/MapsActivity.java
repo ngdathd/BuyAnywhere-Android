@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -50,6 +51,7 @@ import com.uides.buyanywhere.recyclerview_adapter.RecyclerViewAdapter;
 import com.uides.buyanywhere.service.google_map.GetMapAddressService;
 import com.uides.buyanywhere.service.google_map.GetMapLatLonService;
 
+import java.io.IOException;
 import java.util.List;
 
 import butterknife.BindView;
@@ -100,19 +102,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.tool_bar, menu);
+        getMenuInflater().inflate(R.menu.map_tool_bar, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    if (addressAdapter.getItemCount() != 0) {
-                        recyclerView.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    recyclerView.setVisibility(View.INVISIBLE);
+        searchView.setOnQueryTextFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                if (addressAdapter.getItemCount() != 0) {
+                    recyclerView.setVisibility(View.VISIBLE);
                 }
+            } else {
+                recyclerView.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -130,20 +129,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
             break;
 
+            case R.id.action_submit: {
+                Intent intent = new Intent();
+                intent.putExtra(Constant.ADDRESS, address);
+                intent.putExtra(Constant.LOCATION, location);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+            break;
+
             default: {
                 break;
             }
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void finish() {
-        Intent intent = new Intent();
-        intent.putExtra(Constant.ADDRESS, address);
-        intent.putExtra(Constant.LOCATION, location);
-        setResult(RESULT_OK, intent);
-        super.finish();
     }
 
     public void showAddress(boolean isShow, String address) {
@@ -354,6 +353,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         return false;
     }
+
+//    private void queryAddress(String query) {
+//        Geocoder coder = new Geocoder(this);
+//        try {
+//            List<Address> addresses = coder.getFromLocationName(query,6);
+//            if(addresses == null) {
+//                return;
+//            }
+//            addressAdapter.refresh(addresses);
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

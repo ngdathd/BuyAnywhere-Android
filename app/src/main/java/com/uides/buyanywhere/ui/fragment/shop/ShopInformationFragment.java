@@ -120,12 +120,14 @@ public class ShopInformationFragment extends Fragment implements View.OnClickLis
     }
 
     private void initSwipeRefreshLayout() {
-        int firstColor = getResources().getColor(R.color.blue);
-        int secondColor = getResources().getColor(R.color.red);
-        int thirdColor = getResources().getColor(R.color.yellow);
-        int fourthColor = getResources().getColor(R.color.green);
-        refreshLayout.setColorSchemeColors(firstColor, secondColor, thirdColor, fourthColor);
-        refreshLayout.setOnRefreshListener(this);
+        if (getArguments().getBoolean(Constant.ENABLE_REFRESHING, true)) {
+            int firstColor = getResources().getColor(R.color.blue);
+            int secondColor = getResources().getColor(R.color.red);
+            int thirdColor = getResources().getColor(R.color.yellow);
+            int fourthColor = getResources().getColor(R.color.green);
+            refreshLayout.setColorSchemeColors(firstColor, secondColor, thirdColor, fourthColor);
+            refreshLayout.setOnRefreshListener(this);
+        }
     }
 
     @Override
@@ -172,7 +174,7 @@ public class ShopInformationFragment extends Fragment implements View.OnClickLis
             textDescription.setText(description);
         }
 
-        if(isGuest) {
+        if (isGuest) {
             fabEdit.setVisibility(View.INVISIBLE);
         } else {
             fabEdit.setOnClickListener(this);

@@ -43,6 +43,8 @@ public class ShopOrder {
     @Expose
     private Date shippedDate;
 
+    private boolean isShipping;
+
     public String getId() {
         return id;
     }
@@ -121,5 +123,13 @@ public class ShopOrder {
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public boolean isShipping() {
+        return isShipping;
+    }
+
+    public void setShipping(boolean shipping) {
+        isShipping = shipping;
     }
 }

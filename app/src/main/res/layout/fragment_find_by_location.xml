@@ -1,79 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.activity.MainActivity">
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map_view"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
 
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="2dp"
-        android:translationZ="2dp"
-        android:layout_margin="5dp"
-        app:cardCornerRadius="5dp"
-        android:id="@+id/cardView">
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-        <RelativeLayout
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true">
+            android:layout_margin="5dp"
+            android:elevation="2dp"
+            android:translationZ="2dp"
+            app:cardCornerRadius="5dp">
 
-            <android.support.v7.widget.SearchView
-                android:id="@+id/search_view"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:background="@drawable/round_left_edit_text"
-                android:textColor="@android:color/black"
-                android:layout_toStartOf="@id/spinner_distance"
-                app:queryHint="@string/input_key"
-                android:gravity="center_vertical"
-                android:layout_marginEnd="3dp"/>
-
-            <android.support.v7.widget.AppCompatSpinner
-                android:id="@+id/spinner_distance"
-                android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignTop="@id/search_view"
-                android:layout_alignBottom="@id/search_view"
-                android:background="@drawable/round_right_spinner" />
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:padding="8dp">
 
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:layout_marginEnd="8dp"
-                android:visibility="invisible"/>
+                <android.support.v7.widget.SearchView
+                    android:id="@+id/search_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginEnd="3dp"
+                    android:layout_toStartOf="@id/spinner_distance"
+                    android:background="@drawable/round_left_edit_text"
+                    android:gravity="center_vertical"
+                    android:textColor="@android:color/black"
+                    app:queryHint="@string/input_key" />
 
-            <TextView
-                android:id="@+id/txt_searching"
-                android:layout_width="wrap_content"
+                <android.support.v7.widget.AppCompatSpinner
+                    android:id="@+id/spinner_distance"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/search_view"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignTop="@id/search_view"
+                    android:background="@drawable/round_right_spinner" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_marginEnd="8dp"
+                    android:visibility="invisible" />
+
+                <TextView
+                    android:id="@+id/txt_searching"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/progress_bar"
+                    android:text="@string/searching"
+                    android:textSize="@dimen/extra_large_text_font"
+                    android:visibility="invisible" />
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_my_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="@dimen/big_activity_fab_margin"
+            android:src="@drawable/ic_hunt"
+            app:backgroundTint="@android:color/white"
+            app:fabSize="normal" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:behavior_peekHeight="80dp"
+        app:behavior_hideable="true"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        android:elevation="4dp"
+        android:background="@android:color/white">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="6dp"
+            android:translationZ="2dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/extra_large_text_font"
-                android:layout_toEndOf="@id/progress_bar"
-                android:layout_centerVertical="true"
-                android:text="@string/searching"
-                android:visibility="invisible"/>
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:paddingBottom="5dp">
 
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
+                <ImageView
+                    android:id="@+id/img_up"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_up"
+                    android:layout_centerHorizontal="true"/>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_my_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/big_activity_fab_margin"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:src="@drawable/ic_hunt"
-        app:fabSize="normal"
-        app:backgroundTint="@android:color/white"/>
+                <TextView
+                    android:id="@+id/txt_shop_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Shop ABC"
+                    android:layout_below="@id/img_up"
+                    android:layout_toStartOf="@id/txt_product_found"
+                    android:lines="1"
+                    android:ellipsize="end"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/extra_large_text_font"
+                    android:padding="@dimen/activity_vertical_margin"/>
 
-</RelativeLayout>
+                <TextView
+                    android:id="@+id/txt_product_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/product"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignTop="@id/txt_shop_name"/>
+
+                <TextView
+                    android:id="@+id/txt_distance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="100 km"
+                    android:layout_alignBottom="@id/txt_shop_name"
+                    android:layout_alignParentEnd="true"/>
+
+                <TextView
+                    android:id="@+id/txt_product_found"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="100"
+                    android:layout_alignTop="@id/txt_product_label"
+                    android:layout_marginEnd="5dp"
+                    android:layout_toStartOf="@id/txt_product_label"/>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/card_title"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp">
+
+        </android.support.v7.widget.RecyclerView>
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

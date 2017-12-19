@@ -27,7 +27,7 @@ import com.uides.buyanywhere.custom_view.StrikeThroughPriceTextView;
 import com.uides.buyanywhere.custom_view.dialog.LoadingDialog;
 import com.uides.buyanywhere.model.PageResult;
 import com.uides.buyanywhere.model.Product;
-import com.uides.buyanywhere.model.ProductReview;
+import com.uides.buyanywhere.model.ProductPreview;
 import com.uides.buyanywhere.model.User;
 import com.uides.buyanywhere.network.Network;
 import com.uides.buyanywhere.recyclerview_adapter.EndlessLoadingRecyclerViewAdapter;
@@ -36,6 +36,7 @@ import com.uides.buyanywhere.service.product.GetProductService;
 import com.uides.buyanywhere.service.shop.GetShopProductsService;
 import com.uides.buyanywhere.ui.activity.PostProductActivity;
 import com.uides.buyanywhere.ui.activity.ProductDetailActivity;
+import com.uides.buyanywhere.ui.activity.ProductDetailLoadingActivity;
 import com.uides.buyanywhere.ui.fragment.RecyclerViewFragment;
 import com.uides.buyanywhere.utils.DateUtil;
 
@@ -60,8 +61,6 @@ public class ShopProductsFragment extends RecyclerViewFragment implements Endles
     @BindView(R.id.fab_add)
     FloatingActionButton fabAdd;
 
-    private LoadingDialog loadingDialog;
-    private GetProductService getProductService;
     private GetShopProductsService getShopProductsService;
     private String shopID;
     private boolean isGuest;
@@ -78,7 +77,6 @@ public class ShopProductsFragment extends RecyclerViewFragment implements Endles
         shopID = bundle.getString(Constant.SHOP_ID);
         isGuest = bundle.getBoolean(Constant.IS_GUEST, false);
         initServices();
-        this.loadingDialog = new LoadingDialog(getActivity());
     }
 
     @Nullable
@@ -95,7 +93,6 @@ public class ShopProductsFragment extends RecyclerViewFragment implements Endles
 
     private void initServices() {
         Network network = Network.getInstance();
-        getProductService = network.createService(GetProductService.class);
         getShopProductsService = network.createService(GetShopProductsService.class);
     }
 
@@ -115,7 +112,7 @@ public class ShopProductsFragment extends RecyclerViewFragment implements Endles
                         shopID,
                         1,
                         LIMIT_PRODUCT,
-                        ProductReview.CREATED_DATE,
+                        ProductPreview.CREATED_DATE,
                         1)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
@@ -134,7 +131,7 @@ public class ShopProductsFragment extends RecyclerViewFragment implements Endles
         getSwipeRefreshLayout().setRefreshing(false);
     }
 
-    private void onRefreshSuccess(PageResult<ProductReview> pageResult) {
+    private void onRefreshSuccess(PageResult<ProductPreview> pageResult) {
         ((EndlessLoadingRecyclerViewAdapter) getAdapter()).disableLoadingMore(false);
         ProductAdapter productAdapter = (ProductAdapter) getAdapter();
         productAdapter.clear();
@@ -155,7 +152,7 @@ public class ShopProductsFragment extends RecyclerViewFragment implements Endles
                 .getShopProducts(user.getAccessToken(),
                         user.getShopID(),
                         productAdapter.getItemCount() / LIMIT_PRODUCT + 1,
-                        LIMIT_PRODUCT, ProductReview.CREATED_DATE,
+                        LIMIT_PRODUCT, ProductPreview.CREATED_DATE,
                         1)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
@@ -171,7 +168,7 @@ public class ShopProductsFragment extends RecyclerViewFragment implements Endles
         productAdapter.hideLoadingItem();
     }
 
-    private void onLoadMoreSuccess(PageResult<ProductReview> pageResult) {
+    private void onLoadMoreSuccess(PageResult<ProductPreview> pageResult) {
         getSwipeRefreshLayout().setEnabled(true);
         ProductAdapter productAdapter = (ProductAdapter) getAdapter();
         productAdapter.hideLoadingItem();
@@ -183,30 +180,11 @@ public class ShopProductsFragment extends RecyclerViewFragment implements Endles
 
     @Override
     public void onItemClick(RecyclerView.Adapter adapter, View view, int viewType, int position) {
-        loadingDialog.show();
-        ProductReview productReview = getAdapter().getItem(position, ProductReview.class);
-        Disposable disposable = getProductService.getProduct(productReview.getId())
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onFetchProductSuccess, this::onFetchProductFailed);
-        addDisposable(disposable);
-    }
-
-    private void onFetchProductSuccess(Product product) {
-        loadingDialog.dismiss();
-        Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(Constant.PRODUCT, product);
-        bundle.putBoolean(Constant.IS_FROM_SHOP, true);
-        bundle.putBoolean(Constant.IS_VIEW_BY_SHOP_OWNER, true);
-        intent.putExtras(bundle);
+        ProductPreview productPreview = getAdapter().getItem(position, ProductPreview.class);
+        Intent intent = new Intent(getActivity(), ProductDetailLoadingActivity.class);
+        intent.putExtra(Constant.PRODUCT_ID, productPreview.getId());
+        intent.putExtra(Constant.IS_FROM_SHOP, true);
         startActivity(intent);
-    }
-
-    private void onFetchProductFailed(Throwable e) {
-        loadingDialog.dismiss();
-        Log.i(TAG, "onFetchProductFailed: " + e);
-        Toast.makeText(getActivity(), R.string.unexpected_error_message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -230,8 +208,8 @@ public class ShopProductsFragment extends RecyclerViewFragment implements Endles
         switch (requestCode) {
             case POST_PRODUCT_REQUEST_CODE: {
                 if (resultCode == Activity.RESULT_OK) {
-                    ProductReview productReview = (ProductReview) data.getSerializableExtra(Constant.PRODUCT_REVIEW);
-                    getAdapter().addModel(0, productReview, false);
+                    ProductPreview productPreview = (ProductPreview) data.getSerializableExtra(Constant.PRODUCT_REVIEW);
+                    getAdapter().addModel(0, productPreview, false);
                 }
             }
             break;
@@ -266,17 +244,17 @@ public class ShopProductsFragment extends RecyclerViewFragment implements Endles
 
         @Override
         protected void bindNormalViewHolder(NormalViewHolder holder, int position) {
-            ProductReview productReview = getItem(position, ProductReview.class);
+            ProductPreview productPreview = getItem(position, ProductPreview.class);
             ProductViewHolder productViewHolder = (ProductViewHolder) holder;
             Picasso.with(getActivity())
-                    .load(productReview.getPreviewUrl())
+                    .load(productPreview.getPreviewUrl())
                     .placeholder(R.drawable.image_placeholder)
                     .fit()
                     .into(productViewHolder.imagePreview);
-            productViewHolder.textName.setText(productReview.getName());
-            productViewHolder.textShop.setText(productReview.getShopName());
-            long currentPrice = productReview.getCurrentPrice();
-            long originPrice = productReview.getOriginPrice();
+            productViewHolder.textName.setText(productPreview.getName());
+            productViewHolder.textShop.setText(productPreview.getShopName());
+            long currentPrice = productPreview.getCurrentPrice();
+            long originPrice = productPreview.getOriginPrice();
             if (currentPrice < originPrice) {
                 productViewHolder.textCurrentPrice.setPrice("" + currentPrice, Constant.PRICE_UNIT);
                 productViewHolder.textOriginPrice.setVisibility(View.VISIBLE);
@@ -285,13 +263,13 @@ public class ShopProductsFragment extends RecyclerViewFragment implements Endles
                 productViewHolder.textCurrentPrice.setPrice("" + originPrice, Constant.PRICE_UNIT);
                 productViewHolder.textOriginPrice.setVisibility(View.INVISIBLE);
             }
-            productViewHolder.textQuantity.setText("" + productReview.getQuantity());
+            productViewHolder.textQuantity.setText("" + productPreview.getQuantity());
             productViewHolder.tagGroup.removeAll();
-            Tag tag = new Tag(productReview.getCategoryName());
+            Tag tag = new Tag(productPreview.getCategoryName());
             tag.tagTextSize = 11;
             productViewHolder.tagGroup.addTag(tag);
-            productViewHolder.ratingBar.setStar(productReview.getRating());
-            productViewHolder.textTime.setText(DateUtil.getDateDiffNow(productReview.getCreatedDate()));
+            productViewHolder.ratingBar.setStar(productPreview.getRating());
+            productViewHolder.textTime.setText(DateUtil.getDateDiffNow(productPreview.getCreatedDate()));
         }
 
         @Override

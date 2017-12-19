@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.uides.buyanywhere.Constant;
 import com.uides.buyanywhere.ui.fragment.shop.ShopInformationFragment;
 import com.uides.buyanywhere.ui.fragment.shop.ShopOrderFragment;
 import com.uides.buyanywhere.ui.fragment.shop.ShopProductsFragment;
@@ -26,15 +27,19 @@ public class ShopPagerAdapter extends FragmentPagerAdapter {
     public ShopPagerAdapter(FragmentManager fm, Bundle shopBundle) {
         super(fm);
         fragments = new ArrayList<>(2);
+
         ShopInformationFragment shopInformation = new ShopInformationFragment();
         shopInformation.setArguments(shopBundle);
         fragments.add(shopInformation);
         ShopProductsFragment shopProductsFragment = new ShopProductsFragment();
         shopProductsFragment.setArguments(shopBundle);
         fragments.add(shopProductsFragment);
-        ShopOrderFragment shopOrderFragment = new ShopOrderFragment();
-        shopOrderFragment.setArguments(shopBundle);
-        fragments.add(shopOrderFragment);
+        boolean isShopOwner = shopBundle.getBoolean(Constant.IS_VIEW_BY_SHOP_OWNER, false);
+        if(isShopOwner) {
+            ShopOrderFragment shopOrderFragment = new ShopOrderFragment();
+            shopOrderFragment.setArguments(shopBundle);
+            fragments.add(shopOrderFragment);
+        }
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.uides.buyanywhere.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by TranThanhTung on 19/11/2017.
@@ -18,6 +20,11 @@ public class DateUtil {
         }
 
         return getResult(0, endInMilliSecond - startInMilliSecond);
+    }
+
+    public static String getDate(long value) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+        return simpleDateFormat.format(new Date(value));
     }
 
     public static String getDateDiffNow(Date start) {
